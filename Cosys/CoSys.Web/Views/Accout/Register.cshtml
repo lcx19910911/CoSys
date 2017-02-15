@@ -1,0 +1,91 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@CustomHelper.GetValue("Website-Titlte") - 登录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="Flat Dark Web Login Form Responsive Templates, Iphone Widget Template, Smartphone login forms,Login form, Widget Template, Responsive Templates, a Ipad 404 Templates, Flat Responsive Templates" />
+    <link href="~/Styles/reg.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="main">
+        <div class="header">
+            <h1>新用户注册</h1>
+        </div>
+        <form>
+            <ul class="dataform">
+                <li>
+                    <input type="text" placeholder="Username" required />
+                    <a href="#" class="icon ticker"> </a>
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <input type="text" placeholder="Email" required />
+                    <a href="#" class="icon ticker"> </a>
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <input type="password" placeholder="password" required />
+                    <a href="#" class="icon into"> </a>
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <input type="password" placeholder="password" required />
+                    <a href="#" class="icon into"> </a>
+                    <div class="clear"> </div>
+                </li>
+                <label class="checkbox"><input type="checkbox" name="checkbox" checked=""><i> </i>同意平台条款</label>
+                <input type="submit" onClick="myFunction()" value="注册">
+                <div class="clear"> </div>
+            </ul>
+            <div class="clear"> </div>
+
+        </form>
+
+    </div>
+
+    <script type="text/javascript">
+        $.ajaxSetup({ cache: false });
+        $("#loginBtn").click(function () {
+            Login();
+        })
+        function Login() {
+            var accoount = $("#account").val();
+            var password = $("#password").val();
+            if (accoount == "") {
+                    alert("请输入账号");
+                    return false;
+                }
+            if (password == "") {
+                    alert("请输入密码");
+                    return false;
+                }
+                $.ajax({
+                    type: 'get',
+                    url: "/accout/Submit",
+                    data: { accoount: accoount, password: password },
+                    success: function (data) {
+                        if (data.Result) {
+                            window.location.href = "@(string.IsNullOrEmpty(Request["redirecturl"])?"/Home/index": Request["redirecturl"])";
+                        }
+                        else {
+                            alert(data.ErrorDesc);
+                        }
+                    }
+                });
+        }
+
+        document.onkeydown = function (event) {
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if (e && e.keyCode == 13) { // enter 键
+                Login();
+            }
+        };
+    </script>
+
+</body>
+</html>          

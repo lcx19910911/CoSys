@@ -1,0 +1,29 @@
+﻿<div id="searchExamDomain" style="display:none;">
+    <div class="am-g">         
+        <div class="am-u-lg-9">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-btn am-margin-left-sm">
+                    <button class="am-btn am-btn-default" id="btnExamSearch" type="button">搜索</button>
+                </span>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="grid_container">
+    <table id="examDataTable" class="am-table am-table-compact am-table-hover table-main">
+        <thead>
+            <tr>
+                <th dataname="ID" type="checkbox"></th>
+                <th dataname="CreatedTime" datatype="jsondate">考试日期</th>
+                <th render="ShowTheme">科目</th>
+                <th dataname="ThemeTwoCoachName">科二教练</th>
+                <th dataname="ThemeThreeCoachName">科三教练</th>
+                <th dataname="Count">次数</th>
+                <th render="ShowResult">通过情况</th>
+                <th type="eventlist"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>

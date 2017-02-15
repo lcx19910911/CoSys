@@ -1,0 +1,648 @@
+﻿
+<!doctype html>
+<html class="no-js fixed-layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="apple-mobile-web-app-title" content="Amaze UI" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Styles/css/amazeui.css" rel="stylesheet" />
+    @Styles.Render("~/Content/Admin")
+    @RenderSection("linkcss", required: false)
+    @Scripts.Render("~/Scripts/Admin")
+    <script>
+        function changePassword() {
+
+            $.Nuoya.ajaxDialog({
+                closeViaDimmer: false,
+                width: "800px",
+                height: "280px",
+                ajaxUrl: "/HtmlTemplates/User/ChangePassword.html",
+                title: "修改密码",
+                buttons: [{
+                    label: "保存",
+                    callback: function (e) {
+
+                        var oldPassword = $("[name='OldPassword']").val();
+                        var newPassword = $("[name='NewPassword']").val();
+                        var cfmPassword = $("[name='ConfirmPassword']").val();
+
+                        if (oldPassword != "" && newPassword != "" && cfmPassword != "") {
+                            if (newPassword != cfmPassword) {
+                                $.Nuoya.alert("密码不能为空");
+                                return false;
+                            }
+                            $.Nuoya.action("/accout/ChangePassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword }, function (data) {
+                                if (!data.ErrorDesc) {
+                                    $.Nuoya.alert("修改密码成功");
+                                    e.hide();
+                                }
+                                else
+                                    $.Nuoya.alert(data.ErrorDesc);
+
+                            });
+                        }
+                        else
+                            $.Nuoya.alert("密码不能为空");
+                    }
+                }]
+            });
+        }
+        function SelectFrom(obj) {
+            if ($(obj).val() != "1") {
+                $("#schoolDiv input").val("").attr("readonly", true);
+                $('#schoolDiv select').each(function () {
+                    $(this).find('option').eq(0).attr('selected', true);
+                });
+                $("#schoolDiv").hide();
+            }
+            else {
+                $("#schoolDiv").show();
+
+            }
+        }
+
+        //获取Json的日期
+        function RenderDate(data) {
+            var da = eval('new ' + data.replace('/', '', 'g').replace('/', '', 'g'));
+            return da.getFullYear() + "-" + (da.getMonth()+1) + "-" + da.getDate();
+        }
+        //获取Json的时间
+        function RenderTime(data) {
+            var da = eval('new ' + data.replace('/', '', 'g').replace('/', '', 'g'));
+            return da.getFullYear() + "-" + (da.getMonth()+1) + "-" + da.getDate() + " " + da.getHours() + ":" + da.getSeconds() + ":" + da.getMinutes();
+        }
+        //关闭/展示菜单
+        function unState() {
+            var state = $(".admin-sidebar").css("display");
+            if (state == "none")
+                $('.admin-sidebar').show();
+            else
+                $('.admin-sidebar').hide();
+        }
+
+        //加载省份
+        function LoadProvince(isIndex, dataitem) {
+            if (isIndex) {
+                $.Nuoya.action("/Area/GetAreaCodeSelectItem", {}, function (json) {
+                    $(json).each(function () {
+                        $("#searchDomain select[name='ProvinceCode']").append("<option value='" + this.Value + "'>" + this.Text + "</option>");
+                    });
+                });
+            }
+            else {
+                $.Nuoya.action("/Area/GetAreaCodeSelectItem", {}, function (json) {
+
+                    $(json).each(function () {
+                        if (dataitem != null && dataitem.EnteredProvinceCode == this.Value) {
+                            $("#form select[name='EnteredProvinceCode']").append("<option  value='" + this.Value + "' selected='selected' >" + this.Text + "</option>");
+                        } else {
+                            $("#form select[name='EnteredProvinceCode']").append("<option  value='" + this.Value + "' >" + this.Text + "</option>");
+                        }
+                    });
+                    if (dataitem != null) {
+                        ShowCity(false, 2, dataitem.EnteredCityCode);
+                    }
+                });
+
+            }
+        }
+
+        //显示省份下方的市
+        function ShowCity(isIndex, tabe, setVaule) {
+            var value = "";
+            if (isIndex) {
+                {
+                    value = $("#searchDomain select[name='ProvinceCode']").val();
+                    $("#searchDomain select[name='CityCode']").empty();
+                }
+            }
+            else {
+                if (tabe == 1) {
+                    value = $("#form select[name='ProvinceCode']").val();
+                    $("#form select[name='CityCode']").empty();
+                }
+                else if (tabe == 2) {
+                    value = $("#form select[name='EnteredProvinceCode']").val();
+                    $("#form select[name='EnteredCityCode']").empty();
+                }
+
+            }
+
+            if (value == "0")
+                return false;
+            $.Nuoya.action("/Area/GetAreaCodeSelectItem", { value: value }, function (json) {
+                $(json).each(function () {
+                    if (isIndex) {
+                        $("#searchDomain select[name='CityCode']").append("<option value='" + this.Value + "'>" + this.Text + "</option>");
+                    }
+                    else {
+                        if (tabe == 1) {
+                            if (setVaule != null && setVaule == this.Value) {
+                                $("#form select[name='CityCode']").append("<option value='" + this.Value + "'  selected='selected' >" + this.Text + "</option>");
+                            }
+                            else {
+                                $("#form select[name='CityCode']").append("<option value='" + this.Value + "' >" + this.Text + "</option>");
+                            }
+                        } else if (tabe == 2) {
+                            if (setVaule != null && setVaule == this.Value) {
+                                $("#form select[name='EnteredCityCode']").append("<option value='" + this.Value + "'  selected='selected' >" + this.Text + "</option>");
+                            }
+                            else {
+                                $("#form select[name='EnteredCityCode']").append("<option value='" + this.Value + "' >" + this.Text + "</option>");
+                            }
+                        }
+                    }
+                });
+                if (!isIndex) {
+                    if (tabe == 1) {
+                        if (setVaule == "")
+                            $("#form select[name='CityCode']").find('option').eq(0).attr('selected', true);
+                        ShowArea(false, $("#form select[name='CityCode']"))
+                    }
+                    else {
+
+                    }
+                }
+                else {
+                    ShowArea(true, $("select[name='CityCode']"))
+                }
+            });
+        }
+
+        //显示市下方的县区
+        function ShowArea(isIndex, obj) {
+            if (isIndex) {
+                $("#searchDomain select[name='DistrictCode']").empty();
+            }
+            else {
+                $("#form select[name='DistrictCode']").empty();
+            }
+            var value = $(obj).val();
+            if (value != "0") {
+                $.Nuoya.action("/Area/GetAreaCodeSelectItem", { value: value }, function (json) {
+                    $(json).each(function () {
+                        if (isIndex) {
+                            $("#searchDomain select[name='DistrictCode']").append("<option value='" + this.Value + "' selected>" + this.Text + "</option>");
+                        }
+                        else {
+                            $("#form select[name='DistrictCode']").append("<option value='" + this.Value + "' selected>" + this.Text + "</option>");
+                        }
+                    });
+                });
+            }
+        }
+
+        //图片方法 缩小
+        function ShowThum(item) {
+            return "<a onclick='ShowImage(\"" + item.VoucherThum + "\")'><img src='" + item.VoucherThum + "' style='width:100px; height:40px;'/></a>"
+        }
+
+        //展示图片
+        function ShowImage(src) {
+            $("#imgDiv img").attr("src", src);
+            $("#imgDiv").show();
+        }
+        $(function () {
+            $("#imgDiv").click(function () {
+                $("#imgDiv").hide();
+            });
+        });
+
+        //获取页面路径
+        function GetUrlRelativePath() {
+            var url = document.location.toString();
+            var arrUrl = url.split("//");
+
+            var start = arrUrl[1].indexOf("/");
+            var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+            if (relUrl.indexOf("?") != -1) {
+                relUrl = relUrl.split("?")[0];
+            }
+            return relUrl;
+        }
+
+
+        //显示性别
+        function Gender(item) {
+            if (item.GenderCode == 1)
+                return "男";
+            else if (item.GenderCode == 2)
+                return "女";
+            else
+                return "未知";
+        }
+
+        //加载是否框
+        function LoadYesOrNoSelectItem(obj, key) {
+            if (key == 0) {
+                $(obj).append("<option value='0' selected>否</option>");
+                $(obj).append("<option value='1' >是</option>");
+            }
+            else {
+                $(obj).append("<option value='0'>否</option>");
+                $(obj).append("<option value='1' selected>是</option>");
+            }
+        }
+
+   
+        //验证身份证
+        function isCardID(obj, sexObj) {
+            var sId = $(obj).val();
+            if (sId != "") {
+                if (sId.length == 10) {
+
+                    if (!/^\d{6}19\d{2}$/.test(sId) && !/^\d{6}20\d{2}$/.test(sId)) {
+
+                        //10位全数字 澳门
+                        if (/^[1|5|7][0-9]{2}/.test(sId.substr(0, 3))) {
+                            if (!/^[1|5|7][0-9]{6}\([0-9Aa]\)/.test(sId)) {
+                                $.Nuoya.alert("你输入的澳门身份证身份证长度或格式错误")
+                                return false;
+                            } else {
+                                $("#form #ProvinceName").val("澳门");
+                                $("#form #ProvinceCode").val("820000");
+                                $("#form #CityName").val("澳门");
+                                $("#form #CityCode").val("821000");
+                            }
+                        }
+                            //台湾和香港为第一位引英文。但是台湾后面全为数字 香港后面跟着6个数字
+                            //台湾
+                        else if (/^[a-zA-Z][0-9]{7}$/.test(sId.substr(0, 8))) {
+                            if (!/^[a-zA-Z][0-9]{9}$/.test(sId)) {
+                                $.Nuoya.alert("你输入的台湾身份证身份证长度或格式错误")
+                                return false;
+                            }
+                            else {
+                                var sex = sId.substr(1, 1);
+                                //$(sexObj).find('option').eq(parseInt(sex)).attr('selected', true);
+                                CreateSexSelect(sexObj, sex);
+                                $("#form #ProvinceName").val("台湾");
+                                $("#form #ProvinceCode").val("710000");
+                                $("#form #CityName").val("台湾");
+                                $("#form #CityCode").val("711000");
+                            }
+                        }
+                        else if (!/^((\s?[A-Za-z])|([A-Za-z]{2}))\d{6}\(([0−9aA])|([0-9aA])\)$/.test(sId)) {
+                            $.Nuoya.alert("你输入的香港身份证身份证长度或格式错误")
+                            return false;
+                        }
+                        else {
+                            var sex = sId.substr(1, 1);
+                            CreateSexSelect(sexObj, sex);
+                            //$(sexObj).find('option').eq(parseInt(sex)).attr('selected', true);
+                            $("#form #ProvinceName").val("香港");
+                            $("#form #ProvinceCode").val("810000");
+                            $("#form #CityName").val("香港");
+                            $("#form #CityCode").val("811000");
+                        }
+
+                    }
+                }
+                else if (sId.length == 18) {
+                    var iSum = 0;
+                    var info = "";
+
+                    if (!/^\d{17}(\d|x)$/i.test(sId)) {
+                        $.Nuoya.alert("你输入的身份证长度或格式错误")
+                        return false;
+                    }
+                    sId = sId.replace(/x$/i, "a");
+                    if (parseInt(sId.substr(0, 2)) == null) {
+                        $.Nuoya.alert("你的身份证地区非法")
+                        return false;
+                    }
+                    var sBirthday = sId.substr(6, 4) + "-" + Number(sId.substr(10, 2)) + "-" + Number(sId.substr(12, 2));
+                    var d = new Date(sBirthday.replace(/-/g, "/"));
+                    if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate())) {
+                        $.Nuoya.alert("身份证上的出生日期非法")
+                        return false;
+                    }
+                    for (var i = 17; i >= 0; i--) iSum += (Math.pow(2, i) % 11) * parseInt(sId.charAt(17 - i), 11);
+                    if (iSum % 11 != 1) {
+                        $.Nuoya.alert("你输入的身份证号非法");
+                        return false;
+                    }
+                    //此次还可以判断出输入的身份证号的人性别
+                    var sex = parseInt(sId.substr(16, 1)) % 2;
+                    {
+                        CreateSexSelect(sexObj, sex);
+                    }
+                    var cityCode = sId.substr(0, 4) + "00";
+                    var provinceCode = sId.substr(0, 2) + "0000";
+
+                    $("#form #ProvinceCode").val(provinceCode);
+                    $("#form #CityCode").val(cityCode);
+                    if (cityCode == "352200") {
+                        $("#form #ProvinceName").val("福建省");
+                        $("#form #CityName").val("宁德市（旧）");
+                    }
+                    else {
+
+                        $.Nuoya.action("/Area/GetByCityCode", { cityCode: cityCode }, function (json) {
+                            $("#form #ProvinceName").val(json.Item1);
+                            $("#form #CityName").val(json.Item2);
+
+                        });
+                    }
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        //返回上一页
+        function BackUrl() {
+            history.go(-1);
+        }
+
+    </script>
+
+
+</head>
+
+<body>
+    <header class="am-topbar am-topbar-inverse admin-header">
+        <div class="am-topbar-brand">
+            <a href="/home/index"><strong>驾校网上报名管理平台---@ViewBag.Title</strong></a>
+        </div>
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+        <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+            <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+                <li><a href="javascript:;"><span class="am-icon-user">@(CryptoHelper.AES_Decrypt(Session[Params.UserCookieName].ToString(), Params.SecretKey).DeserializeJson<User>()?.Name)</span></a></li>
+
+                <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
+                <li><a href="/accout/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
+            </ul>
+        </div>
+    </header>
+    <div class="am-cf admin-main am-text-left">
+
+        <div id="imgDiv" style="opacity:1;background-color:black;width:100%;height:100%;z-index:9000; display:none; position:absolute;">
+            <div style="width:500px; margin:0 auto; z-index:9001;margin-top:10%">
+                <img src="" style="width:100%;" />
+            </div>
+        </div>
+
+        <div id="loadingDiv" style="opacity:0.7;background-color:black;width:100%;height:100%;z-index:9000; display:none; position:absolute;">
+            <div style="width:500px; margin:0 auto; z-index:9001;margin-top:20%">
+                <img src="~/Images/loading.jpg" />
+            </div>
+        </div>
+
+
+        <!-- sidebar start -->
+        <div class="admin-sidebar">
+            <ul class="am-list admin-sidebar-list">
+
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#审核'}" class="am-cf am-collapsed">
+                        <span class="am-icon-calculator"></span> 审核
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="审核">
+                        <li>
+                            <a data-am-collapse="{target: '#发起者审核'}" class="am-cf am-collapsed" href="/Admin/Settled/Sponsor">
+                                <span class="am-icon-user"></span> 发起者审核
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#创客审核'}" class="am-cf am-collapsed" href="/Admin/Settled/Maker">
+                                <span class="am-icon-user"></span> 创客审核
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#设计师审核'}" class="am-cf am-collapsed" href="/Admin/Settled/Designer">
+                                <span class="am-icon-user"></span> 设计师审核
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#项目管理'}" class="am-cf am-collapsed">
+                        <span class="am-icon-calculator"></span> 项目管理
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="项目管理">
+                        <li>
+                            <a data-am-collapse="{target: '#项目管理'}" class="am-cf am-collapsed" href="/Admin/Project/Index">
+                                <span class="am-icon-user"></span> 项目管理
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#提现管理'}" class="am-cf am-collapsed">
+                        <span class="am-icon-calculator"></span> 提现管理
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="提现管理">
+                        <li>
+                            <a data-am-collapse="{target: '#提现记录'}" class="am-cf am-collapsed" href="/Admin/UserDrawals/Index">
+                                <span class="am-icon-user"></span> 提现记录
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#提现审核'}" class="am-cf am-collapsed" href="/Admin/UserDrawals/Allot">
+                                <span class="am-icon-user"></span> 提现审核
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#推荐管理'}" class="am-cf am-collapsed">
+                        <span class="am-icon-calculator"></span> 推荐管理
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="推荐管理">
+                        <li>
+                            <a data-am-collapse="{target: '#推荐管理'}" class="am-cf am-collapsed" href="/Admin/Recommend/Index?code=@(RecommendCode.Home_Banner_Blog)">
+                                <span class="am-icon-user"></span> 首页博客
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#用户管理'}" class="am-cf am-collapsed">
+                        <span class="am-icon-calculator"></span> 用户管理
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="用户管理">
+                        <li>
+                            <a data-am-collapse="{target: '#发起者管理'}" class="am-cf am-collapsed" href="/Admin/User/Sponsor">
+                                <span class="am-icon-user"></span> 发起者管理
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#创客管理'}" class="am-cf am-collapsed" href="/Admin/User/Maker">
+                                <span class="am-icon-user"></span> 创客管理
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#设计师管理'}" class="am-cf am-collapsed" href="/Admin/User/Designer">
+                                <span class="am-icon-user"></span> 设计师管理
+                            </a>
+                        </li>
+
+
+                    </ul>
+                </li>
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#博客管理'}" class="am-cf am-collapsed">
+                        <span class="am-icon-calculator"></span> 博客管理
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="博客管理">
+                        <li>
+                            <a data-am-collapse="{target: '#博客管理'}" class="am-cf am-collapsed" href="/Admin/Blog/Index">
+                                <span class="am-icon-user"></span> 博客管理
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#订单管理'}" class="am-cf am-collapsed">
+                        <span class="am-icon-calculator"></span> 订单管理
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="订单管理">
+                        <li>
+                            <a data-am-collapse="{target: '#项目订单管理'}" class="am-cf am-collapsed" href="/Admin/ProjectOrder/Index">
+                                <span class="am-icon-user"></span> 项目订单管理
+                            </a>
+                        </li>
+                        @*<li>
+                            <a data-am-collapse="{target: '#退款处理'}" class="am-cf am-collapsed" href="/Admin/ProjectOrder/Refund">
+                                <span class="am-icon-user"></span> 退款处理
+                            </a>
+                        </li>*@
+
+                    </ul>
+                </li>
+
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#账务统计'}" class="am-cf am-collapsed">
+                        <span class="am-icon-calculator"></span> 账务统计
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="账务统计">
+                        <li>
+                            <a data-am-collapse="{target: '#平台佣金设置'}" class="am-cf am-collapsed" href="/Admin/Config/Index?code=">
+                                <span class="am-icon-user"></span> 平台佣金设置
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#订单统计'}" class="am-cf am-collapsed" href="/Admin/ProjectOrder/Index">
+                                <span class="am-icon-user"></span> 订单统计
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="admin-parent">
+                    <a data-am-collapse="{target: '#参数设置'}" class="am-cf am-collapsed">
+                        <span class="am-icon-bars"></span> 参数设置
+                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                    </a>
+                    <ul class="am-list admin-sidebar-sub am-collapse" id="参数设置">
+
+                        <li>
+                            <a data-am-collapse="{target: '#地区管理'}" class="am-cf am-collapsed" href="/Admin/Area/Index">
+                                <span class="am-icon-bars"></span> 地区管理
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#意向/启动项目类型'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=2">
+                                <span class="am-icon-bars"></span> 意向/启动项目类型
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#已具备的优势/资源'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=3">
+                                <span class="am-icon-bars"></span> 已具备的优势/资源
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#需要匹配的资源'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=4">
+                                <span class="am-icon-bars"></span> 需要匹配的资源
+                            </a>
+                        </li>
+
+                        <li>
+                            <a data-am-collapse="{target: '#合作经营'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=5">
+                                <span class="am-icon-bars"></span> 合作经营
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#旅游周边开发'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=6">
+                                <span class="am-icon-bars"></span> 旅游周边开发
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#宣传推广'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=7">
+                                <span class="am-icon-bars"></span> 宣传推广
+                            </a>
+                        </li>
+
+                        <li>
+                            <a data-am-collapse="{target: '#设计风格'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=8">
+                                <span class="am-icon-bars"></span> 设计风格
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#设计师任务'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=9">
+                                <span class="am-icon-bars"></span> 设计师任务
+                            </a>
+                        </li>
+
+                        <li>
+                            <a data-am-collapse="{target: '#设计师标签'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=10">
+                                <span class="am-icon-bars"></span> 设计师标签
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#项目功能'}" class="am-cf am-collapsed" href="/Admin/DataDictionary/Index?type=11">
+                                <span class="am-icon-bars"></span> 项目功能
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+
+            </ul>
+        </div>
+        <!-- sidebar end -->
+        <!-- content start -->
+        <div class="admin-content">
+            <div>
+                @RenderBody()
+            </div>
+
+        </div>
+        <!-- content end -->
+    </div>
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+
+
+
+
+    @RenderSection("scripts", false)
+</body>
+</html>
+
+
+

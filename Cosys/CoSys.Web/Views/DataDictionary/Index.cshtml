@@ -1,0 +1,247 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string type = Request["type"];
+    if (string.IsNullOrEmpty(type))
+    {
+        type = "2";
+    }
+    string title = "";
+    switch (type)
+    {
+        case "2":
+            title = "支付方式";
+            break;
+        case "3":
+            title = "支付渠道";
+            break;
+        case "4":
+            title = "培训班别";
+            break;
+        case "5":
+            title = "证书";
+            break;
+        case "6":
+            title = "收款账户";
+            break;
+        case "10":
+            title = "维修点";
+            break;
+        case "11":
+            title = "加油点";
+            break;
+        case "12":
+            title = "耗损项目";
+            break;
+         
+    }
+    ViewBag.Title = title;
+}
+
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>@(title)</small></div>
+</div>
+<div id="searchDomain">
+
+    <div class="am-g">   
+        <div class="am-u-lg-6 am-u-end">
+            <input name="group" type="hidden" value="@Request["type"]"/>
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">名称：</span>
+                <input type="text" class="am-form-field" placeholder="按@(title)名称搜索" style="width:100px;" name="value" ;>
+                <span class="am-input-group-btn am-margin-left-sm">
+                    <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
+                    <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                </span>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="am-g am-margin-top-sm">
+        <div class="am-u-lg-6">
+            <div class="am-btn-toolbar">
+                <div class="am-btn-group am-btn-group-xs">
+                    <button onclick="add()" type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div class="grid_container">
+    <table id="dataTable" class="am-table am-table-compact am-table-hover table-main">
+        <thead>
+            <tr>
+                <th dataname="ID" type="checkbox"></th>
+                <th dataname="Value">@(title)名称</th>
+                <th dataname="Sort">排序</th>
+                <th dataname="Remark">备注</th>
+                <th type="eventlist"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+
+
+        function ClearFilter() {
+            $("#searchDomain input").val("");
+    }
+    //批量删除
+    function batchDelete() {
+            $.Nuoya.confirm("确认删除？", function () {
+            grid.del({
+                ajaxUrl: "/DataDictionary/Delete",
+                    callback: function (json) {
+                    grid.reload();
+                }
+            });
+            });
+        }
+        function formInit(dataitem) {
+            //添加表单验证
+            $.Nuoya.form("form").validate({
+                rules: {
+                    Value: {
+                        required: true,
+                        maxlength: 64
+                    },
+                    Remark: {
+                        maxlength: 128
+                    },
+                    Sort: {
+                        digits: true,
+                        max: 2147483647,
+                        min: -2147483647
+                    }
+                },
+                messages: {
+                    Value: {
+                        required: "不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    Remark: {
+                        maxlength: "最多{0}个字符"
+                    },
+                    Sort: {
+                        digits: "请输入数字",
+                        max: "必须小于{0}",
+                        min: "必须大于{0}"
+                    }
+                }
+            });
+        }
+
+        //新增
+        function add() {
+            $.Nuoya.ajaxDialog({
+                closeViaDimmer: false,
+                ajaxUrl: "/HtmlTemplates/DataDictionary/Update.html",
+                title: "添加@(title)",
+                width: "800px",
+                height: "460px",
+                callback: function (e) {
+                    formInit();//表单初始化
+                },
+                buttons: [{
+                    label: "保存",
+                    callback: function (e) {
+                        $("#form [name='GroupCode']").val(@(type));
+                        $.Nuoya.form("form").ajaxSubmit({
+                            ajaxUrl: "/DataDictionary/Add",
+                            callback: function (data) {
+                                if (!data.ErrorDesc) {
+                                    e.hide();
+                                    grid.reload();
+                                }
+                                else
+                                    $.Nuoya.alert(data.ErrorDesc);
+                            }
+                        });
+                    }
+                }]
+            })
+        }
+
+        var grid = $.Nuoya.grid({
+            tableId: "dataTable",
+            //表格id
+            search: {
+                domainId: "searchDomain",
+                subId: "btnSearch"
+            },
+            ajaxUrl: "/DataDictionary/GetPageList",
+            //数据请求地址
+            
+            events: [
+                {
+                    className: "am-text-secondary",
+                    icon: "icon-pencil-square-o",
+                    name: "编辑",
+                    click: function (item) {
+                        $.Nuoya.ajaxDialog({
+                            closeViaDimmer: false,
+                            ajaxUrl: "/HtmlTemplates/DataDictionary/Update.html",
+                            title: "编辑@(title)",
+                            width: "800px",
+                            height: "460px",
+                            callback: function (e) {
+                                $.Nuoya.action("/DataDictionary/Find", { id: item.ID }, function (model) {
+                                    //载入数据
+                                    $.Nuoya.form("form").dataLoad({
+                                        data: model
+                                    });
+                                    formInit(model);//表单初始化
+                                    if(@type==6)
+                                    {
+                                        $("#name").parent().show();
+                                    }
+                                });
+                            },
+                            buttons: [{
+                                label: "保存",
+                                callback: function (e) {
+                                    $("#form [name='GroupCode']").val(@(type));
+                                    $.Nuoya.form("form").ajaxSubmit({
+                                        ajaxUrl: "/DataDictionary/Update",
+                                        params: {
+                                            ID: item.ID
+                                        },
+                                        callback: function (data) {
+                                            if (!data.ErrorDesc) {
+                                                e.hide();
+                                                grid.reload();
+                                            }
+                                            else
+                                                $.Nuoya.alert(data.ErrorDesc);
+                                        }
+                                    });
+                                }
+                            }]
+                        })
+                    }
+                },
+                {
+                    className: "am-text-danger",
+                    icon: "icon-trash-o",
+                    name: "删除",
+                    click: function (item) {
+                        $.Nuoya.confirm("确认删除？", function () {
+                            $.Nuoya.deleteAction("/DataDictionary/Delete", {
+                                ID: item.ID
+                            },
+                            function () {
+                                grid.reload();
+                            });
+                        });
+                    }
+                }
+            ]
+        });
+
+    </script>
+}

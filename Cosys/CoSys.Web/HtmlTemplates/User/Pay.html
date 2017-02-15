@@ -1,0 +1,86 @@
+﻿
+<div class="admin-content">
+    <form id="payForm" class="am-form am-form-horizontal">
+        <div class="admin-content-body">
+            <div class="am-margin">             
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        提示：
+                    </div>
+                    <div class="am-u-md-5 am-text-left" id="tipsDiv">
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"></div>
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        缴款日期：
+                    </div>
+                    <div class="am-u-md-5">
+                        <input type="text" name="PayTime"  class="am-input-sm" placeholder="请选择缴费日期"   readonly onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd' })" datatype="jsondate"  />
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        缴费金额：
+                    </div>
+                    <div class="am-u-md-5 am-text-left">
+                        <input type="number" name="PayMoney" class="am-input-sm" />
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        支付方式：
+                    </div>
+                    <div class="am-u-md-5">
+                        <select name="PayTypeID" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" >
+                            <option value="-1">请选择</option>
+                        </select>
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        收款账户：
+                    </div>
+                    <div class="am-u-md-5">
+                        <select name="AccountID">
+                            <option value="-1">请选择</option>
+                        </select>
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        凭证号：
+                    </div>
+                    <div class="am-u-md-5 am-text-left">
+                        <input type="text" name="VoucherNO" class="am-input-sm" maxlength="32" />
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left">不能超过32个字符</div>
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        缩略图
+                    </div>
+                    <div class="am-u-md-3">
+                        <a id="imageFile">上传图片</a>
+                        <input type="hidden" name="VoucherThum" />
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-6 am-text-left"><strong class="am-text-danger am-text-sm">*</strong>必须上传一张图片,参考尺寸：360*360</div>
+                </div>
+
+                <div class="am-g am-margin-top" id="imageDiv" style="display:none">
+                    <div class="am-u-md-3 am-text-right">
+                        <strong class="am-text-danger am-text-sm">*</strong>
+                    </div>
+                    <div class="am-u-md-3 am-text-left">
+                        <img style="width:360px;" />
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
