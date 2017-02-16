@@ -5,20 +5,23 @@ using System.Web;
 using System.Web.Mvc;
 using System.Threading.Tasks;
 using CoSys.Core;
+using CoSys.Model;
 
 namespace CoSys.Web.Controllers
 {
-    public class AccoutController : BaseController
+    public class AccountController : BaseController
     {
         // GET: Login
         public ActionResult Login()
         {
-            WebService.GetArea();
+            //WebService.GetArea();
             return View();
         }
         public ActionResult Register()
         {
-            return View();
+            var model = new User();
+            model.ProvinceItems = WebService.Get_AreaList("");
+            return View(model);
         }
 
         
@@ -49,5 +52,19 @@ namespace CoSys.Web.Controllers
         {
             return JResult(WebService.Admin_ChangePassword(oldPassword, newPassword, cfmPassword));
         }
+
+        #region 验证码
+        /// <summary>
+        /// 验证码
+        /// </summary>
+        public void ValidateCode()
+        {
+            var tuple = WebService.Create_ValidateCode(Client.IP);
+            HttpContext.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            HttpContext.Response.ClearContent();
+            HttpContext.Response.ContentType = "image/Jpeg";
+            HttpContext.Response.BinaryWrite(tuple.Item1.CreateImageStream(tuple.Item2));    //  输出图片
+        }
+        #endregion
     }
 }

@@ -163,5 +163,8 @@ namespace CoSys.Model
 
         public UserCode Code { get; set; }
 
+
+        [NotMapped]
+        public List<SelectItem> ProvinceItems { get; set; }
     }
 }

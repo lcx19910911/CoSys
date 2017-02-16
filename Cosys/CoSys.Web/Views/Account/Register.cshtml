@@ -1,0 +1,195 @@
+﻿@model List<SelectItem>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@CustomHelper.GetValue("Website-Titlte") - 注册</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <meta name="keywords" content="" />
+    <link href="~/Styles/reg.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="main">
+        <div class="header">
+            <h1>新用户注册</h1>
+            <p class="registered">已有账号?<a href="/account/login">立即登录</a></p>
+        </div>
+        <form>
+            <ul class="dataform">
+                <li>
+                    <lable class="info">用户名:</lable><input type="text" placeholder="请输入用户名" required id="account" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">密码:</lable><input type="password" placeholder="请输入密码" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">确认密码:</lable><input type="password" placeholder="确认密码" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">邮箱:</lable><input type="text" placeholder="请输入邮箱" required id="account" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">真实姓名:</lable><input type="text" placeholder="请输入姓名" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">见刊笔名:</lable><input type="text" placeholder="请输入见刊笔名" required id="account" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">户籍所在地:</lable><input type="text" placeholder="户籍所在地" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">身份证号:</lable><input type="text" placeholder="请输入身份证号" required id="account" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">单位:</lable><input type="text" placeholder="请输入单位" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">职位:</lable><input type="text" placeholder="请输入职位" required id="account" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">邮编:</lable><input type="text" placeholder="请输入邮编" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">省:</lable>
+                    <select class="area" onchange="loadArea(this,1)">
+                        @foreach (var item in Model)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                    @*<input type="text" placeholder="省" required id="account" />*@
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">市:</lable>
+                    <select class="area"  onchange="loadArea(this,2)"></select>
+                    @*<input type="text" placeholder="市" required id="password" />*@
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">县:</lable>
+                    <select class="area"  onchange="loadArea(this,3)"></select>
+                    @*<input type="text" placeholder="县" required id="account" />*@
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">街道:</lable>
+                    <select class="area"></select>
+                    @*<input type="text" placeholder="街道" required id="password" />*@
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">会员类型:</lable><input type="text" placeholder="会员类型" required id="account" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">通讯地址:</lable><input type="text" placeholder="请输入密码" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">固定电话:</lable><input type="text" placeholder="请输入固定电话" required id="account" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">手机:</lable><input type="text" placeholder="请输入手机" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">QQ:</lable><input type="text" placeholder="请输入QQ" required id="password" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">验证码:</lable><input type="text" placeholder="账号" required id="account" />
+                    <img id="img_code" alt="" title="点击重新获取" src="/account/validatecode" onclick="javascript:$(this).attr('src','/account/validatecode?r='+Math.random());" />
+                    <div class="clear"> </div>
+                </li>
+                <label><input type="checkbox" name="checkbox" checked=""><i> </i>同意平台条款</label>
+                <input type="submit" onClick="myFunction()" value="注册">
+                <div class="clear"> </div>
+            </ul>
+            <div class="clear"> </div>
+
+        </form>
+
+    </div>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+   
+
+        $("#img_code").attr('src', '/account/validatecode?r=' + Math.random());
+
+        function loadArea(obj) {
+            var thatObj = $(obj);
+            var value = thatObj.val();
+            
+            var nextSelect = thatObj.parent().next().find("select");
+            if (value != "0") {
+                //赋值
+                $.ajax({
+                    type: "GET",
+                    url: "/area/GetAreaCodeSelectItem",
+                    datatype: "json",
+                    data: { value: value },
+                    success: function (data) {
+                        nextSelect.html("");
+                            $(data.Result).each(function (index, item) {
+                                nextSelect.append("<option value='" + item.Value + "'>" + item.Text + "</option>")
+                            });
+
+                    }
+                });
+
+            }
+        }
+
+        function Login() {
+            var accoount = $("#account").val();
+            var password = $("#password").val();
+            if (accoount == "") {
+                    alert("请输入账号");
+                    return false;
+                }
+            if (password == "") {
+                    alert("请输入密码");
+                    return false;
+                }
+                $.ajax({
+                    type: 'get',
+                    url: "/accout/Submit",
+                    data: { accoount: accoount, password: password },
+                    success: function (data) {
+                        if (data.Result) {
+                            window.location.href = "@(string.IsNullOrEmpty(Request["redirecturl"])?"/Home/index": Request["redirecturl"])";
+                        }
+                        else {
+                            alert(data.ErrorDesc);
+                        }
+                    }
+                });
+        }
+
+        document.onkeydown = function (event) {
+            var e = event || window.event || arguments.callee.caller.arguments[0];
+            if (e && e.keyCode == 13) { // enter 键
+                Login();
+            }
+        };
+    </script>
+
+</body>
+</html>          

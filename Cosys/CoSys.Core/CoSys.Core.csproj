@@ -54,6 +54,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -68,7 +69,6 @@
     <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helper\CacheHelper.cs" />
-    <Compile Include="Helper\CookieHelper.cs" />
     <Compile Include="Helper\CryptoHelper.cs" />
     <Compile Include="Helper\CustomHelper.cs" />
     <Compile Include="Helper\EditorHelper.cs" />
@@ -84,8 +84,8 @@
     <Compile Include="Model\LoginUser.cs" />
     <Compile Include="Model\PageList.cs" />
     <Compile Include="Model\Params.cs" />
-    <Compile Include="Model\SelectItem.cs" />
     <Compile Include="Model\UploadStateCode.cs" />
+    <Compile Include="Model\ValidateCodeGenertor.cs" />
     <Compile Include="Model\WebClient.cs" />
     <Compile Include="Model\WebResult.cs" />
     <Compile Include="Model\ZTreeNode.cs" />

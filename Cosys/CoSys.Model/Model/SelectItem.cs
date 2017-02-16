@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoSys.Core
+namespace CoSys.Model
 {
     /// <summary>
     /// 选择项

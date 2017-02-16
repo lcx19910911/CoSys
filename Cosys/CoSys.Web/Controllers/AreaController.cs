@@ -8,7 +8,6 @@ using System.Web.Mvc;
 
 namespace CoSys.Web.Controllers
 {
-    [LoginFilter]
     public class AreaController : BaseController
     {
 

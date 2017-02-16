@@ -8,38 +8,28 @@
     <title>@CustomHelper.GetValue("Website-Titlte") - 登录</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
-    <meta name="keywords" content="Flat Dark Web Login Form Responsive Templates, Iphone Widget Template, Smartphone login forms,Login form, Widget Template, Responsive Templates, a Ipad 404 Templates, Flat Responsive Templates" />
+    <meta name="keywords" content=@CustomHelper.GetValue("Website-Titlte") - 登录" />
     <link href="~/Styles/reg.css" rel="stylesheet" />
 </head>
 <body>
     <div class="main">
         <div class="header">
-            <h1>新用户注册</h1>
+            <h1>登录</h1>
         </div>
         <form>
             <ul class="dataform">
                 <li>
-                    <input type="text" placeholder="Username" required />
-                    <a href="#" class="icon ticker"> </a>
+                    <lable class="info">账号:</lable><input type="text" placeholder="账号" required  id="account"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <input type="text" placeholder="Email" required />
-                    <a href="#" class="icon ticker"> </a>
+                    <lable class="info">密码:</lable><input type="password" placeholder="请输入密码" required id="password"/>
                     <div class="clear"> </div>
                 </li>
-                <li>
-                    <input type="password" placeholder="password" required />
-                    <a href="#" class="icon into"> </a>
-                    <div class="clear"> </div>
-                </li>
-                <li>
-                    <input type="password" placeholder="password" required />
-                    <a href="#" class="icon into"> </a>
-                    <div class="clear"> </div>
-                </li>
-                <label class="checkbox"><input type="checkbox" name="checkbox" checked=""><i> </i>同意平台条款</label>
-                <input type="submit" onClick="myFunction()" value="注册">
+
+                <input type="submit" onClick="myFunction()" value="登录">
+
+                <p class="registered">还没账号?<a href="/account/register">立即注册</a></p>
                 <div class="clear"> </div>
             </ul>
             <div class="clear"> </div>
@@ -48,6 +38,10 @@
 
     </div>
 
+    <div class="copy-rights">
+        <p>Copyright &copy;@CustomHelper.GetValue("Company_Statement")</p>
+    </div>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
     <script type="text/javascript">
         $.ajaxSetup({ cache: false });
         $("#loginBtn").click(function () {
@@ -86,6 +80,5 @@
             }
         };
     </script>
-
 </body>
 </html>          

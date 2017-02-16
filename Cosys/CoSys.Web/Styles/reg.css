@@ -24,13 +24,13 @@ img{max-width:100%;}
 /*end reset*/
 /****-----start-body----****/
 body{
-	background:#eee;
+	background:white;
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .main{
 	margin:7em auto 0;
 	width:40%;
-	background: #fff;
+	background: #eee;
 }
 .header {
 	text-align:center;
@@ -47,7 +47,6 @@ body{
 	font-weight:600;
 	color:#383737;
 	padding: 20px 30px;
-	border-bottom: 1px solid #E7E0E0;
 	margin-top: -13px;
 }
 
@@ -56,16 +55,17 @@ body{
 	margin:22px 28px;
 	width:90%;
 }
-.dataform input[type=text],.dataform input[type=email],.dataform input[type=password] {
+.dataform input:not([type=submit]),.dataform select  {
 	float:left;
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	width:80%;
-	padding: 0.7em 2em 0.7em 1em;
-	border:none;
+	width:60%;
+	padding: 0.1em 2em 0.1em 1em;
 	color: #000;
 	font-size:15px;
 	float: left;
-	outline: none;
+	outline: none; 
+	border:1px solid #EBEBEB;
+    height:2rem;
 }
 form{
 	padding-bottom: 2em;
@@ -73,7 +73,6 @@ form{
 .dataform li{
 	display:block;
 	color:#4D4949;
-	border:1px solid #EBEBEB;
 	border-radius: 0.3em;
 	-webkit-border-radius:0.3em;
   	-moz-border-radius:0.3em;
@@ -108,7 +107,7 @@ form{
 }
 .dataform input[type=submit]{
     width:80%;   
-	margin:10%;
+	margin:10% 10% 2% 10%;
   padding:14px 20px;
   border-radius:0.3em;
  -webkit-border-radius:0.3em;
@@ -127,7 +126,7 @@ form{
   -o-transition: all 0.5s ease-out;
   margin-top:15px;
   cursor: pointer;
-   background:#3ea751;
+   background:#22d9ce;
 }
  input[type=submit]:hover {
  background:#ff2775;
@@ -147,76 +146,69 @@ form{
 	display:block;
 	background:url(../images/check-icon.png) no-repeat 50% 50%;
 }
-.disabled{
-	height:40px;
-	width:28px;
-	display:block;
-	background:url(../images/check-icon.png) no-repeat 0% 100%;
+.disabled {
+    height: 40px;
+    width: 28px;
+    display: block;
+    background: url(../images/check-icon.png) no-repeat 0% 100%;
 }
-.price-selection-tree input[type="checkbox"]{
-	display:none;
-}
-.price-selection-tree input[type="checkbox"]+label{
-	float:left;
-	display: block;
-	vertical-align:top;
-	font-size:13px;
-	font-weight:600;
-	margin-top:-0.3em;
-	height: 76px;
-	cursor:pointer;
-}
-.checkbox-grid-left p{
-	display:block;
-}
+
 .dataform > label {
 	font-size:13px;
+    line-height:35px;
 	float:left;
 	vertical-align: super;
-	margin-left:10px;
 	color:#4C4A4A;
-	margin-top:2px;
+	font-weight: 600;
+    margin-left:80px;
+    width:220px;
+}
+.info {
+    float:left;
+    width:30%;
+    line-height:2.7rem;
+	font-size:14px;
+    text-align:center;
+}
+.registered {
+	font-size:13px;
+	float:right;
+	vertical-align: super;
+	color:#4C4A4A;
 	font-weight: 600;
 }
-input[type=checkbox].css-checkbox10 + label i.css-label10 {
-	float:left;
-	height:40px;
-	width:28px;
-	display: inline-block;
-	line-height:18px;
-	background-repeat: no-repeat;
-	background-position: 0 0px;
-	cursor: pointer;
-	background: url(../images/check-icon.png) no-repeat -0px -82px;
-}
-input[type=checkbox].css-checkbox10:checked + label i.css-label10 {
-	background: url(../images/check-icon.png) no-repeat -0px -82px;
-	height: 20px;
+ .registered a {
+     color:red;
 }
 /*----*/
-/**start-copy-right**/
-.copy-right {
+/*--copyrights--*/
+.copy-rights{
 	text-align: center;
+	margin-top: 8em;
 }
-.copy-right p {
-	color:#000;
-	font-size:1em;
-	margin-top:5em;
-	font-weight:600;
+.copy-rights p{
+	color:#FFF;
+	font-size: 1em;
+	line-height:1.8em;
 }
-.copy-right p a {
-	font-size:1em;
-	font-weight:600;
-	color:#669A16;
+.copy-rights p a{
+	color:#ff2a75;
 	-webkit-transition: all 0.3s ease-out;
 	-moz-transition: all 0.3s ease-out;
 	-ms-transition: all 0.3s ease-out;
 	-o-transition: all 0.3s ease-out;
 	transition: all 0.3s ease-out;
+	text-decoration:none;
 }
-.copy-right a:hover{
-	color:#000;
+.copy-rights p a:hover{
+	color:#3faa53;
+	text-decoration:none;
+		transition: 0.1s all;
+	-webkit-transition: 0.1s all;
+	-moz-transition: 0.1s all;
+	-o-transition: 0.1s all;
 }
+/*--/copyrights--*/
 
 @media only screen and (max-width:1680px) and (min-width:1440px) {
 	.main{
@@ -259,9 +251,9 @@ input[type=checkbox].css-checkbox10:checked + label i.css-label10 {
 	width:97%;
 	margin:5em auto 0;
 	}
-	.dataform input[type=text], .dataform input[type=email], .dataform input[type=password] {
+	.dataform input:not([type=submit]),.dataform select {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	width: 78%;
+	width: 60%;
 	}
 	.copy-right p {
 	margin: 3.5em 0em;
@@ -272,10 +264,10 @@ input[type=checkbox].css-checkbox10:checked + label i.css-label10 {
 	width:95%;
 	margin:5em auto 0;
 	}
-	.dataform input[type=text], .dataform input[type=email], .dataform input[type=password] {
+	.dataform input:not([type=submit]),.dataform select  {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	padding: 0.7em 1em 0.7em 1em;
-	width: 70%;
+	padding: 0.1em 0.1em 0.1em 0.1em;
+	width: 60%;
 	}
 	.dataform{
 	width:88%;
@@ -310,10 +302,10 @@ input[type=checkbox].css-checkbox10:checked + label i.css-label10 {
 	width:95%;
 	margin:5em auto 0;
 	}
-	.dataform input[type=text], .dataform input[type=email], .dataform input[type=password] {
+	.dataform input:not([type=submit]),.dataform select  {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	padding: 0.7em 1em 0.7em 1em;
-	width: 70%;
+	padding: 0.1em 1em 0.1em 0.1em;
+	width: 60%;
 	}
 	.dataform{
 	width:88%;
@@ -349,10 +341,10 @@ input[type=checkbox].css-checkbox10:checked + label i.css-label10 {
 	.main p{
 	padding:16px 20px;
 	}
-	.dataform input[type=text], .dataform input[type=email], .dataform input[type=password] {
+	.dataform input:not([type=submit]),.dataform select {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	padding: 0.7em 1em 0.7em 1em;
-	width: 70%;
+	padding: 0.1em 1em 0.1em 0.1em;
+	width: 60%;
 	}
 	.dataform > label {
 	margin-left:10px;
@@ -384,10 +376,10 @@ input[type=checkbox].css-checkbox10:checked + label i.css-label10 {
 	.main p{
 	padding:16px 17px;
 	}
-	.dataform input[type=text], .dataform input[type=email], .dataform input[type=password] {
+	.dataform input:not([type=submit]),.dataform select  {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	padding: 0.4em 1em 0.4em 1em;
-	width: 70%;
+	padding: 0.1em 0.11em 0.1em 0.1em;
+	width: 60%;
 	}
 	.dataform{
 	text-align: center;

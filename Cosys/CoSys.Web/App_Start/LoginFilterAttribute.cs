@@ -28,7 +28,7 @@ namespace CoSys.Web
             
             if (!LoginHelper.UserIsLogin()&&!LoginHelper.AdminIsLogin())
             {
-                RedirectResult redirectResult = new RedirectResult("/Accout/Login?redirecturl=" + requestUrl);
+                RedirectResult redirectResult = new RedirectResult("/Account/Login?redirecturl=" + requestUrl);
                 filterContext.Result = redirectResult;
             }
             else

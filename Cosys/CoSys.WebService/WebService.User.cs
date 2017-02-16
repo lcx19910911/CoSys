@@ -30,21 +30,21 @@ namespace CoSys.Service
                 provinceList.ForEach(x =>
                 {
 
-                    sb.Append($"insert into DataDictionary(ID,GroupCode,[Key],[Value],Sort) value('{Guid.NewGuid().ToString("N")}',1,'{x.Key}','{x.Value}',{x.Key});\r\n");
+                    sb.Append($"insert into DataDictionary(ID,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}',1,'{x.Key}','{x.Value}',{x.Key});\r\n");
 
                     list.Where(y => y.Parent_Id == x.Key).ToList().ForEach(y =>
                     {
 
-                        sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) value('{Guid.NewGuid().ToString("N")}',{x.Key},1,'{y.Key}','{y.Value}',{y.Key});\r\n");
+                        sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{x.Key}',1,'{y.Key}','{y.Value}',{y.Key});\r\n");
 
 
                         list.Where(z => z.Parent_Id == y.Key).ToList().ForEach(z =>
                         {
-                            sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) value('{Guid.NewGuid().ToString("N")}',{y.Key},1,'{z.Key}','{z.Value}',{z.Key});\r\n");
+                            sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{y.Key}',1,'{z.Key}','{z.Value}',{z.Key});\r\n");
 
                             list.Where(j => j.Parent_Id == z.Key).ToList().ForEach(j =>
                             {
-                                sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) value('{Guid.NewGuid().ToString("N")}',{z.Key},1,'{j.Key}','{j.Value}',{j.Key});\r\n");
+                                sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{z.Key}',1,'{j.Key}','{j.Value}',{j.Key});\r\n");
                             });
                         });
                     });
@@ -104,6 +104,21 @@ namespace CoSys.Service
                 LogHelper.WriteException(ex);
                 return Result(false, ErrorCode.sys_fail);
             }
+        }
+
+        /// <summary>
+        /// 用户登录
+        /// </summary>
+        /// <param name="loginName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns> 
+        public Tuple<ValidateCodeGenertor,string> Create_ValidateCode(string loginName)
+        {
+            ValidateCodeGenertor v = ValidateCodeGenertor.Default;
+            CacheHelper.Remove("code" + loginName);
+            var code = v.CreateValidateCode();
+            CacheHelper.Set<string>("code" + loginName, code, CacheTimeOption.SixMinutes);
+            return new Tuple<ValidateCodeGenertor, string>(v,code);
         }
 
 
