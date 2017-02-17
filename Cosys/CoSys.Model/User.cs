@@ -41,7 +41,6 @@ namespace CoSys.Model
         /// 名称
         /// </summary>
         [MaxLength(32)]
-        [Required]
         public string Email { get; set; }
 
         /// <summary>
@@ -109,6 +108,11 @@ namespace CoSys.Model
         [NotMapped]
         public string CountyName { get; set; }
 
+        /// <summary>
+        /// 街道
+        /// </summary>
+        [NotMapped]
+        public string StreetName { get; set; }
 
         /// <summary>
         /// 位置
@@ -131,7 +135,9 @@ namespace CoSys.Model
         /// <summary>
         /// 街道
         /// </summary>
-        public string StreetName { get; set; }
+        [MaxLength(32)]
+        public string StreetCode { get; set; }
+
 
         /// <summary>
         /// 通信地址

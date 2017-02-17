@@ -19,39 +19,39 @@ namespace CoSys.Service
         {
             using (var db = new DbRepository())
             {
-                StringBuilder sb = new StringBuilder();
-                var list = db.JD_area.ToList().Select(x => new
-                {
-                    Value = x.name.Trim(),
-                    Key = x.ID.GetInt(),
-                    Parent_Id = x.parent_id.GetInt()
-                }).ToList();
-                var provinceList = list.Where(x => x.Parent_Id == 0).OrderBy(x => x.Key).ToList();
-                provinceList.ForEach(x =>
-                {
+                //StringBuilder sb = new StringBuilder();
+                //var list = db.JD_area.ToList().Select(x => new
+                //{
+                //    Value = x.name.Trim(),
+                //    Key = x.ID.GetInt(),
+                //    Parent_Id = x.parent_id.GetInt()
+                //}).ToList();
+                //var provinceList = list.Where(x => x.Parent_Id == 0).OrderBy(x => x.Key).ToList();
+                //provinceList.ForEach(x =>
+                //{
 
-                    sb.Append($"insert into DataDictionary(ID,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}',1,'{x.Key}','{x.Value}',{x.Key});\r\n");
+                //    sb.Append($"insert into DataDictionary(ID,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}',1,'{x.Key}','{x.Value}',{x.Key});\r\n");
 
-                    list.Where(y => y.Parent_Id == x.Key).ToList().ForEach(y =>
-                    {
+                //    list.Where(y => y.Parent_Id == x.Key).ToList().ForEach(y =>
+                //    {
 
-                        sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{x.Key}',1,'{y.Key}','{y.Value}',{y.Key});\r\n");
+                //        sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{x.Key}',1,'{y.Key}','{y.Value}',{y.Key});\r\n");
 
 
-                        list.Where(z => z.Parent_Id == y.Key).ToList().ForEach(z =>
-                        {
-                            sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{y.Key}',1,'{z.Key}','{z.Value}',{z.Key});\r\n");
+                //        list.Where(z => z.Parent_Id == y.Key).ToList().ForEach(z =>
+                //        {
+                //            sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{y.Key}',1,'{z.Key}','{z.Value}',{z.Key});\r\n");
 
-                            list.Where(j => j.Parent_Id == z.Key).ToList().ForEach(j =>
-                            {
-                                sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{z.Key}',1,'{j.Key}','{j.Value}',{j.Key});\r\n");
-                            });
-                        });
-                    });
+                //            list.Where(j => j.Parent_Id == z.Key).ToList().ForEach(j =>
+                //            {
+                //                sb.Append($"insert into DataDictionary(ID,ParentKey,GroupCode,[Key],[Value],Sort) values('{Guid.NewGuid().ToString("N")}','{z.Key}',1,'{j.Key}','{j.Value}',{j.Key});\r\n");
+                //            });
+                //        });
+                //    });
                 
-                });
+                //});
 
-                var aa = sb.ToString();
+                //var aa = sb.ToString();
             }
         }
         /// <summary>
@@ -167,6 +167,37 @@ namespace CoSys.Service
                 LogHelper.WriteException(ex);
                 return Result(false, ErrorCode.sys_fail);
             }
+        }
+
+        /// <summary>
+        /// 增加
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public WebResult<bool> Add_User(User model)
+        {
+            using (DbRepository db = new DbRepository())
+            {
+                if (db.User.AsQueryable().AsNoTracking().Where(x => x.Account.Equals(model.Account) && !x.IsDelete).Any())
+                    return Result(false, ErrorCode.user_name_already_exist);
+                //var role = Cache_Get_RoleList().Where(x => x.ID.Equals(model.RoleID)).FirstOrDefault();
+                //if(role==null)
+                //    return Result(false, ErrorCode.datadatabase_primarykey_not_found);
+                model.Password = CryptoHelper.MD5_Encrypt(model.ConfirmPassword);
+                model.ID = Guid.NewGuid().ToString("N");
+                model.CreatedTime = DateTime.Now;
+                string menuIdStr = string.Empty;
+                db.User.Add(model);
+                if (db.SaveChanges() > 0)
+                {
+                    return Result(true);
+                }
+                else
+                {
+                    return Result(false, ErrorCode.sys_fail);
+                }
+            }
+
         }
 
         /// <summary>

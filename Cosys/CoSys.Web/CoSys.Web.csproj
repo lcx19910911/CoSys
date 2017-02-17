@@ -508,6 +508,7 @@
     <Content Include="Scripts\UEditor\ueditor.config.js" />
     <Content Include="Scripts\UEditor\ueditor.parse.js" />
     <Content Include="Scripts\UEditor\ueditor.parse.min.js" />
+    <Content Include="Scripts\utility.js" />
     <Content Include="Scripts\ztree-select.js" />
     <Content Include="Styles\admin.css" />
     <Content Include="Styles\css\amazeui.css" />

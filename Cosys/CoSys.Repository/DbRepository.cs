@@ -88,7 +88,6 @@ namespace CoSys.Repository
         
         public DbSet<Role> Role { get; set; }
         
-        public DbSet<JD_area> JD_area { get; set; }
         public DbSet<Log> Log { get; set; }
     }
 

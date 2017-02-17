@@ -15,7 +15,9 @@
                             useTitle: false,
                             isMouseover: false,
                             onBeforeShow: function () {
-                                var left = $(element).width() - $(element).data("plugin_tipso").tipso_bubble.width();
+                                //var left = $(element).offset().lef - $(element).data("plugin_tipso").tipso_bubble.width();
+                                //debugger
+                                var left = $(element).offset().left + $(element).data("plugin_tipso").tipso_bubble.width();
                                 $(element).data("plugin_tipso").tipso_bubble.css("left", left + "px");
                             },
                             onHide: function () {

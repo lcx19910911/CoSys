@@ -1,4 +1,4 @@
-﻿@model List<SelectItem>
+﻿@model User
 @{
     Layout = null;
 }
@@ -11,6 +11,7 @@
     <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
     <meta name="keywords" content="" />
     <link href="~/Styles/reg.css" rel="stylesheet" />
+    <link href="~/Scripts/tipso/css/tipso.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="main">
@@ -18,56 +19,56 @@
             <h1>新用户注册</h1>
             <p class="registered">已有账号?<a href="/account/login">立即登录</a></p>
         </div>
-        <form>
+        <form id="regForm">
             <ul class="dataform">
                 <li>
-                    <lable class="info">用户名:</lable><input type="text" placeholder="请输入用户名" required id="account" />
+                    <lable class="info">用户名:</lable><input type="text" placeholder="请输入用户名" required id="account"  name="Account"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">密码:</lable><input type="password" placeholder="请输入密码" required id="password" />
+                    <lable class="info">密码:</lable><input type="password" placeholder="请输入密码" required id="password" name="Password" maxlength="12"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">确认密码:</lable><input type="password" placeholder="确认密码" required id="password" />
+                    <lable class="info">确认密码:</lable><input type="password" placeholder="确认密码" required id="password" name="ConfirmPassword"  maxlength="12"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">邮箱:</lable><input type="text" placeholder="请输入邮箱" required id="account" />
+                    <lable class="info">邮箱:</lable><input type="text" placeholder="请输入邮箱"   name="Email"  maxlength="32"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">真实姓名:</lable><input type="text" placeholder="请输入姓名" required id="password" />
+                    <lable class="info">真实姓名:</lable><input type="text" placeholder="请输入姓名" required  name="RealName" maxlength="32"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">见刊笔名:</lable><input type="text" placeholder="请输入见刊笔名" required id="account" />
+                    <lable class="info">见刊笔名:</lable><input type="text" placeholder="请输入见刊笔名" required  name="PenName" maxlength="32"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">户籍所在地:</lable><input type="text" placeholder="户籍所在地" required id="password" />
+                    <lable class="info">户籍所在地:</lable><input type="text" placeholder="户籍所在地" required  name="IDCardAddres"  maxlength="256"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">身份证号:</lable><input type="text" placeholder="请输入身份证号" required id="account" />
+                    <lable class="info">身份证号:</lable><input type="text" placeholder="请输入身份证号" required  name="IDCard" maxlength="32" />
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">单位:</lable><input type="text" placeholder="请输入单位" required id="password" />
+                    <lable class="info">单位:</lable><input type="text" placeholder="请输入单位"   name="CompanyName"  maxlength="32"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">职位:</lable><input type="text" placeholder="请输入职位" required id="account" />
+                    <lable class="info">职位:</lable><input type="text" placeholder="请输入职位"   name="Position"  maxlength="32"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">邮编:</lable><input type="text" placeholder="请输入邮编" required id="password" />
+                    <lable class="info">邮编:</lable><input type="text" placeholder="请输入邮编"   name="Zipcode"  maxlength="32"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
                     <lable class="info">省:</lable>
-                    <select class="area" onchange="loadArea(this,1)">
-                        @foreach (var item in Model)
+                    <select class="area" onchange="loadArea(this,1)" name="ProvoniceCode">
+                        @foreach (var item in Model.ProvinceItems)
                         {
                             <option value="@item.Value">@item.Text</option>
                         }
@@ -77,49 +78,59 @@
                 </li>
                 <li>
                     <lable class="info">市:</lable>
-                    <select class="area"  onchange="loadArea(this,2)"></select>
+                    <select class="area"  onchange="loadArea(this,2)"  name="CityCode"></select>
                     @*<input type="text" placeholder="市" required id="password" />*@
                     <div class="clear"> </div>
                 </li>
                 <li>
                     <lable class="info">县:</lable>
-                    <select class="area"  onchange="loadArea(this,3)"></select>
+                    <select class="area"  onchange="loadArea(this,3)"  name="CountyCode"></select>
                     @*<input type="text" placeholder="县" required id="account" />*@
                     <div class="clear"> </div>
                 </li>
                 <li>
                     <lable class="info">街道:</lable>
-                    <select class="area"></select>
+                    <select class="area"  name="StreetCode">
+                    </select>
                     @*<input type="text" placeholder="街道" required id="password" />*@
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">会员类型:</lable><input type="text" placeholder="会员类型" required id="account" />
+                    <lable class="info">会员类型:</lable>
+                    <select class="area" name="Code">
+                        <option value="1">协会工作人员</option>
+                        <option value="2">协会小组长</option>
+                        <option value="3">志愿者</option>
+                        <option value="4">普通会员</option>
+                    </select>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">通讯地址:</lable><input type="text" placeholder="请输入密码" required id="password" />
+                    <lable class="info">通讯地址:</lable><input type="text" placeholder="请输入密码" required  name="Addres"   maxlength="256"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">固定电话:</lable><input type="text" placeholder="请输入固定电话" required id="account" />
+                    <lable class="info">固定电话:</lable><input type="text" placeholder="请输入固定电话"   name="TelePhone"  maxlength="15"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">手机:</lable><input type="text" placeholder="请输入手机" required id="password" />
+                    <lable class="info">手机:</lable><input type="text" placeholder="请输入手机" required  name="Phone"  maxlength="11"/>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">QQ:</lable><input type="text" placeholder="请输入QQ" required id="password" />
+                    <lable class="info">QQ:</lable><input type="text" placeholder="请输入QQ"   name="QQ" maxlength="32" />
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">验证码:</lable><input type="text" placeholder="账号" required id="account" />
-                    <img id="img_code" alt="" title="点击重新获取" src="/account/validatecode" onclick="javascript:$(this).attr('src','/account/validatecode?r='+Math.random());" />
+                    <lable class="info">验证码:</lable>
+                    <div style="width:70%;float:left;">
+                        <input type="text" style="width:40%;" placeholder="请输入验证码" required />
+                        <img id="img_code" style="width:30%;height:2rem;float:left;" alt="" title="点击重新获取" src="/account/validatecode" onclick="javascript:$(this).attr('src','/account/validatecode?r='+Math.random());" />    
+                    </div>
                     <div class="clear"> </div>
                 </li>
-                <label><input type="checkbox" name="checkbox" checked=""><i> </i>同意平台条款</label>
-                <input type="submit" onClick="myFunction()" value="注册">
+                <label><input type="checkbox" id="checkbox" checked=""><i> </i>同意平台条款</label>
+                <button class="submit-btn" onclick="Submit()" style="height:50px;margin-left:10%;">注册</button>
                 <div class="clear"> </div>
             </ul>
             <div class="clear"> </div>
@@ -128,12 +139,154 @@
 
     </div>
     <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery.form.js"></script>
+    <script src="~/Scripts/jquery-validation/js/jquery.validate.js"></script>
+    <script src="~/Scripts/Nuoya/nuoya.core.js"></script>
+    <script src="~/Scripts/Nuoya/nuoya.form.js"></script>
+    <script src="~/Scripts/tipso/js/tipso.js"></script>
     <script type="text/javascript">
-   
+       
+        function formInit(dataitem) {
+            //添加表单验证
+            $.Nuoya.form("regForm").validate({
+                rules: {
+                    Account: {
+                        required: true,
+                        maxlength: 32
+                    },
+                    Password: {
+                        required: true,
+                        maxlength: 12
+                    },
+                    ConfirmPassword: {
+                        required: true,
+                        maxlength: 12
+                    },
+                    Email: {
+                        maxlength: 32,
+                        email:true,
+                    },
+                    RealName: {
+                        required: true,
+                        maxlength: 32
+                    },
+                    PenName: {
+                        required: true,
+                        maxlength: 32
+                    },
+                    IDCardAddres: {
+                        required: true,
+                        maxlength: 256
+                    },
+                    IDCard: {
+                        required: true
+                    },
+                    CompanyName: {
+                        maxlength: 64
+                    },
+                    Position: {
+                        maxlength: 32
+                    },
+                    Zipcode: {
+                        maxlength: 32
+                    },
+                    ProvoniceCode: {
+                        required: true,
+                    },
+                    CityCode: {
+                        required: true,
+                    },
+                    CountyCode: {
+                        required: true,
+                    },                   
+                    Addres: {
+                        required: true,
+                        maxlength: 256
+                    },
+                    TelePhone: {
+                        phone: true,
+                        maxlength:15
+                    },
+                    Phone: {
+                        mobile:true,
+                        required: true
+                    }
+                },
+                messages: {
+                    Account: {
+                        required: "用户名不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    Password: {
+                        required: "密码不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    ConfirmPassword: {
+                        required: "确认密码不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    Email: {
+                        maxlength: "最多{0}个字符",
+                    },
+                    RealName: {
+                        required: "真实姓名不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    PenName: {
+                        required: "见刊笔名不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    IDCardAddres: {
+                        required: "户籍所在地不允许为空"
+                    },
+                    IDCard: {
+                        idCard:"请输入正确的身份证号码",
+                        required: "身份证号码不允许为空",
+                    },
+                    CompanyName: {
+                        maxlength: "最多{0}个字符"
+                    },
+                    Position: {
+                        maxlength: "最多{0}个字符"
+                    },
+                    Zipcode: {
+                        maxlength: "最多{0}个字符"
+                    },
+                    ProvoniceCode: {
+                        required: "请选择省份",
+                    },
+                    CityCode: {
+                        required: "请选择市",
+                    },
+                    CountyCode: {
+                        required: "请选择县区",
+                    },                     
+                    Addres: {
+                        required: "通信地址不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    TelePhone: {
+                        maxlength: "最多{0}个字符"
+                    },
+                    Phone: {
+                        required: "手机号不允许为空"
+                    }
+                }
+            });
 
-        $("#img_code").attr('src', '/account/validatecode?r=' + Math.random());
+            //$.Nuoya.action("/Role/GetSelectItem", { id: dataitem ? dataitem.RoleId : "" }, function (json) {
+            //    $(json).each(function () {
+            //        $("select[name='RoleId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+            //    });
+            //});
+            //$.Nuoya.action("/Department/GetSelectItem", { id: dataitem ? dataitem.DepartmentID : "" }, function (json) {
+            //    $(json).each(function () {
+            //        $("select[name='DepartmentID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+            //    });
+            //});
+        }
 
-        function loadArea(obj) {
+        function loadArea(obj ,index) {
             var thatObj = $(obj);
             var value = thatObj.val();
             
@@ -157,38 +310,36 @@
             }
         }
 
-        function Login() {
-            var accoount = $("#account").val();
-            var password = $("#password").val();
-            if (accoount == "") {
-                    alert("请输入账号");
-                    return false;
-                }
-            if (password == "") {
-                    alert("请输入密码");
-                    return false;
-                }
-                $.ajax({
-                    type: 'get',
-                    url: "/accout/Submit",
-                    data: { accoount: accoount, password: password },
-                    success: function (data) {
-                        if (data.Result) {
-                            window.location.href = "@(string.IsNullOrEmpty(Request["redirecturl"])?"/Home/index": Request["redirecturl"])";
-                        }
-                        else {
-                            alert(data.ErrorDesc);
-                        }
-                    }
-                });
-        }
-
-        document.onkeydown = function (event) {
-            var e = event || window.event || arguments.callee.caller.arguments[0];
-            if (e && e.keyCode == 13) { // enter 键
-                Login();
+        $("#checkbox").click(function () {
+            if ($(this).is(":checked"))
+            {
+                $(".submit-btn").attr("disabled", false);
             }
-        };
+            else
+            {
+                $(".submit-btn").attr("disabled", true);
+            }
+        })
+
+        formInit();
+        function Submit()
+        {
+            if (!/^\d{17}(\d|x)$/i.test($("#regForm [name='IDCard']").val())) 
+            {
+                $.Nuoya.alert("你输入的身份证长度或格式错误")
+                return false;
+            }
+            $.Nuoya.form("regForm").ajaxSubmit({
+                ajaxUrl: "/Account/Register",
+                callback: function (data) {
+                    if (!data.ErrorDesc) {
+                        window.location.href = "/home/index";
+                    }
+                    else
+                        alert(data.ErrorDesc);
+                }
+            });
+        }
     </script>
 
 </body>

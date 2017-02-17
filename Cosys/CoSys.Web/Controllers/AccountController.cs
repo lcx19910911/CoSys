@@ -24,6 +24,23 @@ namespace CoSys.Web.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public ActionResult Register(User model)
+        {
+
+            ModelState.Remove("ID");
+            ModelState.Remove("CreatedTime");
+            if (ModelState.IsValid)
+            {
+                var result = WebService.Add_User(model);
+                return JResult(result);
+            }
+            else
+            {
+                return ParamsErrorJResult(ModelState);
+            }
+        }
+
         
 
         /// <summary>

@@ -67,7 +67,6 @@
     <Compile Include="Enum\LogCode.cs" />
     <Compile Include="Enum\UserCode.cs" />
     <Compile Include="Enum\YesOrNo.cs" />
-    <Compile Include="JD_area.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Model\SelectItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

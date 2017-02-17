@@ -55,7 +55,7 @@ body{
 	margin:22px 28px;
 	width:90%;
 }
-.dataform input:not([type=submit]),.dataform select  {
+.dataform input:not([type=submit]),.dataform select,.submit-btn  {
 	float:left;
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	width:60%;
@@ -95,7 +95,7 @@ form{
 	background:url(../images/spirit.png)  no-repeat -31px 0px;
 }
 
-.dataform submit{
+.dataform submit,.submit-btn{
     padding-top:10px;
 	float:left;
 }
@@ -105,7 +105,7 @@ form{
 	font-weight: 600;
 	color:#363535;
 }
-.dataform input[type=submit]{
+.dataform input[type=submit],.submit-btn,.submit-btn{
     width:80%;   
 	margin:10% 10% 2% 10%;
   padding:14px 20px;
@@ -128,11 +128,12 @@ form{
   cursor: pointer;
    background:#22d9ce;
 }
- input[type=submit]:hover {
+ input[type=submit]:hover ,.submit-btn:hover {
  background:#ff2775;
  color:#fff;
 
 }
+
 /*---start-check-box----*/
 .uncheked{
 	height:40px;
@@ -251,7 +252,7 @@ form{
 	width:97%;
 	margin:5em auto 0;
 	}
-	.dataform input:not([type=submit]),.dataform select {
+	.dataform input:not([type=submit]),.dataform select,.submit-btn {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	width: 60%;
 	}
@@ -264,7 +265,7 @@ form{
 	width:95%;
 	margin:5em auto 0;
 	}
-	.dataform input:not([type=submit]),.dataform select  {
+	.dataform input:not([type=submit]),.dataform select,.submit-btn  {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	padding: 0.1em 0.1em 0.1em 0.1em;
 	width: 60%;
@@ -281,7 +282,7 @@ form{
 	.dataform li{
 	margin-left:32px;
 	}
-	.dataform input[type=submit] {
+	.dataform input[type=submit],.submit-btn {
 	padding: 12px 12px;
 	float: right;	
     width:80%;
@@ -302,7 +303,7 @@ form{
 	width:95%;
 	margin:5em auto 0;
 	}
-	.dataform input:not([type=submit]),.dataform select  {
+	.dataform input:not([type=submit]),.dataform select,.submit-btn  {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	padding: 0.1em 1em 0.1em 0.1em;
 	width: 60%;
@@ -318,7 +319,7 @@ form{
 	.dataform li{
 	margin-left:13px;
 	}
-	.dataform input[type=submit] {
+	.dataform input[type=submit],.submit-btn {
 	padding: 12px 12px;
 	text-align:center;
 	margin:10%;
@@ -341,7 +342,7 @@ form{
 	.main p{
 	padding:16px 20px;
 	}
-	.dataform input:not([type=submit]),.dataform select {
+	.dataform input:not([type=submit]),.dataform select,.submit-btn {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	padding: 0.1em 1em 0.1em 0.1em;
 	width: 60%;
@@ -353,7 +354,7 @@ form{
 	.dataform li{
 	margin-left:13px;
 	}
-	.dataform input[type=submit] {
+	.dataform input[type=submit],.submit-btn {
 	padding: 12px 12px;
 	text-align:center;
 	margin:10%;
@@ -376,7 +377,7 @@ form{
 	.main p{
 	padding:16px 17px;
 	}
-	.dataform input:not([type=submit]),.dataform select  {
+	.dataform input:not([type=submit]),.dataform select,.submit-btn  {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	padding: 0.1em 0.11em 0.1em 0.1em;
 	width: 60%;
@@ -391,7 +392,7 @@ form{
 	.dataform li{
 	margin-left:-6px;
 	}
-	.dataform input[type=submit] {
+	.dataform input[type=submit],.submit-btn {
 	padding: 12px 12px;
 	text-align:center;
 	
