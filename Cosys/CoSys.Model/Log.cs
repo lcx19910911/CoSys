@@ -18,11 +18,11 @@ namespace CoSys.Model
         public string ID { get; set; }
 
         /// <summary>
-        /// 学员id
+        /// 新闻id
         /// </summary>
-        [Required(ErrorMessage = "学员id不能为空")]
-        [Column("StudentID", TypeName = "char"), MaxLength(32)]
-        public string StudentID { get; set; }
+        [Required]
+        [Column("NewsID", TypeName = "char"), MaxLength(32)]
+        public string NewsID { get; set; }
 
         /// <summary>
         /// 修改前数据
@@ -56,13 +56,13 @@ namespace CoSys.Model
         /// 创建人名称
         /// </summary>
         [NotMapped]
-        public string CreaterUserName { get; set; }
+        public string AdminName { get; set; }
 
         /// <summary>
         /// 创建人
         /// </summary>
         [Column("CreaterID", TypeName = "char"), MaxLength(32)]
-        public string CreaterID { get; set; }
+        public string AdminID { get; set; }
 
 
         /// <summary>

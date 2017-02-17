@@ -16,47 +16,28 @@ namespace CoSys.Model
 
 
         /// <summary>
-        /// 新增学员信息
+        /// 新增
         /// </summary>
-        [Description("新增学员信息")]
-        AddStudent = 1,
+        [Description("新增")]
+        Create = 1,
 
         /// <summary>
         /// 修改学员信息
         /// </summary>
-        [Description("编辑学员信息")]
-        UpdateStudent = 2,
+        [Description("查看")]
+        Look = 2,
+
+        [Description("编辑")]
+        Update = 4,
 
         /// <summary>
         /// 删除学员信息
         /// </summary>
-        [Description("删除学员信息")]
-        DeleteStudent = 3,
-
-        [Description("新增缴费记录")]
-        AddPayOrder = 4,
-
-        [Description("确认缴费记录")]
-        ConfirmPayOrder = 5,
+        [Description("退回")]
+        AuditFail = 3,
 
 
-        [Description("修改缴费记录")]
-        UpdatePayOrder = 6,
-
-        [Description("删除缴费记录")]
-        DeletePayOrder = 7,
-
-        /// <summary>
-        /// 新增学员信息
-        /// </summary>
-        [Description("新增考试记录")]
-        AddExam = 8,
-
-        [Description("删除考试记录")]
-        DeleteExam = 9,
-
-
-        [Description("删除退学申请记录")]
-        DeleteDropPayOrder = 10,
+        [Description("录用")]
+        AuditPass = 5,
     }
 }

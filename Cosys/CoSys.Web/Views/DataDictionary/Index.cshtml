@@ -9,28 +9,10 @@
     switch (type)
     {
         case "2":
-            title = "支付方式";
+            title = "投稿渠道";
             break;
         case "3":
-            title = "支付渠道";
-            break;
-        case "4":
-            title = "培训班别";
-            break;
-        case "5":
-            title = "证书";
-            break;
-        case "6":
-            title = "收款账户";
-            break;
-        case "10":
-            title = "维修点";
-            break;
-        case "11":
-            title = "加油点";
-            break;
-        case "12":
-            title = "耗损项目";
+            title = "投稿类型";
             break;
          
     }
@@ -76,7 +58,7 @@
                 <th dataname="ID" type="checkbox"></th>
                 <th dataname="Value">@(title)名称</th>
                 <th dataname="Sort">排序</th>
-                <th dataname="Remark">备注</th>
+                <th dataname="Remark">@(type=="2"?"邮箱": "备注")</th>
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -151,6 +133,10 @@
                     label: "保存",
                     callback: function (e) {
                         $("#form [name='GroupCode']").val(@(type));
+                        if('@(type)'==3)
+                        {
+                            $("#form #remarkDiv").text("邮箱地址");
+                        }
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/DataDictionary/Add",
                             callback: function (data) {

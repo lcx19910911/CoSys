@@ -29,27 +29,27 @@ namespace CoSys.Service
             }
         }
 
-      /// <summary>
-      /// 增加日志
-      /// </summary>
-      /// <param name="code">日志编码</param>
-      /// <param name="studentId">学员Id</param>
-      /// <param name="remark">备注</param>
-      /// <param name="beforeJson"></param>
-      /// <param name="afterJson"></param>
-        public void Add_Log(LogCode code,string studentId,string remark,string beforeJson,string afterJson,string info)
+        /// <summary>
+        /// 增加日志
+        /// </summary>
+        /// <param name="code">日志编码</param>
+        /// <param name="newsId">新闻Id</param>
+        /// <param name="remark">备注</param>
+        /// <param name="beforeJson"></param>
+        /// <param name="afterJson"></param>
+        public void Add_Log(LogCode code,string newsId,string userId,string remark = null, string beforeJson=null,string afterJson = null, string info = null)
         {
             using (DbRepository db = new DbRepository())
             {
                 var model = new Log();
                 model.ID = Guid.NewGuid().ToString("N");
-
-                    model.CreatedTime = DateTime.Now;
+                model.NewsID = newsId;
+                model.AdminID = userId;
+                model.CreatedTime = DateTime.Now;
                 model.Remark = remark;
                 model.Code = code;
                 model.BeforeJson = beforeJson;
                 model.AfterJson = afterJson;
-                model.StudentID = studentId;
                 model.UpdateInfo = info;
                 db.Log.Add(model);
 
@@ -63,11 +63,11 @@ namespace CoSys.Service
         /// <param name="">门店id</param>
         /// <returns></returns>
         public WebResult<PageList<Log>> Get_LogByStudentId(int pageIndex,
-            int pageSize, string studentId)
+            int pageSize, string newId)
         {
             using (DbRepository db = new DbRepository())
             {
-                var query = db.Log.AsQueryable().AsNoTracking().Where(x => x.StudentID.Equals(studentId)).OrderByDescending(x => x.CreatedTime);
+                var query = db.Log.AsQueryable().AsNoTracking().Where(x => x.NewsID.Equals(newId)).OrderByDescending(x => x.CreatedTime);
                 var count = query.Count();
                 var list = query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 return ResultPageList(list, pageIndex, pageSize, count);

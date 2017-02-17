@@ -89,6 +89,8 @@ namespace CoSys.Repository
         public DbSet<Role> Role { get; set; }
         
         public DbSet<Log> Log { get; set; }
+
+        public DbSet<News> News { get; set; }
     }
 
 }
