@@ -69,9 +69,7 @@
             });
         }
         function formInit(dataitem) {
-            $("[name='MenuIDStrSelect']").ztreeSelect($("[name='MenuIDStr']"), "/Menu/GetZTreeFlagChildren", dataitem != null ? dataitem.EnteredPointIDStr : 0, true, false);
-           // $("[name=MenuIDStrSelect]").ztreeSelect($("[name=MenuIDStr]"), "/Menu/GetZTreeFlagChildren", "", true, false);
-
+  
             //添加表单验证
             $.Nuoya.form("form").validate({
                 rules: {
@@ -155,53 +153,14 @@
                                         data: model
                                     });
                                     formInit(model);//表单初始化
+                                    $("#form [name='Code']").find("option[text='"+model.CodeStr+"']").attr("selected", true);
                                 });
                             },
                             buttons: [{
                                 label: "保存",
                                 callback: function (e) {
-
                                     $.Nuoya.form("form").ajaxSubmit({
                                         ajaxUrl: "/Role/Update",
-                                        params: {
-                                            ID: item.ID
-                                        },
-                                        callback: function (data) {
-                                            if (!data.ErrorDesc) {
-                                                e.hide();
-                                                grid.reload();
-                                            }
-                                            else
-                                                $.Nuoya.alert(data.ErrorDesc);
-                                        }
-                                    });
-                                }
-                            }]
-                        })
-                    }
-                },
-                {
-                    className: "am-text-success",
-                    icon: "icon-hand-paper-o",
-                    name: "操作权限",
-                    click: function (item) {
-                        $.Nuoya.ajaxDialog({
-                            closeViaDimmer: false,
-                            ajaxUrl: "/HtmlTemplates/User/SelectOperate.html",
-                            title: "操作权限",
-                            width: "1000px",
-                            height: "380px",
-                            callback: function (e) {
-                                $.Nuoya.action("/Role/Find", { id: item.ID }, function (model) {
-                                    $("[name=OperateFlagSelect]").ztreeSelect($("[name=OperateFlag]"), "/Operate/GetZTreeFlagChildren", model != null ? model.OperateFlag : 0, true, true);
-                                });
-                            },
-                            buttons: [{
-                                label: "保存",
-                                callback: function (e) {
-
-                                    $.Nuoya.form("form").ajaxSubmit({
-                                        ajaxUrl: "/Role/UpdateOperate",
                                         params: {
                                             ID: item.ID
                                         },

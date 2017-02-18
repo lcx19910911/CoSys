@@ -9,9 +9,20 @@ using System.Threading.Tasks;
 
 namespace CoSys.Model
 {
-    [Table("Role")]
-    public class Role : BaseEntity
+    [Table("NewsDepartment")]
+    public class NewsDepartment
     {
+        [Key]
+        [Required]
+        [MaxLength(32)]
+        [Column("ID", TypeName = "char")]
+        public string ID { get; set; }
+
+
+        /// <summary>
+        /// 值
+        /// </summary>
+        public long Flag { get; set; }
 
         /// <summary>
         /// 名称
@@ -21,16 +32,9 @@ namespace CoSys.Model
         [Column("Name", TypeName = "varchar")]
         public string Name { get; set; }
 
-        public RoleCode Code { get; set; }
-
-        [NotMapped]
-        public string CodeStr { get; set; }
-
         /// <summary>
-        /// 备注
+        /// 父类Id
         /// </summary>
-        [MaxLength(128)]
-        [Column("Remark", TypeName = "varchar")]
-        public string Remark { get; set; }
+        public string ParentID { get; set; }
     }
 }

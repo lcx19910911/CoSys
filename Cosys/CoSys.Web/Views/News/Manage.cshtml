@@ -1,0 +1,182 @@
+﻿@model News
+@{
+    var isFormPhone = WebHelper.CheckAgent();
+    ViewBag.Title = Model.ID.IsNotNullOrEmpty() ? "编辑" : "投稿";
+}
+
+
+  <div class="admin-content-body">
+                <div class="am-cf am-padding am-padding-bottom-0">
+                    <div class="am-fl am-cf"><a href="/news/index"><strong class="am-text-primary am-text-lg">稿件管理</strong> </a>/ <small>@(Model.ID.IsNotNullOrEmpty() ? "编辑" : "投稿")</small></div>
+                </div>
+                <hr>
+                <div class="am-g">
+                    <div class="am-u-sm-12">
+                        <form class="am-form am-form-horizontal">
+                            <div class="am-form-group">
+                                <label for="user-name" class="am-u-sm-3 am-form-label">标题<strong class="am-text-danger am-text-sm">*</strong></label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" name="Title" placeholder="标题" maxlength="64" value="@(Model?.Title)">
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
+                                <div class="am-u-sm-9">
+                                    <select name="Code">
+                                        @if (Model.TypeList != null && Model.TypeList.Count != 0)
+                                        {
+                                            foreach (var item in Model.TypeList)
+                                            {
+                                                <option value="@item.ID" @(Model.NewsTypeID.Equals(item.ID) ? "selected" : "")>@item.Value</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            @if (isFormPhone)
+                            {
+
+                                <div class="am-form-group">
+                                    <div class="am-u-sm-12">
+                                        <textarea name="Content" rows="8">@(Model?.Content)</textarea>
+                                    </div>
+                                </div>
+
+
+                                <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                                <div class="am-form-group">
+                                    <label for="user-email" class="am-u-sm-3 am-form-label">图片</label>
+                                    <div class="am-u-sm-9">
+                                        <a id="imageFile" class="am-icon-plus am-text-lg" style="line-height:30px;">上传图片</a>
+                                        <input type="hidden" name="Path" />
+                                    </div>
+                                </div>
+
+                                <div class="am-form-group">
+                                    <label for="user-email" class="am-u-sm-3 am-form-label"></label>
+                                    <div class="am-u-sm-9" id="div_imageShow">
+                                        @if (Model.Paths.IsNotNullOrEmpty())
+                                        {
+                                            foreach (var item in Model.Paths.Split(new string[','], StringSplitOptions.RemoveEmptyEntries))
+                                            {
+                                                <img src="@(item)" style="width:100px;height:60px;" />
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="am-form-group">
+                                    <div class="am-u-sm-12">
+                                        <input type="hidden" name="Content" />
+                                        <script class="txtContent" type="text/plain" style="height:300px;">
+                                        </script>
+                                    </div>
+                                </div>
+                            }
+                            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                            @if (Model.ID.IsNotNullOrEmpty())
+                            {
+                                <div class="am-form-group">
+                                    <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
+                                </div>
+                                <div class="am-form-group">
+                                    <div class="am-u-sm-12 am-u-sm-centered">
+                                        <pre class="am-pre-scrollable">
+                                        @foreach (var item in Model.Logs)
+                                        {
+                                            @(item.RoleCode.GetDescription())  @(item.AdminName)  @(item.Code.GetDescription()) @(item.CreatedTime.ToString("yyyy-MM-DD hh:mm"))
+                                        }
+                                        </pre>
+                                    </div>
+                                </div>
+                                <div class="am-form-group">
+                                    <button type="button" class="am-btn am-u-sm-3">驳回</button>
+                                    <div class="am-u-sm-9">
+                                        <textarea name="Msg" rows="4">@(Model?.Msg)</textarea>
+                                    </div>
+                                </div>
+                                <div class="am-form-group">
+                                    <button type="button" class="am-btn am-u-sm-3">发布</button>
+                                    <div class="am-u-sm-9">
+                                        <input type="checkbox" value="1" />微信
+                                        <input type="checkbox" value="2" />官网
+                                        <input type="checkbox" value="4" />人民日报
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="am-form-group">
+                                    <div class="am-u-sm-4 am-u-sm-push-2">
+                                        <button type="button" class="am-btn am-btn-lg am-btn-primary">@(Model.ID.IsNotNullOrEmpty() ? "保存" : "发稿")</button>
+                                    </div>
+                                    <div class="am-u-sm-4">
+                                        <button type="button" class="am-btn am-btn-lg">取消</button>
+                                    </div>
+
+                                </div>
+                            }
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+    @if (!isFormPhone)
+    {
+        <script src="~/Scripts/UEditor/ueditor.config.js"></script>
+        <script src="~/Scripts/UEditor/ueditor.all.js"></script>
+        <script src="~/Scripts/UEditor/ueditor.parse.js"></script>
+        <script src="~/Scripts/UEditor/lang/zh-cn/zh-cn.js"></script>
+        <script>
+            $(function () {
+                var txtContentId = $.AMUI.utils.generateGUID("txtContent");
+                $(".txtContent").attr("id", txtContentId)
+                ue = UE.getEditor(txtContentId);
+                ue.addListener("ready", function () {
+                    // editor准备好之后才可以使用
+                    ue.setContent('@(Model?.Content)');
+                });
+            })
+        </script>
+    }
+    else
+    {
+        <script>
+            $(".admin-header,.am-icon-btn,.admin-sidebar").remove();
+        </script>
+    }
+    <script>
+        $(function () {
+            function UploadImg() {
+                var headimgbtn = $("#imageFile").uploadFile({
+                    url: '/upload/uploadimage?mark=news',
+                    fileSuffixs: ["jpg", "png", 'jpeg'],
+                    maximumFilesUpload: 1,//最大文件上传数
+                    onComplete: function (data) {
+                        if (data) {
+                            $("#div_imageShow").append('<img style="width:100px;height:60px;" src="' + data + '"/>');
+                        }
+                        else {
+                            alert("上传错误");
+                        }
+
+                    },
+                    onChosen: function (file, obj, fileSize, errorText) {
+                        if (errorText) {
+                            $.Nuoya.alert(errorText);
+                            return false;
+                        }
+                        //Loading("图片正在上传中...", "请稍等");
+                        uploadheadimg.submitUpload();
+                        return true;//返回false将取消当前选择的文件
+                    },
+                });
+                var uploadheadimg = headimgbtn.data("uploadFileData");
+            }
+            UploadImg();
+        });
+    </script>

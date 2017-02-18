@@ -21,6 +21,29 @@ namespace CoSys.Core
     /// </summary>
     public static class WebHelper
     {
+        public static bool CheckAgent()
+        {
+            bool flag = false;
+            string agent = HttpContext.Current.Request.UserAgent;
+            string[] keywords = { "Android", "iPhone", "iPod", "iPad", "Windows Phone", "UCBrowser" }; 
+           //排除 Windows 桌面系统 ，主要标志字符串为Windows NT
+            if (!agent.Contains("Windows NT") || (agent.Contains("Windows NT") && agent.Contains("compatible; MSIE 9.0;")))
+            {
+                //排除 苹果桌面系统 ,主要标志字符串为Macintosh
+                if (!agent.Contains("Windows NT") && !agent.Contains("Macintosh"))
+                {
+                    foreach (string item in keywords)
+                    {
+                        if (agent.Contains(item))  //符合Android", "iPhone", "iPod", "iPad", "Windows Phone", "UCBrowser"的，返回true
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            return flag;
+        }
         /// <summary>
         /// 获得技术部IP地址
         /// </summary>

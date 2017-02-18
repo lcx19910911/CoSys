@@ -65,6 +65,10 @@ namespace CoSys.Model
         public string AdminID { get; set; }
 
 
+        public RoleCode RoleCode { get; set; }
+
+        [NotMapped]
+        public RoleCode RoleCodeStr { get; set; }
         /// <summary>
         /// 创建时间
         /// </summary>

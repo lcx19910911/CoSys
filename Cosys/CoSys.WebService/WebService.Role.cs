@@ -105,7 +105,12 @@ namespace CoSys.Service
                 return null;
             using (DbRepository db = new DbRepository())
             {
-                return db.Role.AsQueryable().AsNoTracking().FirstOrDefault(x => x.ID.Equals(id));
+                var model= db.Role.AsQueryable().AsNoTracking().FirstOrDefault(x => x.ID.Equals(id));
+                if (model != null)
+                {
+                    model.CodeStr = model.Code.GetDescription();
+                }
+                return model;
             }
         }
 

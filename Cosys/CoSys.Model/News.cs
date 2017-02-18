@@ -57,11 +57,42 @@ namespace CoSys.Model
         public string StateStr { get; set; }
 
         [MaxLength(1024)]
-        public string msg { get; set; }
+        public string Msg { get; set; }
 
         public long MethodFlag { get; set; }
 
         [NotMapped]
         public List<Log> Logs { get; set; }
+
+        /// <summary>
+        /// 投递审核对象
+        /// </summary>
+        public NewsForCode ForCode { get; set; }
+        
+        /// <summary>
+        /// 处理角色
+        /// </summary>
+        public RoleCode AuditRole { get; set; }
+
+        /// <summary>
+        /// 审核流程
+        /// </summary>
+        public long AuditFlag { get; set; }
+
+        /// <summary>
+        /// 用户
+        /// </summary>
+        [Required(ErrorMessage = "用户不能为空")]
+        [MaxLength(32)]
+        [Column("NewsTypeID", TypeName = "char")]
+        public string NewsTypeID { get; set; }
+
+        [NotMapped]
+        public string NewsTypeName { get; set; }
+
+        public string Paths { get; set; }
+
+        [NotMapped]
+        public List<DataDictionary> TypeList { get; set; }
     }
 }

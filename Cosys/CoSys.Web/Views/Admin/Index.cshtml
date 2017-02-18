@@ -16,21 +16,7 @@
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">名称：</span>
                 <input type="text" class="am-form-field" placeholder="按用户名称搜索" style="width:100px;" name="name" ;>
-            </div>
-        </div>
-        <div class="am-u-lg-3">
-            <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">手机：</span>
-                <input type="text" class="am-form-field" placeholder="按用户手机搜索" style="width:100px;" name="mobile" ;>
-            </div>
-        </div>
-        <div class="am-u-lg-6 am-u-end">
-            <div class="am-input-group am-input-group-sm">
 
-                <span class="am-input-group-label">创建日期</span>
-                <input type="text" class="am-form-field"  placeholder="请选择日期" name="startTimeStart" readonly style="width:120px;">
-                <span class="am-input-group-label"> - </span>
-                <input type="text" class="am-form-field" placeholder="请选择日期" name="endTimeEnd" readonly style="width:120px;">
                 <span class="am-input-group-btn am-margin-left-sm">
                     <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
                     <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
@@ -46,8 +32,6 @@
                 <div class="am-btn-group am-btn-group-xs">
                     <button onclick="add()" type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增</button>
                     <button onclick="batchDelete()" type="button" class="am-btn am-btn-default"><span class="am-icon-trash-o"></span> 删除</button>
-                    <button onclick="batchEnable()" type="button" class="am-btn am-btn-default"><span class="am-icon-check"></span> 启用</button>
-                    <button onclick="batchDisable()" type="button" class="am-btn am-btn-default"><span class="am-icon-close"></span> 禁用</button>
                 </div>
             </div>
         </div>
@@ -60,14 +44,12 @@
         <thead>
             <tr>
                 <th dataname="ID" type="checkbox"></th>
+                <th dataname="Account">账号</th>
                 <th dataname="Name">名称</th>
                 <th dataname="RoleName">角色</th>
-                <th dataname="DepartmentName">部门</th>
-                <th dataname="Account">账号</th>
-                <th dataname="Mobile">手机号</th>
-                <th render="ShowIsStoreAdmin">是否门店管理员</th>
-                <th dataname="State">状态</th>           
-                <th dataname="CreatedTime" datatype="jsondate">创建时间</th>
+                <th dataname="AuditCount">审核数</th>
+                <th dataname="EditCount">修稿数</th>
+                <th dataname="AuditPassCount">审核通过数</th>
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -77,17 +59,8 @@
 @section scripts
 {
     <script type="text/javascript">
-
-        $('[name=startTimeStart]').datepicker({ format: 'yyyy-mm-dd' });
-        $('[name=endTimeEnd]').datepicker({ format: 'yyyy-mm-dd' });
         function ClearFilter() {
             $("#searchDomain input").val("");
-        }
-        function ShowIsStoreAdmin(item) {
-            if (item.IsStoreAdmin == 1)
-                return "是";
-            else
-                return "否";
         }
         //批量删除
         function batchDelete() {
@@ -100,28 +73,6 @@
                 });
             });
         }
-        //批量启用
-        function batchEnable() {
-            grid.batchAction({
-                message: "确定批量启用？",
-                ajaxUrl: "/User/Enable",
-                callback: function (json) {
-                    grid.reload();
-                }
-            });
-        }
-
-        //批量禁用
-        function batchDisable() {
-            grid.batchAction({
-                message: "确定批量禁用？",
-                ajaxUrl: "/User/Disable",
-                callback: function (json) {
-                    grid.reload();
-                }
-            });
-        }
-
         function formInit(dataitem) {
             //添加表单验证
             $.Nuoya.form("form").validate({
@@ -183,7 +134,6 @@
                 title: "添加用户",
                 callback: function (e) {
                     formInit();//表单初始化
-                    LoadYesOrNoSelectItem($("#form select[name='IsStoreAdmin']"), 0);
                 },
                 buttons: [{
                     label: "保存",
@@ -231,14 +181,11 @@
                             callback: function (e) {
                                 $.Nuoya.action("/User/Find", { id: item.ID }, function (model) {
                                     formInit(model);//表单初始化
-                                    LoadYesOrNoSelectItem($("#form select[name='IsStoreAdmin']"), model.IsStoreAdmin);
                                     //载入数据
                                     $.Nuoya.form("form").dataLoad({
                                         data: model
                                     });
                                 });
-                                $("[name='password']").hide();
-                                $("[name='Account']").attr("readonly", true);
                             },
                             buttons: [{
                                 label: "保存",
@@ -266,125 +213,6 @@
                 ,
                 {
                     className: "am-text-danger",
-                    icon: "icon-hand-rock-o",
-                    name: "操作权限",
-                    click: function (item) {
-                        $.Nuoya.ajaxDialog({
-                            closeViaDimmer: false,
-                            width: "500px",
-                            height: "500px",
-                            ajaxUrl: "/HtmlTemplates/User/SelectOperate.html",
-                            title: "操作权限",
-                            callback: function (e) {
-                                $.Nuoya.action("/User/Find", { id: item.ID }, function (model) {
-                                    $("#form [name='OperateFlagSelect']").ztreeSelect($("[name='OperateFlag']"), "/Operate/GetZTreeFlagChildren", model != null ? model.OperateFlag : 0, true, true);
-                                });
-                            },
-                            buttons: [{
-                                label: "保存",
-                                callback: function (e) {
-
-                                    $.Nuoya.form("form").ajaxSubmit({
-                                        ajaxUrl: "/User/UpdateOperate",
-                                        params: {
-                                            ID: item.ID
-                                        },
-                                        callback: function (data) {
-                                            if (!data.ErrorDesc) {
-                                                e.hide();
-                                                grid.reload();
-                                            }
-                                            else
-                                                $.Nuoya.alert(data.ErrorDesc);
-                                        }
-                                    });
-                                }
-                            }]
-                        })
-                    }
-                },
-                {
-                    className: "am-text-success",
-                    icon: "icon-hand-paper-o",
-                    name: "菜单权限",
-                    click: function (item) {
-                        $.Nuoya.ajaxDialog({
-                            closeViaDimmer: false,
-                            width: "500px",
-                            height: "500px",
-                            ajaxUrl: "/HtmlTemplates/User/SelectMenu.html",
-                            title: "菜单权限",
-                            callback: function (e) {
-                                $.Nuoya.action("/User/Find", { id: item.ID }, function (model) {
-                                    $("[name='MenuIDStr']").val(model != null ? model.MenuIDStr : "")
-                                    $("[name='MenuIDStrSelect']").ztreeSelect($("[name='MenuIDStr']"), "/Menu/GetZTreeFlagChildren", "", true, false);
-                                });
-                            },
-                            buttons: [{
-                                label: "保存",
-                                callback: function (e) {
-
-                                    $.Nuoya.form("form").ajaxSubmit({
-                                        ajaxUrl: "/User/UpdateMenuIDStr",
-                                        params: {
-                                            ID: item.ID
-                                        },
-                                        callback: function (data) {
-                                            if (!data.ErrorDesc) {
-                                                e.hide();
-                                                grid.reload();
-                                            }
-                                            else
-                                                $.Nuoya.alert(data.ErrorDesc);
-                                        }
-                                    });
-                                }
-                            }]
-                        })
-                    }
-                },
-                {
-                    className: "am-text-secondary",
-                    icon: "icon-hand-paper-o",
-                    name: "报名点权限",
-                    click: function (item) {
-                        $.Nuoya.ajaxDialog({
-                            closeViaDimmer: false,
-                            width: "500px",
-                            height: "500px",
-                            ajaxUrl: "/HtmlTemplates/User/SelectEnteredPoint.html",
-                            title: "报名点权限",
-                            callback: function (e) {
-                                $.Nuoya.action("/User/Find", { id: item.ID }, function (model) {
-                                    $("[name=EnteredPointIDStr]").val(model != null ? model.EnteredPointIDStr:"")
-                                    $("[name=EnteredPointIDStrSelect]").ztreeSelect($("[name=EnteredPointIDStr]"), "/EnteredPoint/GetZTreeFlagChildren", "", true, false);
-                                  });
-                            },
-                            buttons: [{
-                                label: "保存",
-                                callback: function (e) {
-
-                                    $.Nuoya.form("form").ajaxSubmit({
-                                        ajaxUrl: "/User/UpdateEnteredPointIDStr",
-                                        params: {
-                                            ID: item.ID
-                                        },
-                                        callback: function (data) {
-                                            if (!data.ErrorDesc) {
-                                                e.hide();
-                                                grid.reload();
-                                            }
-                                            else
-                                                $.Nuoya.alert(data.ErrorDesc);
-                                        }
-                                    });
-                                }
-                            }]
-                        })
-                    }
-                },
-                {
-                    className: "am-text-danger",
                     icon: "icon-trash-o",
                     name: "删除",
                     click: function (item) {
@@ -395,48 +223,6 @@
                             function () {
                                 grid.reload();
                             });
-                        });
-                    }
-                },
-                {
-                    className: "am-text-danger",
-                    icon: "icon-close",
-                    name: "禁用",
-                    formula: function (item) {
-                        if (item.Flag==0) {
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    },
-                    click: function (item) {
-                        $.Nuoya.action("/User/Disable", {
-                            ids: item.ID
-                        },
-                        function () {
-                            grid.reload();
-                        });
-                    }
-                },
-                {
-                    className: "am-text-danger",
-                    icon: "icon-check",
-                    name: "启用",
-                    formula: function (item) {
-                        if (item.Flag==2) {
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    },
-                    click: function (item) {
-                        $.Nuoya.action("/User/Enable", {
-                            ids: item.ID
-                        },
-                        function () {
-                            grid.reload();
                         });
                     }
                 }

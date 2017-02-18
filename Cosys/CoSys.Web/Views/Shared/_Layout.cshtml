@@ -1,10 +1,11 @@
 ﻿
 <!doctype html>
-<html class="no-js fixed-layout">
+<html class="no-js">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <meta name="apple-mobile-web-app-title" content="Amaze UI" />
@@ -249,7 +250,7 @@
             }
         }
 
-   
+
         //验证身份证
         function isCardID(obj, sexObj) {
             var sId = $(obj).val();
@@ -437,7 +438,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>         
+                </li>
             </ul>
         </div>
         <!-- sidebar end -->
@@ -450,14 +451,16 @@
         </div>
         <!-- content end -->
     </div>
+
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
 
-
-
-
+    @if (WebHelper.CheckAgent())
+    {
+        <script>
+            $(".admin-header,.am-icon-btn,.admin-sidebar").remove();
+            $("#selectCount").remove();
+        </script>
+    }
     @RenderSection("scripts", false)
 </body>
 </html>
-
-
-

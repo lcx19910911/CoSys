@@ -8,13 +8,20 @@ namespace CoSys.Model
     [Table("Admin")]
     public partial class Admin: BaseEntity
     {
+
+        /// <summary>
+        /// 部门权限
+        /// </summary>
+        public long DepartmentFlag { get; set; }
+
         /// <summary>
         /// 角色
         /// </summary>
         [Required(ErrorMessage = "角色不能为空")]
         [Column("RoleID", TypeName = "char"), MaxLength(32)]
         public string RoleID { get; set; }
-
+        [NotMapped]
+        public Role Role { get; set; }
         /// <summary>
         /// 状态
         /// </summary>
@@ -93,5 +100,18 @@ namespace CoSys.Model
         /// </summary>
         [NotMapped]
         public string State { get; set; }
+
+        /// <summary>
+        /// 审核数
+        /// </summary>
+        public int AuditCount { get; set; }
+        /// <summary>
+        /// 修稿数
+        /// </summary>
+        public int EditCount { get; set; }
+        /// <summary>
+        /// 审核通过数
+        /// </summary>
+        public int AuditPassCount { get; set; }
     }
 }

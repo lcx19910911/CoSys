@@ -8,13 +8,21 @@ using System.Web.Mvc;
 
 namespace CoSys.Web.Controllers
 {
-    [LoginFilter]
+    //[LoginFilter]
     public class NewsController : BaseController
     {
 
         public ViewResult Index()
         {
             return View();
+        }
+
+        public ViewResult Manage(string id)
+        {
+            var model = WebService.Find_News(id);
+            if (model == null)
+                model = new News();
+            return View(model);
         }
 
         /// <summary>
