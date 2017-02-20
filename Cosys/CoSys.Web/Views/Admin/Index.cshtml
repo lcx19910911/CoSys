@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "用户管理";
 }
 <style>
@@ -117,9 +117,9 @@
                     $("select[name='RoleId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                 });
             });
-            $.Nuoya.action("/Department/GetSelectItem", { id: dataitem ? dataitem.DepartmentID : "" }, function (json) {
+            $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: dataitem ? dataitem.NewsDepartment : "" }, function (json) {
                 $(json).each(function () {
-                    $("select[name='DepartmentID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                    $("select[name='NewsDepartment']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                 });
             });
         }
@@ -138,7 +138,6 @@
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
-
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/User/Add",
                             callback: function (data) {

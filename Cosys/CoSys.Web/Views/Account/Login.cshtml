@@ -8,7 +8,7 @@
     <title>@CustomHelper.GetValue("Website-Titlte") - 登录</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
-    <meta name="keywords" content=@CustomHelper.GetValue("Website-Titlte") - 登录" />
+    <meta name="keywords" content="@CustomHelper.GetValue("Website-Titlte") - 登录"/>
     <link href="~/Styles/reg.css" rel="stylesheet" />
 </head>
 <body>
@@ -27,7 +27,7 @@
                     <div class="clear"> </div>
                 </li>
 
-                <input type="submit" onClick="myFunction()" value="登录">
+                <input type="submit" onclick="Login()" value="登录">
 
                 <p class="registered">还没账号?<a href="/Account/Register">立即注册</a></p>
                 <div class="clear"> </div>
@@ -43,14 +43,10 @@
     </div>
     <script src="~/Scripts/jquery-1.10.2.js"></script>
     <script type="text/javascript">
-        $.ajaxSetup({ cache: false });
-        $("#loginBtn").click(function () {
-            Login();
-        })
-        function Login() {
-            var accoount = $("#account").val();
+        function Login(e) {
+            var account = $("#account").val();
             var password = $("#password").val();
-            if (accoount == "") {
+            if (account == "") {
                     alert("请输入账号");
                     return false;
                 }
@@ -60,17 +56,19 @@
                 }
                 $.ajax({
                     type: 'get',
-                    url: "/accout/Submit",
-                    data: { accoount: accoount, password: password },
+                    url: "/account/Submit",
+                    data: { account: account, password: password },
                     success: function (data) {
                         if (data.Result) {
-                            window.location.href = "@(string.IsNullOrEmpty(Request["redirecturl"])?"/Home/index": Request["redirecturl"])";
+                            window.location.href = "/Home/index";
                         }
                         else {
                             alert(data.ErrorDesc);
                         }
                     }
                 });
+
+                return false;
         }
 
         document.onkeydown = function (event) {

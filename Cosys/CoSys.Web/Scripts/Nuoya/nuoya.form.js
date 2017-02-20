@@ -17,8 +17,14 @@
                             onBeforeShow: function () {
                                 //var left = $(element).offset().lef - $(element).data("plugin_tipso").tipso_bubble.width();
                                 //debugger
-                                var left = $(element).offset().left + $(element).data("plugin_tipso").tipso_bubble.width();
-                                $(element).data("plugin_tipso").tipso_bubble.css("left", left + "px");
+                                if ($(element).parents(".am-form-horizontal").length==0) {
+                                    var left = $(element).offset().left + $(element).data("plugin_tipso").tipso_bubble.width();
+                                    $(element).data("plugin_tipso").tipso_bubble.css("left", left + "px");
+                                }
+                                else {
+                                    var left =  $(element).data("plugin_tipso").tipso_bubble.width()*4;
+                                    $(element).data("plugin_tipso").tipso_bubble.css("left", left + "px");
+                                }
                             },
                             onHide: function () {
                                 $(element).tipso('destroy');

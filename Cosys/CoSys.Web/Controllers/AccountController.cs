@@ -30,6 +30,8 @@ namespace CoSys.Web.Controllers
 
             ModelState.Remove("ID");
             ModelState.Remove("CreatedTime");
+            ModelState.Remove("IsDelete");
+            ModelState.Remove("Password");
             if (ModelState.IsValid)
             {
                 var result = WebService.Add_User(model);
@@ -60,8 +62,8 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult Quit()
         {
-            Client.LoginUser = null;
-            Client.LoginAdmin = null;
+            LoginHelper.ClearAdmin();
+            LoginHelper.ClearUser();
             return View("Login");
         }
 

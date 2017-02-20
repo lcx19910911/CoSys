@@ -1,35 +1,18 @@
 ﻿@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    string type = Request["type"];
-    if (string.IsNullOrEmpty(type))
-    {
-        type = "2";
-    }
-    string title = "";
-    switch (type)
-    {
-        case "2":
-            title = "投稿渠道";
-            break;
-        case "3":
-            title = "投稿类型";
-            break;
-
-    }
-    ViewBag.Title = title;
+    ViewBag.Title = "投递部门管理";
 }
 
 <div class="am-cf am-padding">
-    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>@(title)</small></div>
+    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>投递部门管理</small></div>
 </div>
 <div id="searchDomain">
 
     <div class="am-g">   
         <div class="am-u-lg-6 am-u-end">
-            <input name="group" type="hidden" value="@Request["type"]"/>
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">名称：</span>
-                <input type="text" class="am-form-field" placeholder="按@(title)名称搜索" style="width:100px;" name="value" ;>
+                <input type="text" class="am-form-field" placeholder="按投递部门名称搜索" style="width:100px;" name="name" ;>
                 <span class="am-input-group-btn am-margin-left-sm">
                     <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
                     <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
@@ -44,6 +27,7 @@
             <div class="am-btn-toolbar">
                 <div class="am-btn-group am-btn-group-xs">
                     <button onclick="add()" type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增</button>
+                    <button onclick="batchDelete()" type="button" class="am-btn am-btn-default"><span class="am-icon-trash-o"></span> 删除</button>
                 </div>
             </div>
         </div>
@@ -56,9 +40,8 @@
         <thead>
             <tr>
                 <th dataname="ID" type="checkbox"></th>
-                <th dataname="Value">@(title)名称</th>
-                <th dataname="Sort">排序</th>
-                <th dataname="Remark">@(type=="2"?"邮箱": "备注")</th>
+                <th dataname="Name">投递部门名称</th>
+                <th dataname="ParentName">父级部门名称</th>
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -69,113 +52,66 @@
 {
     <script type="text/javascript">
 
-
         function ClearFilter() {
             $("#searchDomain input").val("");
-    }
-    //批量删除
-    function batchDelete() {
+        }
+        //批量删除
+        function batchDelete() {
             $.Nuoya.confirm("确认删除？", function () {
-            grid.del({
-                ajaxUrl: "/DataDictionary/Delete",
+                grid.del({
+                    ajaxUrl: "/NewsDepartment/Delete",
                     callback: function (json) {
-                    grid.reload();
-                }
-            });
+                        grid.reload();
+                    }
+                });
             });
         }
-    function formInit(dataitem)
-    {
-        if ('@(type)' == '2') {
+        function formInit(dataitem) {
+            $.Nuoya.action("/NewsDepartment/GetSelectItem", {}, function (json) {
+                $(json).each(function () {
+                    if (dataitem != null) {
+                        $("#form select[name='ParentID']").append("<option  value='" + this.Value + "' " + (dataitem.ParentID == this.Value ? "selected" : "") + " >" + this.Text + "</option>");
+                    }
+                    else {
+                        $("#form select[name='ParentID']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
+                    }
+                });
+            });
+
             //添加表单验证
             $.Nuoya.form("form").validate({
                 rules: {
-                    Value: {
+                    Name: {
                         required: true,
                         maxlength: 64
-                    },
-                    Remark: {
-                        required:true,
-                        email: true
-                    },
-                    Sort: {
-                        digits: true,
-                        max: 2147483647,
-                        min: -2147483647
                     }
                 },
                 messages: {
-                    Value: {
+                    Name: {
                         required: "不允许为空",
                         maxlength: "最多{0}个字符"
-                    },
-                    Remark: {
-                        required: "不允许为空"
-                    },
-                    Sort: {
-                        digits: "请输入数字",
-                        max: "必须小于{0}",
-                        min: "必须大于{0}"
                     }
                 }
             });
+           
         }
-        else
-        {
-            //添加表单验证
-            $.Nuoya.form("form").validate({
-                rules: {
-                    Value: {
-                        required: true,
-                        maxlength: 64
-                    },
-                    Remark: {
-                        maxlength: 128
-                    },
-                    Sort: {
-                        digits: true,
-                        max: 2147483647,
-                        min: -2147483647
-                    }
-                },
-                messages: {
-                    Value: {
-                        required: "不允许为空",
-                        maxlength: "最多{0}个字符"
-                    },
-                    Remark: {
-                        maxlength: "最多{0}个字符"
-                    },
-                    Sort: {
-                        digits: "请输入数字",
-                        max: "必须小于{0}",
-                        min: "必须大于{0}"
-                    }
-                }
-            });
-        }
-   }
 
         //新增
         function add() {
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
-                ajaxUrl: "/HtmlTemplates/DataDictionary/Update.html",
-                title: "添加@(title)",
-                width: "800px",
-                height: "460px",
+                ajaxUrl: "/HtmlTemplates/NewsDepartment/Update.html",
+                title: "添加投递部门",
+                width: "1000px",
+                height: "380px",
                 callback: function (e) {
                     formInit();//表单初始化
-                    if ('@(type)' == '2') {
-                        $("#form #remarkDiv").text("邮箱地址:");
-                    }
-                    $("#form [name='GroupCode']").val(@(type));
                 },
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
                         $.Nuoya.form("form").ajaxSubmit({
-                            ajaxUrl: "/DataDictionary/Add",
+                            ajaxUrl: "/NewsDepartment/Add",
                             callback: function (data) {
                                 if (!data.ErrorDesc) {
                                     e.hide();
@@ -197,9 +133,8 @@
                 domainId: "searchDomain",
                 subId: "btnSearch"
             },
-            ajaxUrl: "/DataDictionary/GetPageList",
-            //数据请求地址
-
+            ajaxUrl: "/NewsDepartment/GetPageList",
+            //数据请求地址          
             events: [
                 {
                     className: "am-text-secondary",
@@ -208,28 +143,24 @@
                     click: function (item) {
                         $.Nuoya.ajaxDialog({
                             closeViaDimmer: false,
-                            ajaxUrl: "/HtmlTemplates/DataDictionary/Update.html",
-                            title: "编辑@(title)",
-                            width: "800px",
-                            height: "460px",
+                            ajaxUrl: "/HtmlTemplates/NewsDepartment/Update.html",
+                            title: "编辑投递部门",
+                            width: "1000px",
+                            height: "380px",
                             callback: function (e) {
-                                $.Nuoya.action("/DataDictionary/Find", { id: item.ID }, function (model) {
+                                $.Nuoya.action("/NewsDepartment/Find", { id: item.ID }, function (model) {
                                     //载入数据
                                     $.Nuoya.form("form").dataLoad({
                                         data: model
                                     });
-                                    if ('@(type)' == '2') {
-                                        $("#form #remarkDiv").text("邮箱地址");
-                                    }
                                     formInit(model);//表单初始化
                                 });
                             },
                             buttons: [{
                                 label: "保存",
                                 callback: function (e) {
-                                    $("#form [name='GroupCode']").val(@(type));
                                     $.Nuoya.form("form").ajaxSubmit({
-                                        ajaxUrl: "/DataDictionary/Update",
+                                        ajaxUrl: "/NewsDepartment/Update",
                                         params: {
                                             ID: item.ID
                                         },
@@ -253,8 +184,8 @@
                     name: "删除",
                     click: function (item) {
                         $.Nuoya.confirm("确认删除？", function () {
-                            $.Nuoya.deleteAction("/DataDictionary/Delete", {
-                                ID: item.ID
+                            $.Nuoya.deleteAction("/NewsDepartment/Delete", {
+                                ids: item.ID
                             },
                             function () {
                                 grid.reload();

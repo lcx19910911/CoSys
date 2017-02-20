@@ -172,5 +172,9 @@ namespace CoSys.Model
 
         [NotMapped]
         public List<SelectItem> ProvinceItems { get; set; }
+
+
+        [NotMapped]
+        public string ValiteCode { get; set; }
     }
 }

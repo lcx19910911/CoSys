@@ -36,5 +36,12 @@ namespace CoSys.Model
         /// 父类Id
         /// </summary>
         public string ParentID { get; set; }
+        /// <summary>
+        /// 父类Id
+        /// </summary>
+        [NotMapped]
+        public string ParentName { get; set; }
+
+        public bool IsDelete { get; set; }
     }
 }

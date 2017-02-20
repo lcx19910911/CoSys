@@ -71,10 +71,10 @@ namespace CoSys.Service
                 using (var db = new DbRepository())
                 {
                     string md5Password = CryptoHelper.MD5_Encrypt(password);
-                    var admin = db.Admin.AsQueryable().AsNoTracking().Where(x => x.Password.Equals(md5Password) && x.Account.Equals(loginName)).FirstOrDefault();
-                    if (admin == null && !admin.IsDelete)
+                    var admin = db.Admin.Where(x => x.Password.Equals(md5Password) && x.Account.Equals(loginName)).FirstOrDefault();
+                    if (admin == null ||(admin!=null&& admin.IsDelete))
                     {
-                        var user = db.User.AsQueryable().AsNoTracking().Where(x => x.Password.Equals(md5Password) && x.Phone.Equals(loginName)).FirstOrDefault();
+                        var user = db.User.AsQueryable().AsNoTracking().Where(x => x.Password.Equals(md5Password) && x.Account.Equals(loginName)).FirstOrDefault();
                         if (user == null)
                             return Result(false, ErrorCode.user_login_error);
                         else if (user.IsDelete)
@@ -183,13 +183,19 @@ namespace CoSys.Service
                 //var role = Cache_Get_RoleList().Where(x => x.ID.Equals(model.RoleID)).FirstOrDefault();
                 //if(role==null)
                 //    return Result(false, ErrorCode.datadatabase_primarykey_not_found);
+
+                var code=CacheHelper.Get<string>("code" + Client.IP);
+                if (code.IsNullOrEmpty() || !code.Equals(model.ValiteCode,StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return Result(false, ErrorCode.verification_time_out);
+                }
                 model.Password = CryptoHelper.MD5_Encrypt(model.ConfirmPassword);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CreatedTime = DateTime.Now;
-                string menuIdStr = string.Empty;
                 db.User.Add(model);
                 if (db.SaveChanges() > 0)
                 {
+                    Client.LoginUser = model;
                     return Result(true);
                 }
                 else
@@ -260,7 +266,7 @@ namespace CoSys.Service
                 if (db.SaveChanges() > 0)
                 {
 
-                    LoginHelper.CreateUser(user);
+                    LoginHelper.CreateUser(user.ID);
                     return Result(user);
                 }
                 else

@@ -46,6 +46,7 @@ namespace CoSys.Web.Controllers
             ModelState.Remove("CreatedTime");
             ModelState.Remove("UserId");
             ModelState.Remove("Password");
+            ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {
                 var result = WebService.Add_Admin(model);
@@ -69,6 +70,7 @@ namespace CoSys.Web.Controllers
             ModelState.Remove("NewPassword");
             ModelState.Remove("ConfirmPassword");
             ModelState.Remove("Password");
+            ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {
                 var result = WebService.Update_Admin(model);

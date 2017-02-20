@@ -1,6 +1,6 @@
 ﻿
 <!doctype html>
-<html class="no-js">
+<html class="no-js fixed-layout">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -36,7 +36,7 @@
                                 $.Nuoya.alert("密码不能为空");
                                 return false;
                             }
-                            $.Nuoya.action("/accout/ChangePassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword }, function (data) {
+                            $.Nuoya.action("/account/ChangePassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword }, function (data) {
                                 if (!data.ErrorDesc) {
                                     $.Nuoya.alert("修改密码成功");
                                     e.hide();
@@ -51,19 +51,6 @@
                     }
                 }]
             });
-        }
-        function SelectFrom(obj) {
-            if ($(obj).val() != "1") {
-                $("#schoolDiv input").val("").attr("readonly", true);
-                $('#schoolDiv select').each(function () {
-                    $(this).find('option').eq(0).attr('selected', true);
-                });
-                $("#schoolDiv").hide();
-            }
-            else {
-                $("#schoolDiv").show();
-
-            }
         }
 
         //获取Json的日期
@@ -380,11 +367,11 @@
                 <li><a href="javascript:;"><span class="am-icon-user">@(LoginHelper.GetCurrentUser()?.Account)</span></a></li>
 
                 <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
-                <li><a href="/accout/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
+                <li><a href="/account/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>
         </div>
     </header>
-    <div class="am-cf admin-main am-text-left">
+    <div class="am-cf admin-main am-text-left" style="@(WebHelper.CheckAgent()?"padding-top:0px;":"")">
 
         <div id="imgDiv" style="opacity:1;background-color:black;width:100%;height:100%;z-index:9000; display:none; position:absolute;">
             <div style="width:500px; margin:0 auto; z-index:9001;margin-top:10%">

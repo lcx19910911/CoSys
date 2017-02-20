@@ -24,7 +24,7 @@ namespace CoSys.Service
                 var listss = new List<string>();
                 using (var db = new DbRepository())
                 {
-                    var dic = db.DataDictionary.GroupBy(x => x.GroupCode).ToDictionary(x => x.Key, x => x.ToList());
+                    var dic = db.DataDictionary.GroupBy(x => x.GroupCode).ToDictionary(x => x.Key, x => x.OrderBy(y=>y.Sort).ToList());
                     return dic.ToDictionary(x => x.Key,
                         x => {
                             var returnDic = new Dictionary<string, DataDictionary>();
@@ -251,7 +251,7 @@ namespace CoSys.Service
         /// <returns></returns>
         public List<SelectItem> Get_AreaList(string value)
         {
-            var areas = Cache_Get_DataDictionary()[GroupCode.Area].Values.OrderByDescending(x => x.Sort).ToList().AsQueryable();
+            var areas = Cache_Get_DataDictionary()[GroupCode.Area].Values.OrderBy(x => x.Sort).ToList().AsQueryable();
             if (!string.IsNullOrEmpty(value)&&!value.Equals("0"))
                 areas = areas.Where(x=>!string.IsNullOrEmpty(x.ParentKey)&&x.ParentKey.Trim().Equals(value));
             else
@@ -262,23 +262,6 @@ namespace CoSys.Service
             return list;
         }
 
-        /// <summary>
-        /// 获取地区数据
-        /// </summary>
-        /// <param name="value">地区编码</param>
-        /// <returns></returns>
-        public List<SelectItem> Get_SchoolList(string parentId,GroupCode code)
-        {
-            var query = Cache_Get_DataDictionary()[code].Values.OrderByDescending(x => x.Sort).ToList().AsQueryable();
-            if (!string.IsNullOrEmpty(parentId) && !parentId.Equals("0"))
-                query = query.Where(x => !string.IsNullOrEmpty(x.ParentKey) && x.ParentKey.Trim().Equals(parentId));
-            else
-                query = query.Where(_ => string.IsNullOrEmpty(_.ParentKey));
-            var list = query.ToList();
-            var itemList = list.Select(x => new SelectItem() { Value = x.Key, Text = x.Value }).ToList();
-            itemList.Insert(0, new SelectItem() { Value = "0", Text = "点击选择..." });
-            return itemList;
-        }
 
         /// <summary>
         /// 获取地区数据

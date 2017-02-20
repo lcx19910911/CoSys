@@ -28,13 +28,36 @@
                                         {
                                             foreach (var item in Model.TypeList)
                                             {
-                                                <option value="@item.ID" @(Model.NewsTypeID.Equals(item.ID) ? "selected" : "")>@item.Value</option>
+                                                <option value="@item.Value" @(Model.NewsTypeID.Equals(item.Value) ? "selected" : "")>@item.Value</option>
                                             }
                                         }
                                     </select>
                                 </div>
                             </div>
 
+                            <div class="am-form-group">
+                                <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
+                                <div class="am-u-sm-9">
+                                    <select name="Code" onchange="loadChildren(this)">
+                                        @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
+                                        {
+                                            foreach (var item in Model.DepartmentList)
+                                            {
+                                                <option value="@item.Value" @(Model.NewsDepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    <select name="ChildrenCode" style="@(Model.DepartmentList!=null&&Model.DepartmentList.Count>0?"":"display:none;")">
+                                        @if (Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count != 0)
+                                        {
+                                            foreach (var item in Model.DepartmentList)
+                                            {
+                                                <option value="@item.Value" @(Model.NewsDepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
                             @if (isFormPhone)
                             {
 
@@ -151,6 +174,19 @@
     }
     <script>
         $(function () {
+
+            function loadChildren(obj)
+            {
+                $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: $(obj).val() }, function (json) {
+                    if (json.length > 0)
+                    {
+                        $("select[name='ChildrenCode']").show();
+                    }
+                    $(json).each(function () {
+                        $("select[name='ChildrenCode']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
+                    });
+                });
+            }
             function UploadImg() {
                 var headimgbtn = $("#imageFile").uploadFile({
                     url: '/upload/uploadimage?mark=news',

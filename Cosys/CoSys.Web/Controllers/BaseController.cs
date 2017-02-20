@@ -210,13 +210,24 @@ namespace CoSys.Web.Controllers
         }
 
 
-        private LoginUser _loginUser = null;
+        private User _loginUser = null;
 
-        public LoginUser LoginUser
+        public User LoginUser
         {
             get
             {
-                return _loginUser != null ? _loginUser : new LoginUser(CryptoHelper.AES_Decrypt(Client.Session[Params.UserCookieName].ToString(), Params.SecretKey).DeserializeJson<Admin>());
+                return _loginUser != null ? _loginUser : LoginHelper.GetCurrentUser();
+            }
+        }
+
+
+        private Admin _loginAdmin = null;
+
+        public Admin LoginAdmin
+        {
+            get
+            {
+                return _loginAdmin != null ? _loginAdmin : LoginHelper.GetCurrentAdmin();
             }
         }
     }

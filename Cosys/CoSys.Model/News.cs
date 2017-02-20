@@ -87,12 +87,28 @@ namespace CoSys.Model
         [Column("NewsTypeID", TypeName = "char")]
         public string NewsTypeID { get; set; }
 
+
+
+        /// <summary>
+        /// 用户
+        /// </summary>
+        [Required(ErrorMessage = "用户不能为空")]
+        [MaxLength(512)]
+        public string NewsDepartmentID { get; set; }
+        [NotMapped]
+        public string NewsDepartmentName { get; set; }
         [NotMapped]
         public string NewsTypeName { get; set; }
 
         public string Paths { get; set; }
 
         [NotMapped]
-        public List<DataDictionary> TypeList { get; set; }
+        public List<SelectItem> TypeList { get; set; }
+        [NotMapped]
+        public List<SelectItem> DepartmentList { get; set; }
+
+
+        [NotMapped]
+        public List<SelectItem> ChildrenDepartmentList { get; set; }
     }
 }

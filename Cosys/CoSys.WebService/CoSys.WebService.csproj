@@ -63,6 +63,7 @@
     <Compile Include="WebService.cs" />
     <Compile Include="WebService.DataDictionary.cs" />
     <Compile Include="WebService.Log.cs" />
+    <Compile Include="WebService.NewsDepartment.cs" />
     <Compile Include="WebService.Role.cs" />
     <Compile Include="WebService.User.cs" />
   </ItemGroup>

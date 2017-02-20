@@ -1,5 +1,4 @@
-﻿
-using CoSys.Model;
+﻿using CoSys.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,8 @@ using System.Web.Mvc;
 
 namespace CoSys.Web.Controllers
 {
-    [LoginFilter]
-    public class RoleController : BaseController
+    //[LoginFilter]
+    public class NewsDepartmentController : BaseController
     {
 
         public ViewResult Index()
@@ -22,14 +21,12 @@ namespace CoSys.Web.Controllers
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public JsonResult Add(Role entity)
+        public JsonResult Add(NewsDepartment entity)
         {
-            ModelState.Remove("ID");
-            ModelState.Remove("CreatedTime");
             ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {
-                var result = WebService.Add_Role(entity);
+                var result = WebService.Add_NewsDepartment(entity);
                 return JResult(result);
             }
             else
@@ -43,13 +40,12 @@ namespace CoSys.Web.Controllers
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public JsonResult Update(Role entity)
+        public JsonResult Update(NewsDepartment entity)
         {
-            ModelState.Remove("CreatedTime");
             ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {
-                var result = WebService.Update_Role(entity);
+                var result = WebService.Update_NewsDepartment(entity);
                 return JResult(result);
             }
             else
@@ -58,7 +54,7 @@ namespace CoSys.Web.Controllers
             }
         }
 
-        
+
         /// <summary>
         /// 获取分页列表
         /// </summary>
@@ -67,10 +63,11 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string name, string no)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string name)
         {
-            return JResult(WebService.Get_RolePageList(pageIndex, pageSize, name, no));
+            return JResult(WebService.Get_NewsDepartmentPageList(pageIndex, pageSize, name));
         }
+
 
         /// <summary>
         /// 查找实体
@@ -79,7 +76,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult Find(string id)
         {
-            return JResult(WebService.Find_Role(id));
+            return JResult(WebService.Find_NewsDepartment(id));
         }
 
         /// <summary>
@@ -89,16 +86,17 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult Delete(string ids)
         {
-            return JResult(WebService.Delete_Role(ids));
+            return JResult(WebService.Delete_NewsDepartment(ids));
         }
 
+
         /// <summary>
-        /// 获取角色选择项
+        /// 获取选择项
         /// </summary>
         /// <returns></returns>
         public ActionResult GetSelectItem(string id)
         {
-            return JResult(WebService.Get_RoleSelectItem(id));
+            return JResult(WebService.Get_NewsDepartmentSelectItem(id));
         }
     }
 }

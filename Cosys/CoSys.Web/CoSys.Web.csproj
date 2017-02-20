@@ -188,6 +188,7 @@
     <Content Include="HtmlTemplates\Area\Update.html" />
     <Content Include="HtmlTemplates\DataDictionary\Update.html" />
     <Content Include="HtmlTemplates\Menu\Update.html" />
+    <Content Include="HtmlTemplates\NewsDepartment\Update.html" />
     <Content Include="HtmlTemplates\Role\Update.html" />
     <Content Include="HtmlTemplates\User\ChangePassword.html" />
     <Content Include="HtmlTemplates\User\ExamList.html" />
@@ -558,6 +559,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AreaController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\NewsDepartmentController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\DataDictionaryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -601,6 +603,8 @@
     <Content Include="Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Views\News\Index.cshtml" />
     <Content Include="Views\News\Manage.cshtml" />
+    <Content Include="Views\NewsDepartment\Index.cshtml" />
+    <Content Include="Views\Home\Admin.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

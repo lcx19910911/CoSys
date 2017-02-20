@@ -46,7 +46,7 @@ namespace CoSys.Core
             }
             set
             {
-                Session[Params.UserCookieName] = value;
+                LoginHelper.CreateUser(value.ID);
             }
         }
 
@@ -60,7 +60,7 @@ namespace CoSys.Core
             }
             set
             {
-                Session[Params.AdminCookieName] = value;
+                LoginHelper.CreateAdmin(value.ID);
             }
         }
         private string _postData = null;

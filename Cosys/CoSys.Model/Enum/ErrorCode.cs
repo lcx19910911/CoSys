@@ -104,87 +104,7 @@ namespace CoSys.Model
         
         #endregion
 
-        #region 业务逻辑
-        /// <summary>
-        /// 该学员该科目已通过
-        /// </summary>
-        [Description("该学员该科目已通过.")]
-        theme_had_pass =80,
-
-        /// <summary>
-        /// 次数已存在
-        /// </summary>
-        [Description("次数已存在.")]
-        count_had_exit = 81,
-
-
-        /// <summary>
-        /// 考试记录缺失
-        /// </summary>
-        [Description("考试记录缺失.")]
-        exam_had_lose = 82,
-
-        /// <summary>
-        /// 考试时间必须是本科目上次考试时间之后
-        /// </summary>
-        [Description("考试时间必须是本科目上次考试时间之后.")]
-        exam_timer_error = 83,
-
-        /// <summary>
-        /// 该学员未分配该考试科目教练员
-        /// </summary>
-        [Description("该学员未分配该考试科目教练员.")]
-        exam_coache_not_exit = 84,
-
-        /// <summary>
-        /// 该学员正在退学中，不能新增考试记录
-        /// </summary>
-        [Description("该学员正在退学中，不能新增考试记录")]
-        student_want_drop = 85,
-
-        /// <summary>
-        /// 科目二学时未完成
-        /// </summary>
-        [Description("科目二学时未完成.")]
-        themetwo_timecode_not_complete = 86,
-
-        /// <summary>
-        /// 科目三学时未完成
-        /// </summary>
-        [Description("科目三学时未完成.")]
-        themethree_timecode_not_complete = 87,
-
-        /// <summary>
-        /// 学员当前是科目二，必须分配教练
-        /// </summary>
-        [Description("学员当前是科目二，必须分配教练.")]
-        themetwo_no_had_coach = 88,
-
-        /// <summary>
-        /// 该学员当前不是科目三，不能分配教练
-        /// </summary>
-        [Description("学员当前是科目三，必须分配教练.")]
-        themethree_no_had_coach = 89,
-
-        /// <summary>
-        /// 该学员当前不是科目三或科目三，不能分配教练
-        /// </summary>
-        [Description("该学员当前不是科目三或科目三，必须分配教练.")]
-        themecode_no_allow = 90,
-
-        /// <summary>
-        /// 学员当前是科目一，不能记录学时
-        /// </summary>
-        [Description("学员当前是科目一，不能记录学时.")]
-        themeont_no_pass = 91,
-
-        /// <summary>
-        /// 科目一考试时间必须在制卡时间之后
-        /// </summary>
-        [Description("科目一考试时间必须在制卡时间之后")]
-        theme_one_time_error = 92,
-        #endregion
-
+       
 
 
 
@@ -203,9 +123,9 @@ namespace CoSys.Model
         user_name_already_exist = 101,
 
         /// <summary>
-        /// 已过验证时间
+        /// 验证码过期
         /// </summary>
-        [Description("已过验证时间.")]
+        [Description("验证码过期.")]
         verification_time_out = 104,
 
         /// <summary>

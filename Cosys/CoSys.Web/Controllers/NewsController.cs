@@ -21,8 +21,22 @@ namespace CoSys.Web.Controllers
         {
             var model = WebService.Find_News(id);
             if (model == null)
+            {
                 model = new News();
-            return View(model);
+                model.DepartmentList = new List<SelectItem>();
+                model.ChildrenDepartmentList = new List<SelectItem>();
+                model.TypeList = new List<SelectItem>();
+            }
+            else
+            {
+                model.DepartmentList = WebService.Get_NewsDepartmentSelectItem(null);
+                model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
+                if (model.NewsDepartmentID.Split(',').Length == 2)
+                {
+                    model.ChildrenDepartmentList = WebService.Get_NewsDepartmentSelectItem(model.NewsDepartmentID.Split(',')[0]);
+                }
+            }
+                return View(model);
         }
 
         /// <summary>
@@ -35,6 +49,7 @@ namespace CoSys.Web.Controllers
         {
             ModelState.Remove("ID");
             ModelState.Remove("CreatedTime");
+            ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {
                 var result = WebService.Add_News(entity, isAduit);
@@ -55,6 +70,7 @@ namespace CoSys.Web.Controllers
         public JsonResult Update(News entity)
         {
             ModelState.Remove("CreatedTime");
+            ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {
                 var result = WebService.Update_News(entity);

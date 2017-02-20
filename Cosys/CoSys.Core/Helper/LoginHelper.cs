@@ -13,11 +13,25 @@ namespace CoSys.Core
     {
         
 
-        public static void CreateUser(User user)
+        public static void CreateUser(string id)
         {
-            HttpContext.Current.Session[Params.UserCookieName] = CryptoHelper.AES_Encrypt(new User() {
-                ID = user.ID,
-           } .ToJson(), Params.SecretKey);
+            HttpCookie cookie = new HttpCookie(Params.UserCookieName);
+            cookie.Value = id;
+            cookie.Expires = DateTime.Now.AddMinutes(Params.CookieExpires);
+            // 写登录Cookie
+            HttpContext.Current.Response.Cookies.Remove(cookie.Name);
+            HttpContext.Current.Response.Cookies.Add(cookie);
+        }
+
+        public static void ClearUser()
+        {
+            HttpCookie cookie = HttpContext.Current.Request.Cookies[Params.UserCookieName];
+            if (cookie != null)
+            {
+                cookie.Expires = DateTime.Now.AddHours(-1);
+                HttpContext.Current.Response.Cookies.Remove(cookie.Name);
+                HttpContext.Current.Response.Cookies.Add(cookie);
+            }
         }
 
         /// <summary>
@@ -26,12 +40,12 @@ namespace CoSys.Core
         /// <returns></returns>
         public static User GetCurrentUser()
         {
-            var userObj = HttpContext.Current.Session[Params.UserCookieName];
-            if (userObj == null)
+            var userId = GetCurrentUserID();
+           if (userId.IsNullOrEmpty())
                 return null;
             using (var db = new DbRepository())
             {
-                User user = db.User.Find(GetCurrentUserID());          
+                User user = db.User.Find(userId);          
                 return user;
             }
         }
@@ -43,11 +57,10 @@ namespace CoSys.Core
         /// <returns></returns>
         public static string GetCurrentUserID()
         {
-            var userObj = HttpContext.Current.Session[Params.UserCookieName];
-            if (userObj == null)
+            HttpCookie cookie = HttpContext.Current.Request.Cookies[Params.UserCookieName];
+            if (cookie == null)
                 return null;
-            User user = (CryptoHelper.AES_Decrypt(userObj.ToString(), Params.SecretKey)).DeserializeJson<User>();
-            return user.ID;
+            return cookie.Value;
         }
 
 
@@ -57,38 +70,41 @@ namespace CoSys.Core
         /// <returns></returns>
         public static bool UserIsLogin()
         {
-            var userObj = HttpContext.Current.Session[Params.UserCookieName];
-            if (userObj == null)
-                return false;
-            else
-                return true;
+            return GetCurrentUserID().IsNotNullOrEmpty();
         }
         
 
-        public static void CreateAdmin(Admin user)
+        public static void CreateAdmin(string id)
         {
+            HttpCookie cookie = new HttpCookie(Params.AdminCookieName);
+            cookie.Value = id;
+            cookie.Expires = DateTime.Now.AddMinutes(Params.CookieExpires);
             // 写登录Cookie
-            HttpContext.Current.Session[Params.AdminCookieName] = CryptoHelper.AES_Encrypt(new Admin() {
-                ID=user.ID,
-                IsSuperAdmin=user.IsSuperAdmin,
-                Account=user.Account,
-                Name=user.Name,
-                Mobile=user.Mobile,
-            }.ToJson(), Params.SecretKey);
+            HttpContext.Current.Response.Cookies.Remove(cookie.Name);
+            HttpContext.Current.Response.Cookies.Add(cookie);
         }
-
+        public static void ClearAdmin()
+        {
+            HttpCookie cookie = HttpContext.Current.Request.Cookies[Params.AdminCookieName];
+            if (cookie != null)
+            {
+                cookie.Expires = DateTime.Now.AddHours(-1);
+                HttpContext.Current.Response.Cookies.Remove(cookie.Name);
+                HttpContext.Current.Response.Cookies.Add(cookie);
+            }
+        }
         /// <summary>
         /// 获取当前管理员
         /// </summary>
         /// <returns></returns>
         public static Admin GetCurrentAdmin()
         {
-            var userObj = HttpContext.Current.Session[Params.AdminCookieName];
-            if (userObj == null)
+            var id = GetCurrentAdminID();
+            if (id.IsNullOrEmpty())
                 return null;
             using (var db = new DbRepository())
             {
-                Admin user = db.Admin.Find(GetCurrentAdminID());
+                Admin user = db.Admin.Find(id);
                 return user;
             }
         }
@@ -99,11 +115,10 @@ namespace CoSys.Core
         /// <returns></returns>
         public static string GetCurrentAdminID()
         {
-            var userObj = HttpContext.Current.Session[Params.AdminCookieName];
-            if (userObj == null)
+            HttpCookie cookie = HttpContext.Current.Request.Cookies[Params.AdminCookieName];
+            if (cookie == null)
                 return null;
-            Admin user = (CryptoHelper.AES_Decrypt(userObj.ToString(), Params.SecretKey)).DeserializeJson<Admin>();
-            return user.ID;
+            return cookie.Value;
         }
 
         /// <summary>
@@ -112,11 +127,7 @@ namespace CoSys.Core
         /// <returns></returns>
         public static bool AdminIsLogin()
         {
-            var userObj = HttpContext.Current.Session[Params.AdminCookieName];
-            if (userObj == null)
-                return false;
-            else
-                return true;
+            return GetCurrentAdminID().IsNotNullOrEmpty();
         }
     }
 }
