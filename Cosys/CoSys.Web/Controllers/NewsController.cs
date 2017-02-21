@@ -23,20 +23,21 @@ namespace CoSys.Web.Controllers
             if (model == null)
             {
                 model = new News();
-                model.DepartmentList = new List<SelectItem>();
                 model.ChildrenDepartmentList = new List<SelectItem>();
-                model.TypeList = new List<SelectItem>();
             }
             else
             {
-                model.DepartmentList = WebService.Get_NewsDepartmentSelectItem(null);
-                model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
+                if (!model.UserID.Equals(Client.LoginUser.ID))
+                    return View("Index");
                 if (model.NewsDepartmentID.Split(',').Length == 2)
                 {
                     model.ChildrenDepartmentList = WebService.Get_NewsDepartmentSelectItem(model.NewsDepartmentID.Split(',')[0]);
                 }
             }
-                return View(model);
+
+            model.DepartmentList = WebService.Get_NewsDepartmentSelectItem(null);
+            model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
+            return View(model);
         }
 
         /// <summary>
@@ -45,14 +46,18 @@ namespace CoSys.Web.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [ValidateInput(false)]
-        public JsonResult Add(News entity,bool isAduit)
+        public JsonResult Add(News model,bool isAduit=true)
         {
             ModelState.Remove("ID");
             ModelState.Remove("CreatedTime");
             ModelState.Remove("IsDelete");
+            ModelState.Remove("UserID");
+            ModelState.Remove("MethodFlag");
+            ModelState.Remove("State");
+            
             if (ModelState.IsValid)
             {
-                var result = WebService.Add_News(entity, isAduit);
+                var result = WebService.Add_News(model, isAduit);
                 return JResult(result);
             }
             else
@@ -67,13 +72,16 @@ namespace CoSys.Web.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [ValidateInput(false)]
-        public JsonResult Update(News entity)
+        public JsonResult Update(News model)
         {
             ModelState.Remove("CreatedTime");
             ModelState.Remove("IsDelete");
+            ModelState.Remove("State");
+            ModelState.Remove("UserID");
+            ModelState.Remove("MethodFlag");
             if (ModelState.IsValid)
             {
-                var result = WebService.Update_News(entity);
+                var result = WebService.Update_News(model);
                 return JResult(result);
             }
             else
@@ -91,9 +99,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string title, NewsCode? code, YesOrNoCode? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string title, string newsTypeId, YesOrNoCode? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
         {
-            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, code, state, createdTimeStart, createdTimeEnd));
+            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, state, createdTimeStart, createdTimeEnd));
         }
 
 

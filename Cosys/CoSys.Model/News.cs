@@ -45,12 +45,6 @@ namespace CoSys.Model
         /// </summary>
         public string Content { get; set; }
 
-
-        public NewsCode Code { get; set; }
-
-        [NotMapped]
-        public string CodeStr { get; set; }
-
         public NewsState State { get; set; }
 
         [NotMapped]
@@ -65,14 +59,9 @@ namespace CoSys.Model
         public List<Log> Logs { get; set; }
 
         /// <summary>
-        /// 投递审核对象
-        /// </summary>
-        public NewsForCode ForCode { get; set; }
-        
-        /// <summary>
         /// 处理角色
         /// </summary>
-        public RoleCode AuditRole { get; set; }
+        public RoleCode AuditRole { get; set; } = RoleCode.None;
 
         /// <summary>
         /// 审核流程
@@ -82,7 +71,7 @@ namespace CoSys.Model
         /// <summary>
         /// 用户
         /// </summary>
-        [Required(ErrorMessage = "用户不能为空")]
+        [Required]
         [MaxLength(32)]
         [Column("NewsTypeID", TypeName = "char")]
         public string NewsTypeID { get; set; }
@@ -92,7 +81,7 @@ namespace CoSys.Model
         /// <summary>
         /// 用户
         /// </summary>
-        [Required(ErrorMessage = "用户不能为空")]
+        [Required]
         [MaxLength(512)]
         public string NewsDepartmentID { get; set; }
         [NotMapped]

@@ -58,10 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbRepository.cs" />
-    <Compile Include="Migrations\201702200247272_1.cs" />
-    <Compile Include="Migrations\201702200247272_1.Designer.cs">
-      <DependentUpon>201702200247272_1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -74,11 +70,6 @@
       <Project>{2f0b66b6-c289-438d-9c3b-54bf1f04ccc1}</Project>
       <Name>CoSys.Model</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201702200247272_1.resx">
-      <DependentUpon>201702200247272_1.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

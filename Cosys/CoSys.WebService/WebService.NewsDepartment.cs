@@ -179,7 +179,7 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    db.NewsDepartment.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&string.IsNullOrEmpty(id)).ToList().ForEach(x =>
+                    db.NewsDepartment.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&string.IsNullOrEmpty(x.ParentID)).ToList().ForEach(x =>
                     {
                         list.Add(new SelectItem()
                         {

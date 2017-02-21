@@ -17,11 +17,7 @@ namespace CoSys.Web.Controllers
         // GET: 
         public ActionResult Index()
         {
-            if (Client.LoginAdmin != null)
-                return View("Admin");
-            else
                 return View();
-
         }
 
         public ActionResult Admin()

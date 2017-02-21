@@ -5,77 +5,84 @@
 }
 
 
-  <div class="admin-content-body">
-                <div class="am-cf am-padding am-padding-bottom-0">
-                    <div class="am-fl am-cf"><a href="/news/index"><strong class="am-text-primary am-text-lg">稿件管理</strong> </a>/ <small>@(Model.ID.IsNotNullOrEmpty() ? "编辑" : "投稿")</small></div>
+<div class="admin-content-body">
+    <div class="am-cf am-padding am-padding-bottom-0">
+        <div class="am-fl am-cf"><a href="/news/index"><strong class="am-text-primary am-text-lg">稿件管理</strong> </a>/ <small>@(Model.ID.IsNotNullOrEmpty() ? "编辑" : "投稿")</small></div>
+    </div>
+    <hr>
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <form class="am-form am-form-horizontal">
+                <div class="am-form-group">
+                    <label for="user-name" class="am-u-sm-3 am-form-label">标题<strong class="am-text-danger am-text-sm">*</strong></label>
+                    <div class="am-u-sm-9">
+                        <input type="text" name="Title" placeholder="标题" maxlength="64" value="@(Model?.Title)">
+                    </div>
                 </div>
-                <hr>
-                <div class="am-g">
-                    <div class="am-u-sm-12">
-                        <form class="am-form am-form-horizontal">
-                            <div class="am-form-group">
-                                <label for="user-name" class="am-u-sm-3 am-form-label">标题<strong class="am-text-danger am-text-sm">*</strong></label>
-                                <div class="am-u-sm-9">
-                                    <input type="text" name="Title" placeholder="标题" maxlength="64" value="@(Model?.Title)">
-                                </div>
-                            </div>
 
-                            <div class="am-form-group">
-                                <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
-                                <div class="am-u-sm-9">
-                                    <select name="Code">
-                                        @if (Model.TypeList != null && Model.TypeList.Count != 0)
-                                        {
-                                            foreach (var item in Model.TypeList)
-                                            {
-                                                <option value="@item.Value" @(Model.NewsTypeID.Equals(item.Value) ? "selected" : "")>@item.Value</option>
-                                            }
-                                        }
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="am-form-group">
-                                <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
-                                <div class="am-u-sm-9">
-                                    <select name="Code" onchange="loadChildren(this)">
-                                        @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
-                                        {
-                                            foreach (var item in Model.DepartmentList)
-                                            {
-                                                <option value="@item.Value" @(Model.NewsDepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
-                                            }
-                                        }
-                                    </select>
-                                    <select name="ChildrenCode" style="@(Model.DepartmentList!=null&&Model.DepartmentList.Count>0?"":"display:none;")">
-                                        @if (Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count != 0)
-                                        {
-                                            foreach (var item in Model.DepartmentList)
-                                            {
-                                                <option value="@item.Value" @(Model.NewsDepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
-                                            }
-                                        }
-                                    </select>
-                                </div>
-                            </div>
-                            @if (isFormPhone)
+                <div class="am-form-group">
+                    <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
+                    <div class="am-u-sm-9">
+                        <select name="NewsTypeID">
+                            @if (Model.TypeList != null && Model.TypeList.Count != 0)
                             {
-
-                                <div class="am-form-group">
-                                    <div class="am-u-sm-12">
-                                        <textarea name="Content" rows="8">@(Model?.Content)</textarea>
-                                    </div>
-                                </div>
-
-
-                                <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
-                                <div class="am-form-group">
-                                    <label for="user-email" class="am-u-sm-3 am-form-label">图片</label>
-                                    <div class="am-u-sm-9">
-                                        <a id="imageFile" class="am-icon-plus am-text-lg" style="line-height:30px;">上传图片</a>
-                                        <input type="hidden" name="Path" />
-                                    </div>
-                                </div>
+                                foreach (var item in Model.TypeList)
+                                {
+                                    <option value="@item.Value" @(Model.NewsTypeID.IsNotNullOrEmpty() && Model.NewsTypeID.Equals(item.Value) ? "selected" : "")>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label for="user-name" class="am-u-sm-3 am-form-label">见刊笔名<strong class="am-text-danger am-text-sm">*</strong></label>
+                    <div class="am-u-sm-9">
+                        <input type="text" name="PenName" placeholder="见刊笔名" maxlength="64" value="@(Model?.PenName)">
+                    </div>
+                </div>
+                <div class="am-form-group">
+                    <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
+                    <div class="am-u-sm-9">
+                        <select name="NewsDepartmentID" onchange="loadChildren(this)">
+                            @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
+                            {
+                                foreach (var item in Model.DepartmentList)
+                                {
+                                    <option value="@item.Value" @(Model.NewsDepartmentID.IsNotNullOrEmpty() && Model.NewsDepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="am-form-group" id="childrenSelect" style="@(Model.ChildrenDepartmentList!=null&&Model.ChildrenDepartmentList.Count>0?"":"display:none;")">
+                    <label for="user-email" class="am-u-sm-3 am-form-label">小组<strong class="am-text-danger am-text-sm">*</strong></label>
+                    <div class="am-u-sm-9">
+                        <select name="ChildrenCode">
+                            @if (Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count != 0)
+                            {
+                                foreach (var item in Model.DepartmentList)
+                                {
+                                    <option value="@item.Value" @(Model.NewsDepartmentID.IsNotNullOrEmpty() && Model.NewsDepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                @if (isFormPhone)
+                {
+                    <div class="am-form-group">
+                        <div class="am-u-sm-12">
+                            <textarea name="Content" rows="8">@(Model?.Content)</textarea>
+                        </div>
+                    </div>
+                    <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                    <div class="am-form-group">
+                        <label for="user-email" class="am-u-sm-3 am-form-label">图片</label>
+                        <div class="am-u-sm-9">
+                            <a id="imageFile" class="am-icon-plus am-text-lg" style="line-height:30px;">上传图片</a>
+                            <input type="hidden" name="Path" />
+                        </div>
+                    </div>
 
                                 <div class="am-form-group">
                                     <label for="user-email" class="am-u-sm-3 am-form-label"></label>
@@ -89,39 +96,43 @@
                                         }
                                     </div>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="am-form-group">
-                                    <div class="am-u-sm-12">
-                                        <input type="hidden" name="Content" />
-                                        <script class="txtContent" type="text/plain" style="height:300px;">
-                                        </script>
-                                    </div>
-                                </div>
-                            }
-                            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
-                            @if (Model.ID.IsNotNullOrEmpty())
-                            {
-                                <div class="am-form-group">
-                                    <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
-                                </div>
-                                <div class="am-form-group">
-                                    <div class="am-u-sm-12 am-u-sm-centered">
-                                        <pre class="am-pre-scrollable">
+                }
+                else
+                {
+                    <div class="am-form-group">
+                        <label for="user-email" class="am-u-sm-3 am-form-label">内容</label>
+                        <div class="am-u-sm-9">
+                            <input type="hidden" name="Content" />
+                            <script class="txtContent" type="text/plain" style="height:300px;">
+                            </script>
+                        </div>
+                    </div>
+                }
+                <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                @if (Model.ID.IsNotNullOrEmpty())
+                {
+                    <div class="am-form-group">
+                        <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
+                    </div>
+                    <div class="am-form-group">
+                        <div class="am-u-sm-12 am-u-sm-centered">
+                            <pre class="am-pre-scrollable">
                                         @foreach (var item in Model.Logs)
                                         {
                                             @(item.RoleCode.GetDescription())  @(item.AdminName)  @(item.Code.GetDescription()) @(item.CreatedTime.ToString("yyyy-MM-DD hh:mm"))
                                         }
                                         </pre>
-                                    </div>
-                                </div>
-                                <div class="am-form-group">
-                                    <button type="button" class="am-btn am-u-sm-3">驳回</button>
-                                    <div class="am-u-sm-9">
-                                        <textarea name="Msg" rows="4">@(Model?.Msg)</textarea>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                }
+                @if (LoginHelper.AdminIsLogin() && Model.ID.IsNotNullOrEmpty())
+                {
+                    <div class="am-form-group">
+                        <button type="button" class="am-btn am-u-sm-3">驳回</button>
+                        <div class="am-u-sm-9">
+                            <textarea name="Msg" rows="4">@(Model?.Msg)</textarea>
+                        </div>
+                    </div>
                                 <div class="am-form-group">
                                     <button type="button" class="am-btn am-u-sm-3">发布</button>
                                     <div class="am-u-sm-9">
@@ -130,29 +141,74 @@
                                         <input type="checkbox" value="4" />人民日报
                                     </div>
                                 </div>
-                            }
-                            else
-                            {
                                 <div class="am-form-group">
                                     <div class="am-u-sm-4 am-u-sm-push-2">
-                                        <button type="button" class="am-btn am-btn-lg am-btn-primary">@(Model.ID.IsNotNullOrEmpty() ? "保存" : "发稿")</button>
+                                        <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
                                     </div>
                                     <div class="am-u-sm-4">
-                                        <button type="button" class="am-btn am-btn-lg">取消</button>
+                                        <button id="cancleBtn" type="button" class="am-btn am-btn-lg">取消</button>
                                     </div>
 
                                 </div>
-                            }
-                        </form>
-                    </div>
-                </div>
-            </div>
+                }
+                @if (LoginHelper.UserIsLogin())
+                {
+                    if (Model.ID.IsNotNullOrEmpty())
+                    {
+                        if (Model.State == NewsState.Reject)
+                        {
+                            <div class="am-form-group">
+                                <button type="button" class="am-btn am-u-sm-3">驳回原因</button>
+                                <div class="am-u-sm-9">
+                                    <textarea rows="4" readonly>@(Model?.Msg)</textarea>
+                                </div>
+                            </div>
+                            <div class="am-form-group">
+                                <div class="am-u-sm-4 am-u-sm-push-2">
+                                    <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
+                                </div>
+                                <div class="am-u-sm-4">
+                                    <button id="cancleBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
+                                </div>
 
-    @if (!isFormPhone)
-    {
-        <script src="~/Scripts/UEditor/ueditor.config.js"></script>
-        <script src="~/Scripts/UEditor/ueditor.all.js"></script>
-        <script src="~/Scripts/UEditor/ueditor.parse.js"></script>
+                            </div>
+                        }
+                        else if (Model.State != NewsState.None)
+                        {
+                            <div class="am-form-group">
+                                <button type="button" class="am-btn am-u-sm-3">发布</button>
+                                <div class="am-u-sm-9">
+                                    <input type="checkbox" value="1" />微信
+                                    <input type="checkbox" value="2" />官网
+                                    <input type="checkbox" value="4" />人民日报
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="am-form-group">
+                            <div class="am-u-sm-4 am-u-sm-push-2">
+                                <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
+                            </div>
+                            <div class="am-u-sm-4">
+                                <button id="cancleBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
+                            </div>
+
+                        </div>
+                    }
+
+                }
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (!isFormPhone)
+{
+    <script src="~/Scripts/UEditor/ueditor.config.js"></script>
+    <script src="~/Scripts/UEditor/ueditor.all.js"></script>
+    <script src="~/Scripts/UEditor/ueditor.parse.js"></script>
         <script src="~/Scripts/UEditor/lang/zh-cn/zh-cn.js"></script>
         <script>
             $(function () {
@@ -161,58 +217,120 @@
                 ue = UE.getEditor(txtContentId);
                 ue.addListener("ready", function () {
                     // editor准备好之后才可以使用
-                    ue.setContent('@(Model?.Content)');
+                    ue.setContent('@(Html.Raw(Model?.Content))');
                 });
             })
         </script>
-    }
-    else
-    {
-        <script>
-            $(".admin-header,.am-icon-btn,.admin-sidebar").remove();
-        </script>
-    }
+}
+else
+{
     <script>
-        $(function () {
-
-            function loadChildren(obj)
-            {
-                $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: $(obj).val() }, function (json) {
-                    if (json.length > 0)
-                    {
-                        $("select[name='ChildrenCode']").show();
-                    }
-                    $(json).each(function () {
-                        $("select[name='ChildrenCode']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
-                    });
-                });
-            }
-            function UploadImg() {
-                var headimgbtn = $("#imageFile").uploadFile({
-                    url: '/upload/uploadimage?mark=news',
-                    fileSuffixs: ["jpg", "png", 'jpeg'],
-                    maximumFilesUpload: 1,//最大文件上传数
-                    onComplete: function (data) {
-                        if (data) {
-                            $("#div_imageShow").append('<img style="width:100px;height:60px;" src="' + data + '"/>');
-                        }
-                        else {
-                            alert("上传错误");
-                        }
-
-                    },
-                    onChosen: function (file, obj, fileSize, errorText) {
-                        if (errorText) {
-                            $.Nuoya.alert(errorText);
-                            return false;
-                        }
-                        //Loading("图片正在上传中...", "请稍等");
-                        uploadheadimg.submitUpload();
-                        return true;//返回false将取消当前选择的文件
-                    },
-                });
-                var uploadheadimg = headimgbtn.data("uploadFileData");
-            }
-            UploadImg();
-        });
+        $(".admin-header,.am-icon-btn,.admin-sidebar").remove();
     </script>
+}
+<script>
+    function loadChildren(obj) {
+        $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: $(obj).val() }, function (json) {
+            if (json.length > 0) {
+                $("#childrenSelect").show();
+                $(json).each(function () {
+                    $("select[name='ChildrenCode']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
+                });
+            }
+        });
+    }
+
+    function UploadImg() {
+        var headimgbtn = $("#imageFile").uploadFile({
+            url: '/upload/uploadimage?mark=news',
+            fileSuffixs: ["jpg", "png", 'jpeg'],
+            maximumFilesUpload: 1,//最大文件上传数
+            onComplete: function (data) {
+                if (data) {
+                    $("#div_imageShow").append('<img style="width:100px;height:60px;" src="' + data + '"/>');
+                }
+                else {
+                    alert("上传错误");
+                }
+
+            },
+            onChosen: function (file, obj, fileSize, errorText) {
+                if (errorText) {
+                    $.Nuoya.alert(errorText);
+                    return false;
+                }
+                //Loading("图片正在上传中...", "请稍等");
+                uploadheadimg.submitUpload();
+                return true;//返回false将取消当前选择的文件
+            },
+        });
+        var uploadheadimg = headimgbtn.data("uploadFileData");
+    }
+    $(function () {
+
+        $("#cancleBtn").on("click", function () {
+            window.location.href = "/news/index"
+        });
+
+        $("#saveBtn").on("click", function () {
+            var id = '@(Model.ID)';
+            var title = $("[name='Title']").val();
+            if (title == "") {
+                $.Nuoya.alert("请填写标题");
+                return;
+            }
+            var newsTypeID = $("[name='NewsTypeID']").val();
+            if (title == "") {
+                $.Nuoya.alert("请选择类型");
+                return;
+            }
+            var departmentID = $("[name='NewsDepartmentID']").val();
+            if (title == "") {
+                $.Nuoya.alert("请选择投递部门");
+                return;
+            }
+            var children = $("[name='ChildrenCode']").val();
+            var penName = $("[name='PenName']").val();
+            if (children != "") {
+                departmentID += ";" + children;
+            }
+            var content = "";
+            var imgAry = new Array();
+            var isPhone = '@(isFormPhone?1:0)';
+            var paths = "";
+            if (isPhone == "1") {
+                content = $("[name='Content']").text();
+                $("#div_imageShow img").each(function () {
+                    imgAry.push($(this).prop("src"));
+                })
+                paths = imgAry.join(',');
+            }
+            else {
+                content = ue.getContent();
+            }
+
+            if (content == "") {
+                $.Nuoya.alert("请填写内容");
+                return;
+            }
+            var url = '@(Model.ID.IsNotNullOrEmpty()? "/News/Update" : "/News/Add")';
+            $.Nuoya.action(url, {
+                ID: id,
+                Title: title,
+                PenName: penName,
+                NewsTypeID: newsTypeID,
+                NewsDepartmentID: departmentID,
+                Paths: paths,
+                Content: content,
+                isAduit: '@(Model.ID.IsNotNullOrEmpty() ? 1 : 0)' == '1',
+            }, function (data) {
+                if (!data.ErrorDesc) {
+                    $.Nuoya.alert("保存成功");
+                }
+                else
+                    $.Nuoya.alert(data.ErrorDesc);
+            });
+        });
+        UploadImg();
+    });
+</script>

@@ -22,7 +22,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_NewsPageList(int pageIndex, int pageSize, string title,NewsCode? code,YesOrNoCode? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        public WebResult<PageList<News>> Get_NewsPageList(int pageIndex, int pageSize, string title,string newsTypeId,YesOrNoCode? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -31,9 +31,9 @@ namespace CoSys.Service
                 {
                     query = query.Where(x => x.Title.Contains(title));
                 }
-                if (code!=null)
+                if (newsTypeId.IsNotNullOrEmpty())
                 {
-                    query = query.Where(x => x.Code== code);
+                    query = query.Where(x => x.NewsTypeID.Equals(newsTypeId));
                 }
                 if (createdTimeStart != null)
                 {
@@ -62,7 +62,6 @@ namespace CoSys.Service
                 list.ForEach(x =>
                 {
                     x.StateStr = x.State.GetDescription();
-                    x.CodeStr = x.Code.GetDescription();
                     if (userDic.Count != 0 && userDic.ContainsKey(x.UserID))
                         x.UserName = userDic.GetValue(x.UserID);
                 });
@@ -81,6 +80,7 @@ namespace CoSys.Service
             using (DbRepository db = new DbRepository())
             {
                 model.ID = Guid.NewGuid().ToString("N");
+                model.UserID = Client.LoginUser.ID;
                 if(isAudit)
                     model.State = NewsState.None;
                 else
@@ -115,7 +115,6 @@ namespace CoSys.Service
                     oldEntity.Title = model.Title;
                     oldEntity.PenName = model.PenName;
                     oldEntity.Content = model.Content;
-                    oldEntity.Code = model.Code;
                     oldEntity.MethodFlag = model.MethodFlag;
                 }
                 else
@@ -150,7 +149,6 @@ namespace CoSys.Service
                 if (model != null)
                 {
                     model.StateStr = model.State.GetDescription();
-                    model.CodeStr = model.Code.GetDescription();
                     model.UserName = db.User.Find(model.UserID)?.RealName;
                     model.Logs = db.Log.Where(x => x.NewsID.Equals(id)).ToList();
                     var adminIdList = model.Logs.Select(x => x.AdminID).ToList();

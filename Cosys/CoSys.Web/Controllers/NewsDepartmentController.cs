@@ -23,6 +23,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public JsonResult Add(NewsDepartment entity)
         {
+            ModelState.Remove("ID");
             ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {

@@ -26,9 +26,7 @@
                     <lable class="info">密码:</lable><input type="password" placeholder="请输入密码" required id="password"/>
                     <div class="clear"> </div>
                 </li>
-
-                <input type="submit" onclick="Login()" value="登录">
-
+                <button  class="submit-btn" style="height:50px;margin-left:10%;">登录</button>
                 <p class="registered">还没账号?<a href="/Account/Register">立即注册</a></p>
                 <div class="clear"> </div>
             </ul>
@@ -43,40 +41,36 @@
     </div>
     <script src="~/Scripts/jquery-1.10.2.js"></script>
     <script type="text/javascript">
-        function Login(e) {
+        $(".submit-btn").on("click",function (event) {
             var account = $("#account").val();
             var password = $("#password").val();
             if (account == "") {
-                    alert("请输入账号");
-                    return false;
-                }
-            if (password == "") {
-                    alert("请输入密码");
-                    return false;
-                }
-                $.ajax({
-                    type: 'get',
-                    url: "/account/Submit",
-                    data: { account: account, password: password },
-                    success: function (data) {
-                        if (data.Result) {
-                            window.location.href = "/Home/index";
-                        }
-                        else {
-                            alert(data.ErrorDesc);
-                        }
-                    }
-                });
-
+                alert("请输入账号");
                 return false;
-        }
-
-        document.onkeydown = function (event) {
-            var e = event || window.event || arguments.callee.caller.arguments[0];
-            if (e && e.keyCode == 13) { // enter 键
-                Login();
             }
-        };
+            if (password == "") {
+                alert("请输入密码");
+                return false;
+            }
+            $.ajax({
+                type: 'get',
+                url: "/account/Submit",
+                data: { account: account, password: password },
+                success: function (data) {
+                    if (data.Result==1) {
+                        window.location.href = "/Home/index";
+                    }
+                    else if (data.Result == 2) {
+                        window.location.href = "/Home/Admin";
+                    }
+                    else {
+                        alert(data.ErrorDesc);
+                    }
+                }
+            });
+            return false;
+        })
+
     </script>
 </body>
 </html>          

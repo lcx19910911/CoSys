@@ -60,13 +60,13 @@ namespace CoSys.Service
         /// <param name="loginName"></param>
         /// <param name="password"></param>
         /// <returns></returns> 
-        public WebResult<bool> Login(string loginName, string password)
+        public WebResult<int> Login(string loginName, string password)
         {
             try
             {
                 if (loginName.IsNullOrEmpty() || password.IsNullOrEmpty())
                 {
-                    return Result(false, ErrorCode.sys_param_format_error);
+                    return Result(0, ErrorCode.sys_param_format_error);
                 }
                 using (var db = new DbRepository())
                 {
@@ -76,33 +76,33 @@ namespace CoSys.Service
                     {
                         var user = db.User.AsQueryable().AsNoTracking().Where(x => x.Password.Equals(md5Password) && x.Account.Equals(loginName)).FirstOrDefault();
                         if (user == null)
-                            return Result(false, ErrorCode.user_login_error);
+                            return Result(0, ErrorCode.user_login_error);
                         else if (user.IsDelete)
                         {
-                            return Result(false, ErrorCode.user_not_exit);
+                            return Result(0, ErrorCode.user_not_exit);
                         }
                         else
                         {
                             Client.LoginUser = user;
-                            return Result(true);
+                            return Result(1);
                         }
 
                     }
                     else if (admin.IsDelete)
                     {
-                        return Result(false, ErrorCode.user_not_exit);
+                        return Result(0, ErrorCode.user_not_exit);
                     }
                     else
                     {
                         Client.LoginAdmin = admin;
-                        return Result(true);
+                        return Result(2);
                     }
                 }
             }
             catch (Exception ex)
             {
                 LogHelper.WriteException(ex);
-                return Result(false, ErrorCode.sys_fail);
+                return Result(0, ErrorCode.sys_fail);
             }
         }
 
