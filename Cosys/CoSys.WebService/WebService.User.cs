@@ -144,7 +144,6 @@ namespace CoSys.Service
                 using (var db = new DbRepository())
                 {
                     oldPassword = CryptoHelper.MD5_Encrypt(oldPassword);
-
                     var user = db.User.Where(x => x.ID.Equals(this.Client.LoginUser.ID)).FirstOrDefault();
                     if (user == null)
                         return Result(false, ErrorCode.user_not_exit);

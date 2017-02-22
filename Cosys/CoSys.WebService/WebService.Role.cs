@@ -106,10 +106,6 @@ namespace CoSys.Service
             using (DbRepository db = new DbRepository())
             {
                 var model= db.Role.AsQueryable().AsNoTracking().FirstOrDefault(x => x.ID.Equals(id));
-                if (model != null)
-                {
-                    model.CodeStr = model.Code.GetDescription();
-                }
                 return model;
             }
         }

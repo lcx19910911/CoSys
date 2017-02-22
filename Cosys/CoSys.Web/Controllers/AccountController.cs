@@ -67,11 +67,14 @@ namespace CoSys.Web.Controllers
             return View("Login");
         }
 
-        public ActionResult ChangePassword(string oldPassword, string newPassword, string cfmPassword)
+        public ActionResult ChangeAdminPassword(string oldPassword, string newPassword, string cfmPassword,string id)
         {
-            return JResult(WebService.Admin_ChangePassword(oldPassword, newPassword, cfmPassword));
+            return JResult(WebService.Admin_ChangePassword(oldPassword, newPassword, cfmPassword,id));
         }
-
+        public ActionResult ChangeUserPassword(string oldPassword, string newPassword, string cfmPassword)
+        {
+            return JResult(WebService.User_ChangePassword(oldPassword, newPassword, cfmPassword));
+        }
         #region 验证码
         /// <summary>
         /// 验证码

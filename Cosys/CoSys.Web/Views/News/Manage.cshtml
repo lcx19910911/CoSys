@@ -119,7 +119,7 @@
                             <pre class="am-pre-scrollable">
                                         @foreach (var item in Model.Logs)
                                         {
-                                            @(item.RoleCode.GetDescription())  @(item.AdminName)  @(item.Code.GetDescription()) @(item.CreatedTime.ToString("yyyy-MM-DD hh:mm"))
+                                            @(item.RoleName)  @(item.AdminName)  @(item.Code.GetDescription()) @(item.CreatedTime.ToString("yyyy-MM-DD hh:mm"))
                                         }
                                         </pre>
                         </div>

@@ -105,7 +105,7 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Update_News(News model)
+        public WebResult<bool> Update_News(News model,bool isAudit)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -116,6 +116,18 @@ namespace CoSys.Service
                     oldEntity.PenName = model.PenName;
                     oldEntity.Content = model.Content;
                     oldEntity.MethodFlag = model.MethodFlag;
+                    oldEntity.Paths = model.Paths;
+                    oldEntity.NewsTypeID = model.NewsTypeID;
+                    oldEntity.NewsDepartmentID = model.NewsDepartmentID;
+                    oldEntity.Msg = model.Msg;
+                    if (oldEntity.State == NewsState.Reject)
+                    {
+                        oldEntity.AuditUserIDs = string.Empty;
+                        if (isAudit)
+                            oldEntity.State = NewsState.WaitAudit;
+                        else
+                            oldEntity.State = NewsState.None;
+                    }
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);

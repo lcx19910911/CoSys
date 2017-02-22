@@ -72,7 +72,7 @@ namespace CoSys.Web.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [ValidateInput(false)]
-        public JsonResult Update(News model)
+        public JsonResult Update(News model, bool isAduit = true)
         {
             ModelState.Remove("CreatedTime");
             ModelState.Remove("IsDelete");
@@ -81,7 +81,7 @@ namespace CoSys.Web.Controllers
             ModelState.Remove("MethodFlag");
             if (ModelState.IsValid)
             {
-                var result = WebService.Update_News(model);
+                var result = WebService.Update_News(model, isAduit);
                 return JResult(result);
             }
             else

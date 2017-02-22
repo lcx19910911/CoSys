@@ -1,21 +1,26 @@
 ﻿@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewBag.Title = "用户管理";
+    ViewBag.Title = "管理员管理";
 }
 <style>
-    #menuFlagDiv,#storeFlagDiv input{ float:left;}
-    #menuFlagDiv,#storeFlagDiv label{ float:left;}
+    #menuFlagDiv, #storeFlagDiv input {
+        float: left;
+    }
+
+    #menuFlagDiv, #storeFlagDiv label {
+        float: left;
+    }
 </style>
 <div class="am-cf am-padding">
-    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>用户管理</small></div>
+    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>管理员管理</small></div>
 </div>
 <div id="searchDomain">
 
-    <div class="am-g">   
+    <div class="am-g">
         <div class="am-u-lg-3">
             <div class="am-input-group am-input-group-sm">
                 <span class="am-input-group-label">名称：</span>
-                <input type="text" class="am-form-field" placeholder="按用户名称搜索" style="width:100px;" name="name" ;>
+                <input type="text" class="am-form-field" placeholder="按管理员名称搜索" style="width:100px;" name="name" ;>
 
                 <span class="am-input-group-btn am-margin-left-sm">
                     <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
@@ -66,7 +71,7 @@
         function batchDelete() {
             $.Nuoya.confirm("确认删除？", function () {
                 grid.del({
-                    ajaxUrl: "/User/Delete",
+                    ajaxUrl: "/Admin/Delete",
                     callback: function (json) {
                         grid.reload();
                     }
@@ -117,11 +122,38 @@
                     $("select[name='RoleId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                 });
             });
-            $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: dataitem ? dataitem.NewsDepartment : "" }, function (json) {
-                $(json).each(function () {
-                    $("select[name='NewsDepartment']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+
+            if (dataitem == null) {
+                $.Nuoya.action("/NewsDepartment/GetSelectItem", {}, function (json) {
+                    $(json).each(function () {
+                        $("select[name='NewsDepartmentID']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
+                    });
                 });
-            });
+            }
+            else {
+                var departmentIdAry = dataitem.split(';');
+                if (departmentIdAry.length == 1) {
+                    $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: dataitem.NewsDepartmentID }, function (json) {
+                        $(json).each(function () {
+                            $("select[name='NewsDepartmentID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
+                }
+                else if (departmentIdAry.length == 2) {
+                    $("#childrenDiv").show();
+                    $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: departmentIdAry[0] }, function (json) {
+                        $(json).each(function () {
+                            $("select[name='NewsDepartmentID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
+
+                    $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: departmentIdAry[1] }, function (json) {
+                        $(json).each(function () {
+                            $("select[name='ChildrenDepartmentID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
+                }
+            }
         }
 
         //新增
@@ -130,8 +162,8 @@
                 closeViaDimmer: false,
                 width: "1000px",
                 height: "600px",
-                ajaxUrl: "/HtmlTemplates/User/Update.html",
-                title: "添加用户",
+                ajaxUrl: "/HtmlTemplates/Admin/Update.html",
+                title: "添加管理员",
                 callback: function (e) {
                     formInit();//表单初始化
                 },
@@ -139,7 +171,7 @@
                     label: "保存",
                     callback: function (e) {
                         $.Nuoya.form("form").ajaxSubmit({
-                            ajaxUrl: "/User/Add",
+                            ajaxUrl: "/Admin/Add",
                             callback: function (data) {
                                 if (!data.ErrorDesc) {
                                     e.hide();
@@ -161,9 +193,9 @@
                 domainId: "searchDomain",
                 subId: "btnSearch"
             },
-            ajaxUrl: "/User/GetPageList",
+            ajaxUrl: "/Admin/GetPageList",
             //数据请求地址
-            
+
             events: [
 
                 {
@@ -175,10 +207,10 @@
                             closeViaDimmer: false,
                             width: "1000px",
                             height: "600px",
-                            ajaxUrl: "/HtmlTemplates/User/Update.html",
-                            title: "编辑用户",
+                            ajaxUrl: "/HtmlTemplates/Admin/Update.html",
+                            title: "编辑管理员",
                             callback: function (e) {
-                                $.Nuoya.action("/User/Find", { id: item.ID }, function (model) {
+                                $.Nuoya.action("/Admin/Find", { id: item.ID }, function (model) {
                                     formInit(model);//表单初始化
                                     //载入数据
                                     $.Nuoya.form("form").dataLoad({
@@ -189,9 +221,8 @@
                             buttons: [{
                                 label: "保存",
                                 callback: function (e) {
-
                                     $.Nuoya.form("form").ajaxSubmit({
-                                        ajaxUrl: "/User/Update",
+                                        ajaxUrl: "/Admin/Update",
                                         params: {
                                             ID: item.ID
                                         },
@@ -210,13 +241,22 @@
                     }
                 }
                 ,
+            {
+                className: "am-text-danger",
+                icon: "icon-hand-rock-o",
+                name: "修改密码",
+                click: function (item) {
+                    changePassword();
+                }
+            }
+                ,
                 {
                     className: "am-text-danger",
                     icon: "icon-trash-o",
                     name: "删除",
                     click: function (item) {
                         $.Nuoya.confirm("确认删除？", function () {
-                            $.Nuoya.deleteAction("/User/Delete", {
+                            $.Nuoya.deleteAction("/Admin/Delete", {
                                 ids: item.ID
                             },
                             function () {

@@ -183,7 +183,6 @@ namespace CoSys.Service
                     {
                         list.Add(new SelectItem()
                         {
-                            Selected = x.ID.Equals(id),
                             Text = x.Name,
                             Value = x.ID
                         });

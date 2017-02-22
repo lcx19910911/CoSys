@@ -59,11 +59,6 @@ namespace CoSys.Model
         public List<Log> Logs { get; set; }
 
         /// <summary>
-        /// 处理角色
-        /// </summary>
-        public RoleCode AuditRole { get; set; } = RoleCode.None;
-
-        /// <summary>
         /// 审核流程
         /// </summary>
         public long AuditFlag { get; set; }
@@ -75,7 +70,6 @@ namespace CoSys.Model
         [MaxLength(32)]
         [Column("NewsTypeID", TypeName = "char")]
         public string NewsTypeID { get; set; }
-
 
 
         /// <summary>
@@ -95,6 +89,11 @@ namespace CoSys.Model
         public List<SelectItem> TypeList { get; set; }
         [NotMapped]
         public List<SelectItem> DepartmentList { get; set; }
+
+        /// <summary>
+        /// 审核ID集合
+        /// </summary>
+        public string AuditUserIDs { get; set; }
 
 
         [NotMapped]

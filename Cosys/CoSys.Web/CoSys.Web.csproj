@@ -191,11 +191,6 @@
     <Content Include="HtmlTemplates\NewsDepartment\Update.html" />
     <Content Include="HtmlTemplates\Role\Update.html" />
     <Content Include="HtmlTemplates\User\ChangePassword.html" />
-    <Content Include="HtmlTemplates\User\ExamList.html" />
-    <Content Include="HtmlTemplates\User\Pay.html" />
-    <Content Include="HtmlTemplates\User\SelectEnteredPoint.html" />
-    <Content Include="HtmlTemplates\User\SelectMenu.html" />
-    <Content Include="HtmlTemplates\User\SelectOperate.html" />
     <Content Include="HtmlTemplates\User\Update.html" />
     <Content Include="Images\404Pic.png" />
     <Content Include="Images\adm.png" />

@@ -15,13 +15,13 @@
     @Scripts.Render("~/Scripts/Admin")
 
     <script>
-        function changePassword() {
+        function changePassword(item) {
 
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
                 width: "800px",
                 height: "280px",
-                ajaxUrl: "/HtmlTemplates/User/ChangePassword.html",
+                ajaxUrl: "/HtmlTemplates/Admin/ChangePassword.html",
                 title: "修改密码",
                 buttons: [{
                     label: "保存",
@@ -36,7 +36,7 @@
                                 $.Nuoya.alert("密码不能为空");
                                 return false;
                             }
-                            $.Nuoya.action("/admin/ChangePassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword }, function (data) {
+                            $.Nuoya.action("/account/ChangeAdminPassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword, id: item != null ? item.ID : "" }, function (data) {
                                 if (!data.ErrorDesc) {
                                     $.Nuoya.alert("修改密码成功");
                                     e.hide();

@@ -70,6 +70,19 @@ namespace CoSys.Service
                 var query = db.Log.AsQueryable().AsNoTracking().Where(x => x.NewsID.Equals(newId)).OrderByDescending(x => x.CreatedTime);
                 var count = query.Count();
                 var list = query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var adminIds = list.Select(x => x.AdminID).ToList();
+                var adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID);
+                var roleDic = db.Role.ToDictionary(x => x.ID);
+                list.ForEach(x =>
+                {
+                    if (x.AdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.AdminID))
+                    {
+                        var admin = adminDic[x.AdminID];
+                        x.AdminName = admin.Name;
+                        if (admin.RoleID.IsNotNullOrEmpty() && roleDic.ContainsKey(admin.RoleID))
+                            x.RoleName = roleDic[admin.RoleID].Name;
+                    }
+                });
                 return ResultPageList(list, pageIndex, pageSize, count);
             }
         }

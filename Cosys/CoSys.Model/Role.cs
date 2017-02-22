@@ -21,11 +21,6 @@ namespace CoSys.Model
         [Column("Name", TypeName = "varchar")]
         public string Name { get; set; }
 
-        public RoleCode Code { get; set; }
-
-        [NotMapped]
-        public string CodeStr { get; set; }
-
         /// <summary>
         /// 备注
         /// </summary>

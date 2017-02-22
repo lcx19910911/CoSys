@@ -22,7 +22,7 @@ namespace CoSys.Service
         /// <param name="loginName"></param>
         /// <param name="password"></param>
         /// <returns></returns> 
-        public WebResult<bool> Admin_ChangePassword(string oldPassword, string newPassword, string cfmPassword)
+        public WebResult<bool> Admin_ChangePassword(string oldPassword, string newPassword, string cfmPassword,string id)
         {
             try
             {
@@ -38,15 +38,15 @@ namespace CoSys.Service
                 using (var db = new DbRepository())
                 {
                     oldPassword = CryptoHelper.MD5_Encrypt(oldPassword);
-
-                    var user = db.Admin.Where(x => x.ID.Equals(this.Client.LoginAdmin.ID)).FirstOrDefault();
+                    if (id.IsNullOrEmpty())
+                        id = this.Client.LoginAdmin.ID;
+                    var user = db.Admin.Where(x => x.ID.Equals(id)).FirstOrDefault();
                     if (user == null)
                         return Result(false, ErrorCode.user_not_exit);
                     if (!user.Password.Equals(oldPassword))
                         return Result(false, ErrorCode.user_password_nottrue);
                     newPassword = CryptoHelper.MD5_Encrypt(newPassword);
                     user.Password = newPassword;
-                    Client.LoginAdmin = user;
                     if (db.SaveChanges() > 0)
                     {
                         return Result(true);

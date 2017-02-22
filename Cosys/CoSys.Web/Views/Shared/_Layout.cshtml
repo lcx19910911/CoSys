@@ -36,7 +36,7 @@
                                 $.Nuoya.alert("密码不能为空");
                                 return false;
                             }
-                            $.Nuoya.action("/account/ChangePassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword }, function (data) {
+                            $.Nuoya.action("/account/ChangeUserPassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword }, function (data) {
                                 if (!data.ErrorDesc) {
                                     $.Nuoya.alert("修改密码成功");
                                     e.hide();

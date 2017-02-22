@@ -13,7 +13,7 @@ namespace CoSys.Model
         /// 部门权限
         /// </summary>
         public long DepartmentFlag { get; set; }
-
+        
         /// <summary>
         /// 角色
         /// </summary>
@@ -22,6 +22,8 @@ namespace CoSys.Model
         public string RoleID { get; set; }
         [NotMapped]
         public Role Role { get; set; }
+        [NotMapped]
+        public string CodeStr { get; set; }
         /// <summary>
         /// 状态
         /// </summary>

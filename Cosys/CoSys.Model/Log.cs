@@ -64,11 +64,9 @@ namespace CoSys.Model
         [Column("CreaterID", TypeName = "char"), MaxLength(32)]
         public string AdminID { get; set; }
 
-
-        public RoleCode RoleCode { get; set; }
-
+        
         [NotMapped]
-        public RoleCode RoleCodeStr { get; set; }
+        public string  RoleName { get; set; }
         /// <summary>
         /// 创建时间
         /// </summary>
