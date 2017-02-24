@@ -33,34 +33,57 @@
                     <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
                 </div>
 
+
                 <div class="am-g am-margin-top">
                     <div class="am-u-md-3 am-text-right">
-                        权限：
+                        是否稿件审核员：
                     </div>
                     <div class="am-u-md-5">
-                        <select name="OperateFlag"></select>
+                        <select onchange="selectRole(this)" name="IsLastAudit">
+                            <option value="0">否</option>
+                            <option value="1">是</option>
+                        </select>
                     </div>
                     <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
-                </div>  
-                
+                </div>
+
+                      
                 <div class="am-g am-margin-top">
                     <div class="am-u-md-3 am-text-right">
-                        所属栏目组：
+                        省：
                     </div>
                     <div class="am-u-md-5">
-                        <select name="NewsDepartmentID"></select>
+                        <select onchange="loadArea(this,1)" name="ProvoniceCode"></select>
                     </div>
                     <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
-                </div> 
-                <div class="am-g am-margin-top" style="display:none" id="childrenDiv">
+                </div>
+                <div class="am-g am-margin-top">
                     <div class="am-u-md-3 am-text-right">
-                        协会：
+                        市：
                     </div>
                     <div class="am-u-md-5">
-                        <select name="ChildrenDepartmentID"></select>
+                        <select onchange="loadArea(this,2)" name="CityCode"></select>
                     </div>
                     <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
-                </div>       
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        县：
+                    </div>
+                    <div class="am-u-md-5">
+                        <select onchange="loadArea(this,3)" name="CountyCode"></select>
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
+                </div>
+                <div class="am-g am-margin-top">
+                    <div class="am-u-md-3 am-text-right">
+                        街道：
+                    </div>
+                    <div class="am-u-md-5">
+                        <select name="StreetCode"></select>
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
+                </div>   
             </div>
         </div>
     </form>

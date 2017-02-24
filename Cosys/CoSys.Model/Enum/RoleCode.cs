@@ -8,23 +8,23 @@ using System.Threading.Tasks;
 namespace CoSys.Model
 {
     /// <summary>
-    /// 新闻类捏
+    /// 角色类型
     /// </summary>
-    public enum NewsCode
+    public enum RoleCode
     {
         None = 0,
 
         /// <summary>
-        /// 创业
+        /// 编辑
         /// </summary>
-        [Description("创业")]
-        Entrepreneurship = 1,
+        [Description("编辑")]
+        Editor = 1,
 
         /// <summary>
-        /// 审计
+        /// 部长
         /// </summary>
-        [Description("审计")]
-        Audit = 2,
+        [Description("部长")]
+        Minister = 2,
 
         /// <summary>
         /// 等等

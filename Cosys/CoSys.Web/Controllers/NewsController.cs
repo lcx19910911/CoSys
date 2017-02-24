@@ -29,13 +29,13 @@ namespace CoSys.Web.Controllers
             {
                 if (!model.UserID.Equals(Client.LoginUser.ID))
                     return View("Index");
-                if (model.NewsDepartmentID.Split(',').Length == 2)
+                if (model.DepartmentID.Split(',').Length == 2)
                 {
-                    model.ChildrenDepartmentList = WebService.Get_NewsDepartmentSelectItem(model.NewsDepartmentID.Split(',')[0]);
+                    model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentID.Split(',')[0]);
                 }
             }
 
-            model.DepartmentList = WebService.Get_NewsDepartmentSelectItem(null);
+            model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
             model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
             return View(model);
         }
@@ -99,9 +99,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string title, string newsTypeId, YesOrNoCode? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string title,string newsTypeId,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, bool isAudit=false)
         {
-            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, state, createdTimeStart, createdTimeEnd));
+            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, isAudit,state, createdTimeStart, createdTimeEnd));
         }
 
 

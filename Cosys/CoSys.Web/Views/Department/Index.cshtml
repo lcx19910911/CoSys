@@ -59,7 +59,7 @@
         function batchDelete() {
             $.Nuoya.confirm("确认删除？", function () {
                 grid.del({
-                    ajaxUrl: "/NewsDepartment/Delete",
+                    ajaxUrl: "/Department/Delete",
                     callback: function (json) {
                         grid.reload();
                     }
@@ -67,7 +67,7 @@
             });
         }
         function formInit(dataitem) {
-            $.Nuoya.action("/NewsDepartment/GetSelectItem", {}, function (json) {
+            $.Nuoya.action("/Department/GetSelectItem", {}, function (json) {
                 $(json).each(function () {
                     if (dataitem != null) {
                         $("#form select[name='ParentID']").append("<option  value='" + this.Value + "' " + (dataitem.ParentID == this.Value ? "selected" : "") + " >" + this.Text + "</option>");
@@ -100,7 +100,7 @@
         function add() {
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
-                ajaxUrl: "/HtmlTemplates/NewsDepartment/Update.html",
+                ajaxUrl: "/HtmlTemplates/Department/Update.html",
                 title: "添加投递部门",
                 width: "1000px",
                 height: "380px",
@@ -111,7 +111,7 @@
                     label: "保存",
                     callback: function (e) {
                         $.Nuoya.form("form").ajaxSubmit({
-                            ajaxUrl: "/NewsDepartment/Add",
+                            ajaxUrl: "/Department/Add",
                             callback: function (data) {
                                 if (!data.ErrorDesc) {
                                     e.hide();
@@ -133,7 +133,7 @@
                 domainId: "searchDomain",
                 subId: "btnSearch"
             },
-            ajaxUrl: "/NewsDepartment/GetPageList",
+            ajaxUrl: "/Department/GetPageList",
             //数据请求地址          
             events: [
                 {
@@ -143,12 +143,12 @@
                     click: function (item) {
                         $.Nuoya.ajaxDialog({
                             closeViaDimmer: false,
-                            ajaxUrl: "/HtmlTemplates/NewsDepartment/Update.html",
+                            ajaxUrl: "/HtmlTemplates/Department/Update.html",
                             title: "编辑投递部门",
                             width: "1000px",
                             height: "380px",
                             callback: function (e) {
-                                $.Nuoya.action("/NewsDepartment/Find", { id: item.ID }, function (model) {
+                                $.Nuoya.action("/Department/Find", { id: item.ID }, function (model) {
                                     //载入数据
                                     $.Nuoya.form("form").dataLoad({
                                         data: model
@@ -160,7 +160,7 @@
                                 label: "保存",
                                 callback: function (e) {
                                     $.Nuoya.form("form").ajaxSubmit({
-                                        ajaxUrl: "/NewsDepartment/Update",
+                                        ajaxUrl: "/Department/Update",
                                         params: {
                                             ID: item.ID
                                         },
@@ -184,7 +184,7 @@
                     name: "删除",
                     click: function (item) {
                         $.Nuoya.confirm("确认删除？", function () {
-                            $.Nuoya.deleteAction("/NewsDepartment/Delete", {
+                            $.Nuoya.deleteAction("/Department/Delete", {
                                 ids: item.ID
                             },
                             function () {

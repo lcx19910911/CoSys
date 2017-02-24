@@ -28,9 +28,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string name, string mobile, DateTime? startTimeStart, DateTime? endTimeEnd)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string name, DateTime? startTimeStart, DateTime? endTimeEnd)
         {
-            return JResult(WebService.Get_AdminPageList(pageIndex, pageSize, name, mobile, startTimeStart, endTimeEnd));
+            return JResult(WebService.Get_AdminPageList(pageIndex, pageSize, name, startTimeStart, endTimeEnd));
         }
 
 
@@ -41,8 +41,6 @@ namespace CoSys.Web.Controllers
         public ActionResult Add(CoSys.Model.Admin model)
         {
             ModelState.Remove("ID");
-            ModelState.Remove("UpdaterID");
-            ModelState.Remove("UpdatedTime");
             ModelState.Remove("CreatedTime");
             ModelState.Remove("UserId");
             ModelState.Remove("Password");
@@ -64,8 +62,6 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult Update(CoSys.Model.Admin model)
         {
-            ModelState.Remove("UpdaterID");
-            ModelState.Remove("UpdatedTime");
             ModelState.Remove("CreatedTime");
             ModelState.Remove("NewPassword");
             ModelState.Remove("ConfirmPassword");

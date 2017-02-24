@@ -43,26 +43,26 @@
                 <div class="am-form-group">
                     <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <select name="NewsDepartmentID" onchange="loadChildren(this)">
+                        <select name="DepartmentID" onchange="loadChildren(this)">
                             @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
                             {
                                 foreach (var item in Model.DepartmentList)
                                 {
-                                    <option value="@item.Value" @(Model.NewsDepartmentID.IsNotNullOrEmpty() && Model.NewsDepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                    <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
                                 }
                             }
                         </select>
                     </div>
                 </div>
-                <div class="am-form-group" id="childrenSelect" style="@(Model.ChildrenDepartmentList!=null&&Model.ChildrenDepartmentList.Count>0?"":"display:none;")">
+                <div class="am-form-group" id="childrenDiv" style="@(Model.ChildrenDepartmentList!=null&&Model.ChildrenDepartmentList.Count>0?"":"display:none;")">
                     <label for="user-email" class="am-u-sm-3 am-form-label">小组<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <select name="ChildrenCode">
+                        <select name="ChildrenDepartmentID">
                             @if (Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count != 0)
                             {
                                 foreach (var item in Model.DepartmentList)
                                 {
-                                    <option value="@item.Value" @(Model.NewsDepartmentID.IsNotNullOrEmpty() && Model.NewsDepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                    <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
                                 }
                             }
                         </select>
@@ -230,11 +230,11 @@ else
 }
 <script>
     function loadChildren(obj) {
-        $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: $(obj).val() }, function (json) {
+        $.Nuoya.action("/Department/GetSelectItem", { id: $(obj).val() }, function (json) {
             if (json.length > 0) {
-                $("#childrenSelect").show();
+                $("#childrenDiv").show();
                 $(json).each(function () {
-                    $("select[name='ChildrenCode']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
+                    $("select[name='ChildrenDepartmentID']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
                 });
             }
         });
@@ -284,12 +284,12 @@ else
                 $.Nuoya.alert("请选择类型");
                 return;
             }
-            var departmentID = $("[name='NewsDepartmentID']").val();
+            var departmentID = $("[name='DepartmentID']").val();
             if (title == "") {
                 $.Nuoya.alert("请选择投递部门");
                 return;
             }
-            var children = $("[name='ChildrenCode']").val();
+            var children = $("[name='ChildrenDepartmentID']").val();
             var penName = $("[name='PenName']").val();
             if (children != "") {
                 departmentID += ";" + children;
@@ -319,7 +319,7 @@ else
                 Title: title,
                 PenName: penName,
                 NewsTypeID: newsTypeID,
-                NewsDepartmentID: departmentID,
+                DepartmentID: departmentID,
                 Paths: paths,
                 Content: content,
                 isAduit: '@(Model.ID.IsNotNullOrEmpty() ? 1 : 0)' == '1',

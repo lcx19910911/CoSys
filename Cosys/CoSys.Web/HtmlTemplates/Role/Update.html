@@ -11,12 +11,43 @@
                     </div>
                     <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm"><strong class="am-text-danger am-text-sm">*</strong></strong>必填，不能超过32个字符</div>
                 </div>
+                <div class="am-g am-margin-top" id="departmentDiv">
+                    <div class="am-u-md-3 am-text-right">
+                        所属栏目组：
+                    </div>
+                    <div class="am-u-md-5">
+                        <input type="hidden" name="DepartmentFlag" />
+                        <input type="text" name="DepartmentFlagSelect" />
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"><strong class="am-text-danger am-text-sm">*</strong></div>
+                </div>
+                <div class="am-g am-margin-top" id="operateFlagDiv">
+                    <div class="am-u-md-3 am-text-right">
+                        权限：
+                    </div>
+                    <div class="am-u-md-5 am-text-left">
+                        <input name="OperateFlag" type="hidden" />
+                        <label class="am-checkbox">
+                            <input type="checkbox" value="1" data-am-ucheck />稿件查看
+                        </label>
+                        <label class="am-checkbox">
+                            <input type="checkbox" value="2" data-am-ucheck />稿件编辑
+                        </label>
+                        <label class="am-checkbox">
+                            <input type="checkbox" value="4" data-am-ucheck />稿件审核
+                        </label>
+                        <label class="am-checkbox">
+                            <input type="checkbox" value="8" data-am-ucheck />稿件发布
+                        </label>
+                    </div>
+                    <div class="am-hide-sm-only am-u-md-4 am-text-left"></div>
+                </div>
                 <div class="am-g am-margin-top">
                     <div class="am-u-md-3 am-text-right">
                         备注 :
                     </div>
                     <div class="am-u-md-5">
-                        <input type="text" name="Remark"  class="am-input-sm" maxlength="32" placeholder="请输入备注">
+                        <textarea  name="Remark" placeholder="请输入备注" maxlength="128" rows="8"></textarea>
                     </div>
                     <div class="am-hide-sm-only am-u-md-4 am-text-left">不能超过128个字符</div>
                 </div>

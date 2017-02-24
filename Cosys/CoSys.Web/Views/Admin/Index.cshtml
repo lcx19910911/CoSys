@@ -78,6 +78,33 @@
                 });
             });
         }
+
+
+        function loadArea(obj, i) {
+            var thatObj = $(obj);
+            var value = thatObj.val();
+
+            var nextSelect = thatObj.parents(".am-margin-top").next().find("select");
+            if (value != "0") {
+                //赋值
+                $.ajax({
+                    type: "GET",
+                    url: "/area/GetAreaCodeSelectItem",
+                    datatype: "json",
+                    data: { value: value },
+                    success: function (data) {
+                        nextSelect.html("");
+                        $(data.Result).each(function (index, item) {
+                            nextSelect.append("<option value='" + item.Value + "'>" + item.Text + "</option>")
+                        });
+
+                    }
+                });
+
+            }
+        }
+
+ 
         function formInit(dataitem) {
             //添加表单验证
             $.Nuoya.form("form").validate({
@@ -122,37 +149,35 @@
                     $("select[name='RoleId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                 });
             });
-
+            $("#form [name='DepartmentFlagSelect']").ztreeSelect($("[name='DepartmentFlag']"), "/Department/GetZTreeChildren", dataitem != null ? dataitem.DepartmentFlag : 0, true, true);
             if (dataitem == null) {
-                $.Nuoya.action("/NewsDepartment/GetSelectItem", {}, function (json) {
+                $.Nuoya.action("/area/GetAreaCodeSelectItem", {}, function (json) {
                     $(json).each(function () {
-                        $("select[name='NewsDepartmentID']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
+                        $("select[name='ProvoniceCode']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
                     });
                 });
             }
             else {
-                var departmentIdAry = dataitem.split(';');
-                if (departmentIdAry.length == 1) {
-                    $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: dataitem.NewsDepartmentID }, function (json) {
-                        $(json).each(function () {
-                            $("select[name='NewsDepartmentID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
-                        });
+                $.Nuoya.action("/area/GetAreaCodeSelectItem", {}, function (json) {
+                    $(json).each(function () {
+                        $("select[name='ProvoniceCode']").append("<option " + (this.Value == dataitem.ProvoniceCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
                     });
-                }
-                else if (departmentIdAry.length == 2) {
-                    $("#childrenDiv").show();
-                    $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: departmentIdAry[0] }, function (json) {
-                        $(json).each(function () {
-                            $("select[name='NewsDepartmentID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
-                        });
+                });
+                $.Nuoya.action("/area/GetAreaCodeSelectItem", { value: dataitem.ProvoniceCode }, function (json) {
+                    $(json).each(function () {
+                        $("select[name='CityCode']").append("<option " + (this.Value == dataitem.CityCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
                     });
-
-                    $.Nuoya.action("/NewsDepartment/GetSelectItem", { id: departmentIdAry[1] }, function (json) {
-                        $(json).each(function () {
-                            $("select[name='ChildrenDepartmentID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
-                        });
+                });
+                $.Nuoya.action("/area/GetAreaCodeSelectItem", { value: dataitem.CityCode }, function (json) {
+                    $(json).each(function () {
+                        $("select[name='CountyCode']").append("<option " + (this.Value == dataitem.CountyCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
                     });
-                }
+                });
+                $.Nuoya.action("/area/GetAreaCodeSelectItem", { value: dataitem.CountyCode }, function (json) {
+                    $(json).each(function () {
+                        $("select[name='StreetCode']").append("<option " + (this.Value == dataitem.StreetCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
+                    });
+                });
             }
         }
 
@@ -161,7 +186,7 @@
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
                 width: "1000px",
-                height: "600px",
+                height: "680px",
                 ajaxUrl: "/HtmlTemplates/Admin/Update.html",
                 title: "添加管理员",
                 callback: function (e) {
@@ -170,6 +195,7 @@
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
+
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/Admin/Add",
                             callback: function (data) {
@@ -206,7 +232,7 @@
                         $.Nuoya.ajaxDialog({
                             closeViaDimmer: false,
                             width: "1000px",
-                            height: "600px",
+                            height: "680px",
                             ajaxUrl: "/HtmlTemplates/Admin/Update.html",
                             title: "编辑管理员",
                             callback: function (e) {
@@ -221,6 +247,18 @@
                             buttons: [{
                                 label: "保存",
                                 callback: function (e) {
+                                    var flag = 0;
+                                    $("#operateFlagDiv input[type='checkbox']:checked").each(function () {
+                                        flag = flag | parseInt($(this).val());
+                                    });
+                                    $("#operateFlagDiv [name='OperateFlag']").val(flag);
+                                    var departmentID = $("[name='DepartmentID']").val();
+                                    var children = $("[name='ChildrenDepartmentID']").val();
+                                    if (children != "") {
+                                        departmentID += ";" + children;
+                                    }
+                                    $("[name='DepartmentID']").val(departmentID);
+
                                     $.Nuoya.form("form").ajaxSubmit({
                                         ajaxUrl: "/Admin/Update",
                                         params: {

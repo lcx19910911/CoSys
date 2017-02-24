@@ -37,7 +37,10 @@ namespace CoSys.Web
                "~/Scripts/My97DatePicker/config.js",
                "~/Scripts/My97DatePicker/lang/zh-cn.js",
 
-               "~/Scripts/file_upload_plug-in.js"
+               "~/Scripts/file_upload_plug-in.js",
+
+               "~/Scripts/jquery.ztree.all-3.5.min.js",
+               "~/Scripts/ztree-select.js"
                ));
 
             #endregion

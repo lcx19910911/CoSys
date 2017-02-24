@@ -72,7 +72,7 @@ namespace CoSys.Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<Admin>> Get_AdminPageList(int pageIndex, int pageSize, string name,string mobile, DateTime? startTimeStart, DateTime? endTimeEnd)
+        public WebResult<PageList<Admin>> Get_AdminPageList(int pageIndex, int pageSize, string name, DateTime? startTimeStart, DateTime? endTimeEnd)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -81,10 +81,6 @@ namespace CoSys.Service
                 if (name.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => x.Name.Contains(name));
-                }
-                if (mobile.IsNotNullOrEmpty())
-                {
-                    query = query.Where(x => x.Mobile.Contains(mobile));
                 }
                 if (startTimeStart != null)
                 {
@@ -98,11 +94,13 @@ namespace CoSys.Service
                 
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var roleIdList = list.Select(x => x.RoleID).ToList();
+                var roleDic = db.Role.Where(x => roleIdList.Contains(x.ID)).ToDictionary(x => x.ID);
                 list.ForEach(x =>
                 {
                     //推荐人
-                    //if (!string.IsNullOrEmpty(x.RoleID) && roleDic.ContainsKey(x.RoleID))
-                    //    x.RoleName = roleDic[x.RoleID]?.Name;
+                    if (!string.IsNullOrEmpty(x.RoleID) && roleDic.ContainsKey(x.RoleID))
+                        x.RoleName = roleDic[x.RoleID]?.Name;
                 });
                 return ResultPageList(list, pageIndex, pageSize, count);
             }
@@ -118,14 +116,9 @@ namespace CoSys.Service
         {
             using (DbRepository db = new DbRepository())
             {
-                if (db.Admin.AsQueryable().AsNoTracking().Where(x => x.Mobile.Equals(model.Mobile)&&!x.IsDelete).Any())
-                    return Result(false, ErrorCode.datadatabase_mobile__had);
                 if (db.Admin.AsQueryable().AsNoTracking().Where(x => x.Account.Equals(model.Account) &&!x.IsDelete).Any())
                     return Result(false, ErrorCode.user_name_already_exist);
-                //var role = Cache_Get_RoleList().Where(x => x.ID.Equals(model.RoleID)).FirstOrDefault();
-                //if(role==null)
-                //    return Result(false, ErrorCode.datadatabase_primarykey_not_found);
-                model.Password = CryptoHelper.MD5_Encrypt(model.ConfirmPassword);
+                model.Password = CryptoHelper.MD5_Encrypt("111111");
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CreatedTime = DateTime.Now;
                 string menuIdStr = string.Empty;
@@ -152,18 +145,16 @@ namespace CoSys.Service
         {
             using (DbRepository db = new DbRepository())
             {
-                if (db.Admin.AsQueryable().AsNoTracking().Where(x => x.Mobile.Equals(model.Mobile) && !x.ID.Equals(model.ID) && !x.IsDelete).Any())
-                    return Result(false, ErrorCode.datadatabase_mobile__had);
                 var oldEntity = db.Admin.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    //var role = Cache_Get_RoleList().Where(x => x.ID.Equals(model.RoleID)).FirstOrDefault();
-                    //if (role == null)
-                    //    return Result(false, ErrorCode.datadatabase_primarykey_not_found);
-                    oldEntity.Mobile = model.Mobile;
                     oldEntity.Name = model.Name;
                     oldEntity.Remark = model.Remark;
-                    string menuIdStr = string.Empty;
+                    oldEntity.RoleID = model.RoleID;
+                    oldEntity.ProvoniceCode = model.ProvoniceCode;
+                    oldEntity.CityCode = model.CityCode;
+                    oldEntity.CountyCode = model.CountyCode;
+                    oldEntity.StreetCode = model.StreetCode;
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);
@@ -179,41 +170,7 @@ namespace CoSys.Service
             }
 
         }
-
-
-
-        /// <summary>
-        /// 修改
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public WebResult<bool> Update_AdminOperate(string ID, long OperateFlag)
-        {
-            using (DbRepository db = new DbRepository())
-            {
-                var oldEntity = db.Admin.Find(ID);
-                if (oldEntity != null)
-                {
-                    oldEntity.OperateFlag = OperateFlag;
-                }
-                else
-                    return Result(false, ErrorCode.sys_param_format_error);
-
-                if (db.SaveChanges() > 0)
-                {
-                    return Result(true);
-                }
-                else
-                {
-                    return Result(false, ErrorCode.sys_fail);
-                }
-            }
-
-        }
-        
-        
-
-        
+     
 
         /// <summary>
         /// 删除分类
@@ -275,9 +232,7 @@ namespace CoSys.Service
                         Value = x.ID
                     });
                 });
-
                 return list;
-
             }
         }
 

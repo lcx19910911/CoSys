@@ -43,11 +43,9 @@ namespace CoSys.Web
                         ID = Guid.NewGuid().ToString("N"),
                         CreatedTime = DateTime.Now,
                         Name = "Admin",
-                        Mobile = "11111111111",
                         Account = "admin",
                         Password = CryptoHelper.MD5_Encrypt("123456"),
                         IsSuperAdmin = true,
-                        OperateFlag = -1,
                         RoleID = "1",
                     });
                     dbcontext.SaveChanges();

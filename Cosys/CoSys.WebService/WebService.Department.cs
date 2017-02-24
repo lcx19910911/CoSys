@@ -22,18 +22,18 @@ namespace CoSys.Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<NewsDepartment>> Get_NewsDepartmentPageList(int pageIndex, int pageSize, string name)
+        public WebResult<PageList<Department>> Get_DepartmentPageList(int pageIndex, int pageSize, string name)
         {
             using (DbRepository db = new DbRepository())
             {
-                var query = db.NewsDepartment.AsQueryable().AsNoTracking().Where(x => !x.IsDelete);
+                var query = db.Department.AsQueryable().AsNoTracking().Where(x => !x.IsDelete);
                 if (name.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => x.Name.Contains(name));
                 }
 
                 var count = query.Count();
-                var dic = db.NewsDepartment.ToDictionary(x => x.ID);
+                var dic = db.Department.ToDictionary(x => x.ID);
                 var list = query.OrderByDescending(x => x.ID).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 list.ForEach(x =>
                 {
@@ -51,7 +51,7 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Add_NewsDepartment(NewsDepartment model)
+        public WebResult<bool> Add_Department(Department model)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -60,7 +60,7 @@ namespace CoSys.Service
                 {
                     model.ParentID = string.Empty;
                 }
-                db.NewsDepartment.Add(model);
+                db.Department.Add(model);
                 if (db.SaveChanges() > 0)
                 {
                     return Result(true);
@@ -81,20 +81,21 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Update_NewsDepartment(NewsDepartment model)
+        public WebResult<bool> Update_Department(Department model)
         {
             using (DbRepository db = new DbRepository())
             {
-                var oldEntity = db.NewsDepartment.Find(model.ID);
+                var oldEntity = db.Department.Find(model.ID);
                 if (oldEntity != null)
                 {
                     oldEntity.Name = model.Name;
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);
+               
                 if (model.ParentID.IsNotNullOrEmpty() && model.ParentID == "-1")
                 {
-                    oldEntity.ParentID = string.Empty;
+                    oldEntity.ParentID = null;
                 }
                 if (db.SaveChanges() > 0)
                 {
@@ -113,13 +114,13 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public NewsDepartment Find_NewsDepartment(string id)
+        public Department Find_Department(string id)
         {
             if (!id.IsNotNullOrEmpty())
                 return null;
             using (DbRepository db = new DbRepository())
             {
-                var model= db.NewsDepartment.AsQueryable().AsNoTracking().FirstOrDefault(x => x.ID.Equals(id));
+                var model= db.Department.AsQueryable().AsNoTracking().FirstOrDefault(x => x.ID.Equals(id));
                 return model;
             }
         }
@@ -129,7 +130,7 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public WebResult<bool> Delete_NewsDepartment(string ids)
+        public WebResult<bool> Delete_Department(string ids)
         {
             if (!ids.IsNotNullOrEmpty())
             {
@@ -138,7 +139,7 @@ namespace CoSys.Service
             using (DbRepository db = new DbRepository())
             {
                 //找到实体
-                db.NewsDepartment.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                db.Department.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
                 {
                     x.IsDelete = true;
                 });
@@ -157,9 +158,9 @@ namespace CoSys.Service
         /// <summary>
         /// 获取选择项
         /// </summary>
-        /// <param name="NewsDepartmentFlag">角色flag值</param>
+        /// <param name="DepartmentFlag">角色flag值</param>
         /// <returns></returns>
-        public List<SelectItem> Get_NewsDepartmentSelectItem(string id) 
+        public List<SelectItem> Get_DepartmentSelectItem(string id) 
         {
             List<SelectItem> list = new List<SelectItem>();
 
@@ -167,7 +168,7 @@ namespace CoSys.Service
             {
                 if (id.IsNotNullOrEmpty())
                 {
-                    db.NewsDepartment.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&!string.IsNullOrEmpty(x.ParentID)&&x.ParentID.Equals(id)).ToList().ForEach(x =>
+                    db.Department.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&!string.IsNullOrEmpty(x.ParentID)&&x.ParentID.Equals(id)).ToList().ForEach(x =>
                     {
                         list.Add(new SelectItem()
                         {
@@ -179,7 +180,7 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    db.NewsDepartment.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&string.IsNullOrEmpty(x.ParentID)).ToList().ForEach(x =>
+                    db.Department.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&string.IsNullOrEmpty(x.ParentID)).ToList().ForEach(x =>
                     {
                         list.Add(new SelectItem()
                         {
@@ -191,5 +192,72 @@ namespace CoSys.Service
                 return list;
             }
         }
+
+
+        #region 部门下拉框
+
+        /// <summary>
+        /// 获取ZTree子节点
+        /// </summary>
+        /// <param name="parentId">父级id</param>
+        /// <param name="groups">分组数据</param>
+        /// <returns></returns>
+        private List<ZTreeNode> Get_DepartmentZTreeChildren(string parentId, List<IGrouping<string, Department>> groups)
+        {
+            List<ZTreeNode> ztreeNodes = new List<ZTreeNode>();
+            var group = groups.FirstOrDefault(x => x.Key== parentId);
+            if (group != null)
+            {
+                ztreeNodes = group.Select(
+                    x => new ZTreeNode()
+                    {
+                        name = x.Name,
+                        value = x.ID,
+                        children = Get_DepartmentZTreeChildren(x.ID, groups)
+                    }).ToList();
+            }
+            return ztreeNodes;
+        }
+
+        /// <summary>
+        /// 获取ZTree子节点
+        /// </summary>
+        /// <param name="parentId">父级id</param>
+        /// <param name="groups">分组数据</param>
+        /// <returns></returns>
+        public List<ZTreeNode> Get_DepartmentZTreeChildren(string parentId)
+        {
+            List<ZTreeNode> ztreeNodes = new List<ZTreeNode>();
+            using (var db = new DbRepository())
+            {
+                var group = db.Department.AsQueryable().Where(x =>!x.IsDelete).AsNoTracking().OrderByDescending(x => x.Flag).GroupBy(x => x.ParentID).ToList();
+                return Get_DepartmentZTreeChildren(parentId, group);
+            }
+        }
+
+        /// <summary>
+        /// 获取ZTree子节点
+        /// </summary>
+        /// <param name="parentId">父级id</param>
+        /// <param name="groups">分组数据</param>
+        /// <returns></returns>
+        private List<ZTreeNode> Get_DepartmentZTreeFlagChildren(string parentId, List<IGrouping<string, Department>> groups)
+        {
+            List<ZTreeNode> ztreeNodes = new List<ZTreeNode>();
+            var group = groups.FirstOrDefault(x => x.Key == parentId);
+            if (group != null)
+            {
+                ztreeNodes = group.Select(
+                    x => new ZTreeNode()
+                    {
+                        name = x.Name,
+                        value = x.ID,
+                        children = Get_DepartmentZTreeFlagChildren(x.ID, groups)
+                    }).ToList();
+            }
+            return ztreeNodes;
+        }
+
+        #endregion
     }
 }

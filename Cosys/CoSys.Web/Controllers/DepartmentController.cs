@@ -8,7 +8,7 @@ using System.Web.Mvc;
 namespace CoSys.Web.Controllers
 {
     //[LoginFilter]
-    public class NewsDepartmentController : BaseController
+    public class DepartmentController : BaseController
     {
 
         public ViewResult Index()
@@ -21,13 +21,13 @@ namespace CoSys.Web.Controllers
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public JsonResult Add(NewsDepartment entity)
+        public JsonResult Add(Department entity)
         {
             ModelState.Remove("ID");
             ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {
-                var result = WebService.Add_NewsDepartment(entity);
+                var result = WebService.Add_Department(entity);
                 return JResult(result);
             }
             else
@@ -41,12 +41,12 @@ namespace CoSys.Web.Controllers
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public JsonResult Update(NewsDepartment entity)
+        public JsonResult Update(Department entity)
         {
             ModelState.Remove("IsDelete");
             if (ModelState.IsValid)
             {
-                var result = WebService.Update_NewsDepartment(entity);
+                var result = WebService.Update_Department(entity);
                 return JResult(result);
             }
             else
@@ -66,7 +66,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult GetPageList(int pageIndex, int pageSize, string name)
         {
-            return JResult(WebService.Get_NewsDepartmentPageList(pageIndex, pageSize, name));
+            return JResult(WebService.Get_DepartmentPageList(pageIndex, pageSize, name));
         }
 
 
@@ -77,7 +77,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult Find(string id)
         {
-            return JResult(WebService.Find_NewsDepartment(id));
+            return JResult(WebService.Find_Department(id));
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult Delete(string ids)
         {
-            return JResult(WebService.Delete_NewsDepartment(ids));
+            return JResult(WebService.Delete_Department(ids));
         }
 
 
@@ -97,7 +97,16 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult GetSelectItem(string id)
         {
-            return JResult(WebService.Get_NewsDepartmentSelectItem(id));
+            return JResult(WebService.Get_DepartmentSelectItem(id));
+        }
+
+        /// <summary>
+        /// 获取下拉框 
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetZTreeChildren()
+        {
+            return JResult(WebService.Get_DepartmentZTreeChildren(null));
         }
     }
 }

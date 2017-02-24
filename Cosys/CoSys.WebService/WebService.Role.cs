@@ -78,6 +78,8 @@ namespace CoSys.Service
                 {
                     oldEntity.Remark = model.Remark;
                     oldEntity.Name = model.Name;
+                    oldEntity.DepartmentFlag = model.DepartmentFlag;
+                    oldEntity.OperateFlag = model.OperateFlag;
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);

@@ -27,5 +27,17 @@ namespace CoSys.Model
         [MaxLength(128)]
         [Column("Remark", TypeName = "varchar")]
         public string Remark { get; set; }
+
+
+        /// <summary>
+        /// 操作权限
+        /// </summary>
+        public long OperateFlag { get; set; }
+
+        /// <summary>
+        /// 部门权限
+        /// </summary>
+        public long DepartmentFlag { get; set; }
+
     }
 }

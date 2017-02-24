@@ -1,7 +1,9 @@
 ﻿@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewBag.Title = "审核中心";
+    ViewBag.Title = "管理后台";
+    var admin = LoginHelper.GetCurrentAdmin();
 }
 
-<h2></h2>
-
+<h2>稿件审核数:</h2><p>@(admin?.AuditCount)</p>
+<h2>由你发布数</h2><p>@(admin?.PlushCount)</p>
+<h2>修改数</h2><p>@(admin?.EditCount)</p>

@@ -17,6 +17,11 @@ namespace CoSys.Web.Controllers
         // GET: 
         public ActionResult Index()
         {
+            if (Client.LoginAdmin != null)
+            {
+                return RedirectToAction("Admin");
+            }
+            else
                 return View();
         }
 

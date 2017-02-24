@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace CoSys.Model
 {
-    [Table("NewsDepartment")]
-    public class NewsDepartment
+    [Table("Department")]
+    public class Department
     {
         [Key]
         [Required]
@@ -35,6 +35,8 @@ namespace CoSys.Model
         /// <summary>
         /// 父类Id
         /// </summary>
+        [MaxLength(32)]
+        [Column("ParentID", TypeName = "char")]
         public string ParentID { get; set; }
         /// <summary>
         /// 父类Id

@@ -33,13 +33,22 @@ namespace CoSys.Model
         /// <summary>
         /// 用户
         /// </summary>
-        [Required(ErrorMessage = "用户不能为空")]
         [MaxLength(32)]
         [Column("UserID", TypeName = "char")]
         public string UserID { get; set; }
 
         [NotMapped]
         public string UserName { get; set; }
+
+        /// <summary>
+        /// 管理员
+        /// </summary>
+        [MaxLength(32)]
+        [Column("AdminID", TypeName = "char")]
+        public string AdminID { get; set; }
+
+        [NotMapped]
+        public string AdminName { get; set; }
         /// <summary>
         /// 标题
         /// </summary>
@@ -77,9 +86,9 @@ namespace CoSys.Model
         /// </summary>
         [Required]
         [MaxLength(512)]
-        public string NewsDepartmentID { get; set; }
+        public string DepartmentID { get; set; }
         [NotMapped]
-        public string NewsDepartmentName { get; set; }
+        public string DepartmentName { get; set; }
         [NotMapped]
         public string NewsTypeName { get; set; }
 
@@ -93,7 +102,7 @@ namespace CoSys.Model
         /// <summary>
         /// 审核ID集合
         /// </summary>
-        public string AuditUserIDs { get; set; }
+        public string AuditAdminIDs { get; set; }
 
 
         [NotMapped]

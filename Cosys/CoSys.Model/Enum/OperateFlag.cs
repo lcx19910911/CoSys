@@ -13,77 +13,25 @@ namespace CoSys.Model
     public enum OperateFlag
     {
         None = 0,
-
         /// <summary>
-        /// 审核
+        /// 稿件查看
         /// </summary>
-        [Description("审核")]
-        Audit = 1,
-
+        [Description("稿件查看")]
+        Detial = 1,
         /// <summary>
-        /// 新增管理员
+        /// 稿件编辑
         /// </summary>
-        [Description("新增管理员")]
-        NewAdmin = 2,
-
+        [Description("稿件编辑")]
+        Edit = 2,
         /// <summary>
-        /// 查看
+        /// 稿件审核
         /// </summary>
-        [Description("查看")]
-        Detial = 4,
-
+        [Description("稿件审核")]
+        Audit = 4,
         /// <summary>
         /// 发布
         /// </summary>
-        [Description("发布")]
+        [Description("稿件发布")]
         Plush = 8,
-
-        /// <summary>
-        /// 修改投稿渠道
-        /// </summary>
-        [Description("修改投稿渠道")]
-        UpdateChannel = 16,
-
-        /// <summary>
-        /// 领导
-        /// </summary>
-        [Description("修改投稿类型")]
-        UpdateType = 32,
-
-        /// <summary>
-        /// 角色管理
-        /// </summary>
-        [Description("角色管理")]
-        Role = 64,
-
-        /// <summary>
-        /// 会员管理
-        /// </summary>
-        [Description("会员管理")]
-        User = 128,
-
-        /// <summary>
-        /// 地区管理
-        /// </summary>
-        [Description("地区管理")]
-        Area = 256,
-
-        /// <summary>
-        /// 地区统计
-        /// </summary>
-        [Description("地区统计")]
-        AreaStatistics = 512,
-
-        /// <summary>
-        /// 渠道统计
-        /// </summary>
-        [Description("渠道统计")]
-        ChannelStatistics = 1024,
-
-        /// <summary>
-        /// 渠道统计
-        /// </summary>
-        [Description("渠道统计")]
-        RegisterStatistics = 2048,
     }
 }

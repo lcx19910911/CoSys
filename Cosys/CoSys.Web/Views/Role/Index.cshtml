@@ -43,7 +43,6 @@
                 <th dataname="Name">角色名称</th>
                 <th dataname="Remark">备注</th>
                 <th dataname="CreatedTime" datatype="jsondate">创建日期</th>
-                <th dataname="UpdatedTime" datatype="jsondate">编辑日期</th>
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -68,8 +67,10 @@
                 });
             });
         }
+
+
         function formInit(dataitem) {
-  
+            $("#form [name='DepartmentFlagSelect']").ztreeSelect($("[name='DepartmentFlag']"), "/Department/GetZTreeChildren", dataitem != null ? dataitem.DepartmentFlag : 0, true, true);
             //添加表单验证
             $.Nuoya.form("form").validate({
                 rules: {
@@ -91,7 +92,14 @@
                     }
                 }
             });
-           
+            if (dataitem != null)
+            {
+                $("#operateFlagDiv input[type='checkbox']").each(function () {
+                    if ((parseInt($(this).val()) & dataitem.OperateFlag )!= 0) {
+                        $(this).attr("checked", true)
+                    }
+                });
+            }
         }
 
         //新增
@@ -101,13 +109,20 @@
                 ajaxUrl: "/HtmlTemplates/Role/Update.html",
                 title: "添加角色",
                 width: "1000px",
-                height: "380px",
+                height: "600px",
                 callback: function (e) {
                     formInit();//表单初始化
                 },
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
+
+                        var flag = 0;
+                        $("#operateFlagDiv input[type='checkbox']:checked").each(function () {
+                            flag = flag | parseInt($(this).val());
+                        });
+                        $("#operateFlagDiv [name='OperateFlag']").val(flag);
+
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/Role/Add",
                             callback: function (data) {
@@ -145,7 +160,7 @@
                             ajaxUrl: "/HtmlTemplates/Role/Update.html",
                             title: "编辑角色",
                             width: "1000px",
-                            height: "380px",
+                            height: "600px",
                             callback: function (e) {
                                 $.Nuoya.action("/Role/Find", { id: item.ID }, function (model) {
                                     //载入数据
@@ -158,6 +173,12 @@
                             buttons: [{
                                 label: "保存",
                                 callback: function (e) {
+                                    debugger
+                                    var flag = 0;
+                                    $("#operateFlagDiv input[type='checkbox']:checked").each(function () {
+                                        flag = flag | parseInt($(this).val());
+                                    });
+                                    $("#operateFlagDiv [name='OperateFlag']").val(flag);
                                     $.Nuoya.form("form").ajaxSubmit({
                                         ajaxUrl: "/Role/Update",
                                         params: {

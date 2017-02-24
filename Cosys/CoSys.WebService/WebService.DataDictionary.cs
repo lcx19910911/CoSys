@@ -224,10 +224,12 @@ namespace CoSys.Service
         /// <returns></returns>
         public string GetValue(GroupCode code, string key)
         {
-            var data_Dictionary = Cache_Get_DataDictionary()[code][key];
-            if (data_Dictionary != null)
+     
+            var data_Dictionary = Cache_Get_DataDictionary()[code];
+            
+            if (data_Dictionary != null&& data_Dictionary.ContainsKey(key))
             {
-                return data_Dictionary.Value;
+                return data_Dictionary[key].Value;
             }
             return null;
         }

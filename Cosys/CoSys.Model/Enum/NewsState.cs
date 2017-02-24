@@ -21,15 +21,22 @@ namespace CoSys.Model
         /// 待审核
         /// </summary>
         [Description("审核中")]
-        WaitAudit = 0,
+        WaitAudit = 1,
+
+        /// <summary>
+        /// 终审
+        /// </summary>
+        [Description("终审")]
+        LastAudit =2,
+
         /// <summary>
         /// 已录用
         /// </summary>
         [Description("已录用")]
-        Pass = 1,
+        Pass = 3,
 
         [Description("被退")]
-        Reject = 2,
+        Reject = 4,
 
     }
 }

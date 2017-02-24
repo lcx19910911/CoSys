@@ -68,13 +68,13 @@
     <Compile Include="Enum\OperateFlag.cs" />
     <Compile Include="Enum\NewsForCode.cs" />
     <Compile Include="Enum\NewsState.cs" />
-    <Compile Include="Enum\NewsCode.cs" />
+    <Compile Include="Enum\RoleCode.cs" />
     <Compile Include="Enum\UserCode.cs" />
     <Compile Include="Enum\YesOrNo.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Model\SelectItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NewsDepartment.cs" />
+    <Compile Include="Department.cs" />
     <Compile Include="Role.cs" />
     <Compile Include="News.cs" />
     <Compile Include="SiteMessage.cs" />

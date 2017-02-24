@@ -22,7 +22,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_NewsPageList(int pageIndex, int pageSize, string title,string newsTypeId,YesOrNoCode? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        public WebResult<PageList<News>> Get_NewsPageList(int pageIndex, int pageSize, string title,string newsTypeId,bool isAudit,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -46,9 +46,29 @@ namespace CoSys.Service
                 }
 
                 var userDic = new Dictionary<string, string>();
-                if (Client.LoginUser != null)
+                var adminDic = new Dictionary<string, string>();
+                if (!isAudit)
                 {
-                    query = query.Where(x => x.UserID.Equals(Client.LoginUser.ID));
+
+                    if (Client.LoginUser != null)
+                    {
+                        query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginUser.ID));
+                    }
+                    if (Client.LoginAdmin != null)
+                    {
+                        query = query.Where(x => !string.IsNullOrEmpty(x.AdminID) && x.AdminID.Equals(Client.LoginAdmin.ID));
+                    }
+                }
+                else
+                {
+                    if (Client.LoginAdmin != null)
+                    {
+                        query = query.Where(x =>!string.IsNullOrEmpty(x.AuditAdminIDs)&&x.AuditAdminIDs.Contains(Client.LoginAdmin.ID));
+                    }
+                }
+                if (state != null)
+                {
+                    query = query.Where(x => x.State== state);
                 }
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -58,12 +78,41 @@ namespace CoSys.Service
                 {
                     var ids = list.Select(x => x.UserID).ToList();
                     userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID,x=>x.RealName);
+                    var adminIds = list.Select(x => x.AdminID).ToList();
+                    adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
                 }
+                var departmentDic = db.Department.ToDictionary(x => x.ID);
                 list.ForEach(x =>
                 {
                     x.StateStr = x.State.GetDescription();
-                    if (userDic.Count != 0 && userDic.ContainsKey(x.UserID))
+                    if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
                         x.UserName = userDic.GetValue(x.UserID);
+                    else if (x.AdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.AdminID))
+                        x.UserName = adminDic.GetValue(x.AdminID);
+                    if (x.NewsTypeID.IsNotNullOrEmpty())
+                        x.NewsTypeName = GetValue(GroupCode.Type, x.NewsTypeID);
+                    if (x.DepartmentID.IsNotNullOrEmpty())
+                    {
+                        var departmentAry = x.DepartmentID.Split(':');
+                        if (departmentAry.Length == 1)
+                        {
+                            if (departmentDic.ContainsKey(departmentAry[0]))
+                            {
+                                x.DepartmentName = departmentDic[departmentAry[0]].Name;
+                            }
+                        }
+                        else if (departmentAry.Length == 2)
+                        {
+                            if (departmentDic.ContainsKey(departmentAry[0]))
+                            {
+                                x.DepartmentName = departmentDic[departmentAry[0]].Name;
+                            }
+                            if (departmentDic.ContainsKey(departmentAry[1]))
+                            {
+                                x.DepartmentName +="-"+ departmentDic[departmentAry[1]].Name;
+                            }
+                        }
+                    }
                 });
                 return ResultPageList(list, pageIndex, pageSize, count);
             }
@@ -80,7 +129,10 @@ namespace CoSys.Service
             using (DbRepository db = new DbRepository())
             {
                 model.ID = Guid.NewGuid().ToString("N");
-                model.UserID = Client.LoginUser.ID;
+                if (Client.LoginUser != null)
+                    model.UserID = Client.LoginUser.ID;
+                else
+                    model.UserID = Client.LoginAdmin.ID;
                 if(isAudit)
                     model.State = NewsState.None;
                 else
@@ -118,11 +170,11 @@ namespace CoSys.Service
                     oldEntity.MethodFlag = model.MethodFlag;
                     oldEntity.Paths = model.Paths;
                     oldEntity.NewsTypeID = model.NewsTypeID;
-                    oldEntity.NewsDepartmentID = model.NewsDepartmentID;
+                    oldEntity.DepartmentID = model.DepartmentID;
                     oldEntity.Msg = model.Msg;
                     if (oldEntity.State == NewsState.Reject)
                     {
-                        oldEntity.AuditUserIDs = string.Empty;
+                        oldEntity.AuditAdminIDs = string.Empty;
                         if (isAudit)
                             oldEntity.State = NewsState.WaitAudit;
                         else

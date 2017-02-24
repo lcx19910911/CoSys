@@ -10,11 +10,6 @@ namespace CoSys.Model
     {
 
         /// <summary>
-        /// 部门权限
-        /// </summary>
-        public long DepartmentFlag { get; set; }
-        
-        /// <summary>
         /// 角色
         /// </summary>
         [Required(ErrorMessage = "角色不能为空")]
@@ -29,16 +24,10 @@ namespace CoSys.Model
         /// </summary>
         [NotMapped]
         public string RoleName { get; set; }
-
         /// <summary>
         /// 是否管理员
         /// </summary>
         public bool IsSuperAdmin { get; set; }
-
-        /// <summary>
-        /// 操作权限
-        /// </summary>
-        public long OperateFlag { get; set; } 
 
         /// <summary>
         /// 账号
@@ -65,14 +54,6 @@ namespace CoSys.Model
         [Column("Password", TypeName = "varchar")]
         public string Password { get; set; }
         /// <summary>
-        /// 手机号
-        /// </summary>
-        [Display(Name = "手机号")]
-        [MaxLength(11)]
-        [Required(ErrorMessage = "手机号不能为空")]
-        [RegularExpression(@"((\d{11})$)", ErrorMessage = "手机格式不正确")]
-        public string Mobile { get; set; }
-        /// <summary>
         /// 备注
         /// </summary>
         [Display(Name = "备注")]
@@ -95,7 +76,55 @@ namespace CoSys.Model
         [MaxLength(12), MinLength(6),Compare("NewPassword",ErrorMessage="两次密码输入不一致")]
         [NotMapped]
         public string ConfirmPassword { get; set; }
-       
+
+        /// <summary>
+        /// 位置
+        /// </summary>
+        [NotMapped]
+        public string ProvoniceName { get; set; }
+
+        /// <summary>
+        /// 位置
+        /// </summary>
+        [NotMapped]
+        public string CityName { get; set; }
+
+        /// <summary>
+        /// 位置
+        /// </summary>
+        [NotMapped]
+        public string CountyName { get; set; }
+
+        /// <summary>
+        /// 街道
+        /// </summary>
+        [NotMapped]
+        public string StreetName { get; set; }
+
+        /// <summary>
+        /// 位置
+        /// </summary>
+        [MaxLength(32)]
+        public string ProvoniceCode { get; set; }
+
+        /// <summary>
+        /// 位置
+        /// </summary>
+        [MaxLength(32)]
+        public string CityCode { get; set; }
+
+        /// <summary>
+        /// 位置
+        /// </summary>
+        [MaxLength(32)]
+        public string CountyCode { get; set; }
+
+        /// <summary>
+        /// 街道
+        /// </summary>
+        [MaxLength(32)]
+        public string StreetCode { get; set; }
+
 
         /// <summary>
         /// 状态
@@ -115,5 +144,9 @@ namespace CoSys.Model
         /// 审核通过数
         /// </summary>
         public int AuditPassCount { get; set; }
+        /// <summary>
+        /// 发布数
+        /// </summary>
+        public int PlushCount { get; set; }
     }
 }

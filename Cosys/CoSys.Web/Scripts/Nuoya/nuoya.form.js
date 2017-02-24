@@ -308,7 +308,7 @@
                 return this.optional(element) || (/(13[0-9]{9})|(14[0-9]{9})|(15[0-9]{9})|(17[0-9]{9})|(18[0-9]{9})/.test(value));
             });
             this.addMethod("phone", function (value, element) {
-                return this.optional(element) || (/^\d{3,4}-\d{7,8}(-\d{3,4})?$/.test(value));
+                return this.optional(element) || (/^\d{3,4}-?\d{7,8}(-?\d{3,4})?$/.test(value));
             });
             this.addMethod("phoneMobile", function (value, element) {
                 return this.optional(element) || (/(^\d{3,4}-\d{7,8}(-\d{3,4})?$)|(^(1[0-9]{10})$)|(^\d{10,12}$)|(^\d{3,4} \d{7,8}$)/.test(value));
