@@ -14,24 +14,41 @@ namespace CoSys.Model
     {
         None = 0,
         /// <summary>
-        /// 稿件查看
-        /// </summary>
-        [Description("稿件查看")]
-        Detial = 1,
-        /// <summary>
-        /// 稿件编辑
-        /// </summary>
-        [Description("稿件编辑")]
-        Edit = 2,
-        /// <summary>
         /// 稿件审核
         /// </summary>
-        [Description("稿件审核")]
-        Audit = 4,
+        [Description("审核")]
+        Audit = 1,
         /// <summary>
         /// 发布
         /// </summary>
-        [Description("稿件发布")]
-        Plush = 8,
+        [Description("发布")]
+        Plush = 2,
+
+
+        /// <summary>
+        /// 稿件查看
+        /// </summary>
+        [Description("查看")]
+        Detial = 4,
+
+
+        /// <summary>
+        /// 用户管理
+        /// </summary>
+        [Description("用户管理")]
+        Admin = 8,
+
+        /// <summary>
+        /// 参数设置
+        /// </summary>
+        [Description("参数设置")]
+        Config = 16,
+        
+
+        /// <summary>
+        /// 统计
+        /// </summary>
+        [Description("统计")]
+        Statistics = 32,
     }
 }

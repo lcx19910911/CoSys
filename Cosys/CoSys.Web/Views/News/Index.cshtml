@@ -29,13 +29,8 @@
             <tr>
                 <th dataname="ID" type="checkbox"></th>
                 <th dataname="Title">稿件名称</th>
-                <th dataname="CodeStr">类型</th>
-                @if (LoginHelper.AdminIsLogin())
-                {
-                <th dataname="UserName">创建人</th>
-                }               
+                <th dataname="CodeStr">类型</th>           
                 <th dataname="StateStr">状态</th>
-
                 <th dataname="CreatedTime" datatype="jsondate">申请日期</th>
                 <th type="eventlist"></th>
             </tr>
@@ -62,65 +57,6 @@
             //数据请求地址
             events: [            
                 {
-                    className: "am-text-secondary",
-                    icon: "icon-pencil-square-o",
-                    name: "审核",
-                    formula: function (item) {
-                        if (item.State ==1&&('@(LoginHelper.AdminIsLogin()?"1":"0")'=="1")) {
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    },
-                    click: function (item) {
-
-                        $.Nuoya.ajaxDialog({
-                            closeViaDimmer: false,
-                            addIframe:true,
-                            ajaxUrl: "/News/Aduit?id=" + item.ID,
-                            title: "审核",
-                            width: "1200px",
-                            height: "880px",
-                            callback: function (e) {
-                                setTimeout(function () {
-                                    $("#alrtIframe").contents().find(".view-select").remove();
-                                    $("#alrtIframe").contents().find(".trc-button").parent().remove();
-                                }, 2000);
-
-                            },
-                            buttons: [{
-                                label: "通过",
-                                className: "am-btn-success",
-                                callback: function (e) {
-                                    $.Nuoya.action("/News/Audit", { isPass: 1, id: item.ID }, function (data) {
-                                        if (!data.ErrorDesc) {
-                                            e.hide();
-                                            grid.reload();
-                                        }
-                                        else
-                                            alert(data.ErrorDesc);
-                                    });
-                                }
-                            },
-                            {
-                                label: "驳回",
-                                callback: function (e) {
-                                    $.Nuoya.action("/News/Audit", { isPass: 0, id: item.ID }, function (data) {
-                                        if (!data.ErrorDesc) {
-                                            e.hide();
-                                            grid.reload();
-                                        }
-                                        else
-                                            alert(data.ErrorDesc);
-                                    });
-
-                                }
-                            }]
-                        })
-                    }
-                },
-                 {
                      className: "am-text-danger",
                      icon: "icon-edit",
                      name: "查看",

@@ -41,6 +41,7 @@
             <tr>
                 <th dataname="ID" type="checkbox"></th>
                 <th dataname="Name">角色名称</th>
+                <th dataname="AuditStateStr">审核节点</th>
                 <th dataname="Remark">备注</th>
                 <th dataname="CreatedTime" datatype="jsondate">创建日期</th>
                 <th type="eventlist"></th>
@@ -70,7 +71,7 @@
 
 
         function formInit(dataitem) {
-            $("#form [name='DepartmentFlagSelect']").ztreeSelect($("[name='DepartmentFlag']"), "/Department/GetZTreeChildren", dataitem != null ? dataitem.DepartmentFlag : 0, true, true);
+
             //添加表单验证
             $.Nuoya.form("form").validate({
                 rules: {
@@ -94,11 +95,7 @@
             });
             if (dataitem != null)
             {
-                $("#operateFlagDiv input[type='checkbox']").each(function () {
-                    if ((parseInt($(this).val()) & dataitem.OperateFlag )!= 0) {
-                        $(this).attr("checked", true)
-                    }
-                });
+                $("#form [name='AuditState']").val(dataitem.AuditState);
             }
         }
 
@@ -116,12 +113,6 @@
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
-
-                        var flag = 0;
-                        $("#operateFlagDiv input[type='checkbox']:checked").each(function () {
-                            flag = flag | parseInt($(this).val());
-                        });
-                        $("#operateFlagDiv [name='OperateFlag']").val(flag);
 
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/Role/Add",
@@ -173,12 +164,6 @@
                             buttons: [{
                                 label: "保存",
                                 callback: function (e) {
-                                    debugger
-                                    var flag = 0;
-                                    $("#operateFlagDiv input[type='checkbox']:checked").each(function () {
-                                        flag = flag | parseInt($(this).val());
-                                    });
-                                    $("#operateFlagDiv [name='OperateFlag']").val(flag);
                                     $.Nuoya.form("form").ajaxSubmit({
                                         ajaxUrl: "/Role/Update",
                                         params: {

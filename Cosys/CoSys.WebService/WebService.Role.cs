@@ -33,6 +33,10 @@ namespace CoSys.Service
 
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                list.ForEach(x =>
+                {
+                    x.AuditStateStr = x.AuditState.GetDescription();
+                });
                 return ResultPageList(list, pageIndex, pageSize, count);
             }
         }
@@ -78,8 +82,7 @@ namespace CoSys.Service
                 {
                     oldEntity.Remark = model.Remark;
                     oldEntity.Name = model.Name;
-                    oldEntity.DepartmentFlag = model.DepartmentFlag;
-                    oldEntity.OperateFlag = model.OperateFlag;
+                    oldEntity.AuditState = model.AuditState;
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);

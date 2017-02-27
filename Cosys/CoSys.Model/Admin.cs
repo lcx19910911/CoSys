@@ -10,6 +10,15 @@ namespace CoSys.Model
     {
 
         /// <summary>
+        /// 部门权限
+        /// </summary>
+        public long DepartmentFlag { get; set; }
+
+        /// <summary>
+        /// 权限
+        /// </summary>
+        public long OperateFlag { get; set; }
+        /// <summary>
         /// 角色
         /// </summary>
         [Required(ErrorMessage = "角色不能为空")]

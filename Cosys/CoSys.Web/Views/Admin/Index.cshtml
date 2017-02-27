@@ -158,6 +158,13 @@
                 });
             }
             else {
+
+                $("#operateFlagDiv input[type='checkbox']").each(function () {
+                    if ((parseInt($(this).val()) & dataitem.OperateFlag) != 0) {
+                        $(this).attr("checked", true)
+                    }
+                });
+
                 $.Nuoya.action("/area/GetAreaCodeSelectItem", {}, function (json) {
                     $(json).each(function () {
                         $("select[name='ProvoniceCode']").append("<option " + (this.Value == dataitem.ProvoniceCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
@@ -195,7 +202,11 @@
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
-
+                        var flag = 0;
+                        $("#operateFlagDiv input[type='checkbox']:checked").each(function () {
+                            flag = flag | parseInt($(this).val());
+                        });
+                        $("#operateFlagDiv [name='OperateFlag']").val(flag);
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/Admin/Add",
                             callback: function (data) {
@@ -252,12 +263,6 @@
                                         flag = flag | parseInt($(this).val());
                                     });
                                     $("#operateFlagDiv [name='OperateFlag']").val(flag);
-                                    var departmentID = $("[name='DepartmentID']").val();
-                                    var children = $("[name='ChildrenDepartmentID']").val();
-                                    if (children != "") {
-                                        departmentID += ";" + children;
-                                    }
-                                    $("[name='DepartmentID']").val(departmentID);
 
                                     $.Nuoya.form("form").ajaxSubmit({
                                         ajaxUrl: "/Admin/Update",

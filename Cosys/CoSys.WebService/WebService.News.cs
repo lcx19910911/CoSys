@@ -61,9 +61,15 @@ namespace CoSys.Service
                 }
                 else
                 {
+                    //判断权限加载相对应的新闻
                     if (Client.LoginAdmin != null)
                     {
-                        query = query.Where(x =>!string.IsNullOrEmpty(x.AuditAdminIDs)&&x.AuditAdminIDs.Contains(Client.LoginAdmin.ID));
+                        //角色的审核权限
+                        var role = db.Role.Find(Client.LoginAdmin.RoleID);
+                        if(role==null)
+                            return ResultPageList(new List<News>(), pageIndex, pageSize, 0);
+                        var departmentIds = db.Department.Where(x => (Client.LoginAdmin.DepartmentFlag & x.Flag) != 0 && x.ParentID.IsNotNullOrEmpty()).Select(x => x.ParentID+";"+x.ID).ToList();
+                        query = query.Where(x =>(x.State==NewsState.Pass||x.AuditState==role.AuditState)&& departmentIds.Contains(x.DepartmentID));
                     }
                 }
                 if (state != null)
@@ -74,13 +80,12 @@ namespace CoSys.Service
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                
 
-                if (Client.LoginAdmin != null)
-                {
-                    var ids = list.Select(x => x.UserID).ToList();
-                    userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID,x=>x.RealName);
-                    var adminIds = list.Select(x => x.AdminID).ToList();
-                    adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
-                }
+
+                var ids = list.Select(x => x.UserID).ToList();
+                userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID,x=>x.RealName);                 
+                var adminIds = list.Select(x => x.AdminID).ToList();
+                adminIds.AddRange(list.Select(x => x.UpdateAdminID).ToList());
+                adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
                 var departmentDic = db.Department.ToDictionary(x => x.ID);
                 list.ForEach(x =>
                 {
@@ -89,6 +94,8 @@ namespace CoSys.Service
                         x.UserName = userDic.GetValue(x.UserID);
                     else if (x.AdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.AdminID))
                         x.UserName = adminDic.GetValue(x.AdminID);
+                    if (x.UpdateAdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UpdateAdminID))
+                        x.UpdateAdminName = adminDic.GetValue(x.UpdateAdminID);
                     if (x.NewsTypeID.IsNotNullOrEmpty())
                         x.NewsTypeName = GetValue(GroupCode.Type, x.NewsTypeID);
                     if (x.DepartmentID.IsNotNullOrEmpty())
@@ -113,6 +120,7 @@ namespace CoSys.Service
                             }
                         }
                     }
+
                 });
                 return ResultPageList(list, pageIndex, pageSize, count);
             }
@@ -133,11 +141,13 @@ namespace CoSys.Service
                     model.UserID = Client.LoginUser.ID;
                 else
                     model.UserID = Client.LoginAdmin.ID;
-                if(isAudit)
+                if (isAudit)
                     model.State = NewsState.None;
                 else
+                {
                     model.State = NewsState.WaitAudit;
-
+                    model.AuditState = NewsAuditState.EditorAudit;
+                }
                 db.News.Add(model);
                 if (db.SaveChanges() > 0)
                 {
@@ -172,9 +182,9 @@ namespace CoSys.Service
                     oldEntity.NewsTypeID = model.NewsTypeID;
                     oldEntity.DepartmentID = model.DepartmentID;
                     oldEntity.Msg = model.Msg;
+                    oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
                     if (oldEntity.State == NewsState.Reject)
                     {
-                        oldEntity.AuditAdminIDs = string.Empty;
                         if (isAudit)
                             oldEntity.State = NewsState.WaitAudit;
                         else
@@ -266,18 +276,74 @@ namespace CoSys.Service
         {
             using (var db = new DbRepository())
             {
-                var News = db.News.Find(id);
-                if (News == null)
+                var news = db.News.Find(id);
+                if (news == null)
                     return Result(false, ErrorCode.sys_param_format_error);
 
-                if (News.State != NewsState.WaitAudit)
+                var admin = Client.LoginAdmin;
+                if (news.State != NewsState.WaitAudit|| admin==null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
                 else
                 {
-                    News.State = isPass == YesOrNoCode.Yes ? NewsState.Pass : NewsState.Reject;
+                    var role = db.Role.Find(admin.RoleID);
+                    if (role == null)
+                        return Result(false, ErrorCode.sys_param_format_error);
 
+                    //主编审核
+                   if(news.AuditState==NewsAuditState.EditorAudit)
+                   { 
+                        if(role.AuditState==NewsAuditState.EditorAudit)
+                        {
+                            news.UpdateAdminID = admin.ID;
+                            if (isPass == YesOrNoCode.Yes)
+                            {
+                                news.AuditState = NewsAuditState.MinisterAudit;
+                            }
+                            else
+                            {
+                                news.State = NewsState.Reject;
+                            }
+                        }
+                        else
+                            return Result(false, ErrorCode.sys_user_role_error);
+                    }
+                   //部长/编委会审核
+                    else if (news.AuditState == NewsAuditState.MinisterAudit)
+                    {
+                        if (role.AuditState == NewsAuditState.MinisterAudit)
+                        {
+                            news.UpdateAdminID = admin.ID;
+                            if (isPass == YesOrNoCode.Yes)
+                            {
+                                news.AuditState = NewsAuditState.LastAudit;
+                            }
+                            else
+                            {
+                                news.AuditState = NewsAuditState.EditorAudit;                             
+                            }
+                        }
+                        else
+                            return Result(false, ErrorCode.sys_user_role_error);
+                    } //稿件审核员/领导审核
+                    else if (news.AuditState == NewsAuditState.LastAudit)
+                    {
+                        if (role.AuditState == NewsAuditState.LastAudit)
+                        {
+                            news.UpdateAdminID = admin.ID;
+                            if (isPass == YesOrNoCode.Yes)
+                            {
+                                news.State = NewsState.Pass;
+                            }
+                            else
+                            {
+                                news.AuditState = NewsAuditState.MinisterAudit;
+                            }
+                        }
+                        else
+                            return Result(false, ErrorCode.sys_user_role_error);
+                    }
                 }
                 if(isPass == YesOrNoCode.Yes)
                     Add_Log(LogCode.AuditPass, id,Client.LoginAdmin.ID);

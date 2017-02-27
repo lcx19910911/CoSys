@@ -24,12 +24,6 @@ namespace CoSys.Model
         WaitAudit = 1,
 
         /// <summary>
-        /// 终审
-        /// </summary>
-        [Description("终审")]
-        LastAudit =2,
-
-        /// <summary>
         /// 已录用
         /// </summary>
         [Description("已录用")]
@@ -38,5 +32,10 @@ namespace CoSys.Model
         [Description("被退")]
         Reject = 4,
 
+        /// <summary>
+        /// 发布
+        /// </summary>
+        [Description("发布")]
+        Plush = 5,
     }
 }

@@ -24,9 +24,11 @@ namespace CoSys.Web.Controllers
             {
                 model = new News();
                 model.ChildrenDepartmentList = new List<SelectItem>();
+                model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
             }
             else
             {
+                model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
                 if (!model.UserID.Equals(Client.LoginUser.ID))
                     return View("Index");
                 if (model.DepartmentID.Split(',').Length == 2)
@@ -35,7 +37,6 @@ namespace CoSys.Web.Controllers
                 }
             }
 
-            model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
             model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
             return View(model);
         }
@@ -99,9 +100,22 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string title,string newsTypeId,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, bool isAudit=false)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string title,string newsTypeId,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
         {
-            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, isAudit,state, createdTimeStart, createdTimeEnd));
+            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, false, state, createdTimeStart, createdTimeEnd));
+        }
+
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="name">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title, string newsTypeId, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        {
+            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, true, state, createdTimeStart, createdTimeEnd));
         }
 
 

@@ -155,6 +155,8 @@ namespace CoSys.Service
                     oldEntity.CityCode = model.CityCode;
                     oldEntity.CountyCode = model.CountyCode;
                     oldEntity.StreetCode = model.StreetCode;
+                    oldEntity.DepartmentFlag = model.DepartmentFlag;
+                    oldEntity.OperateFlag = model.OperateFlag;
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);

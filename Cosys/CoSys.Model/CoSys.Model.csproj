@@ -65,10 +65,10 @@
     <Compile Include="Enum\GlobalFlag.cs" />
     <Compile Include="Enum\GroupCode.cs" />
     <Compile Include="Enum\LogCode.cs" />
-    <Compile Include="Enum\OperateFlag.cs" />
+    <Compile Include="Enum\NewsAuditState.cs" />
     <Compile Include="Enum\NewsForCode.cs" />
     <Compile Include="Enum\NewsState.cs" />
-    <Compile Include="Enum\RoleCode.cs" />
+    <Compile Include="Enum\OperateFlag.cs" />
     <Compile Include="Enum\UserCode.cs" />
     <Compile Include="Enum\YesOrNo.cs" />
     <Compile Include="Log.cs" />

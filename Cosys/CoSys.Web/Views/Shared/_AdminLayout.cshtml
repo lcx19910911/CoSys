@@ -1,10 +1,13 @@
-﻿
+﻿@{ 
+    var currentAdmin = LoginHelper.GetCurrentAdmin();
+}
 <!doctype html>
 <html class="no-js fixed-layout">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <meta name="apple-mobile-web-app-title" content="Amaze UI" />
@@ -364,7 +367,7 @@
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
-                <li><a href="javascript:;"><span class="am-icon-user">@(LoginHelper.GetCurrentAdmin()?.Name)</span></a></li>
+                <li><a href="javascript:;"><span class="am-icon-user">@(currentAdmin?.Name)</span></a></li>
 
                 <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
                 <li><a href="/account/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
@@ -397,7 +400,7 @@
                     </a>
                     <ul class="am-list admin-sidebar-sub am-collapse" id="投稿管理">
                         <li>
-                            <a data-am-collapse="{target: '#投稿管理'}" class="am-cf am-collapsed" href="/News/Index">
+                            <a data-am-collapse="{target: '#投稿管理'}" class="am-cf am-collapsed" href="/News/admnin">
                                 <span class="am-icon-user"></span> 投稿管理
                             </a>
                         </li>
@@ -408,6 +411,8 @@
                         </li>
                     </ul>
                 </li>
+                @if (currentAdmin.IsSuperAdmin||(currentAdmin.OperateFlag & (long)OperateFlag.Admin) != 0)
+                {
                 <li class="admin-parent">
                     <a data-am-collapse="{target: '#用户管理'}" class="am-cf am-collapsed">
                         <span class="am-icon-calculator"></span> 用户管理
@@ -432,8 +437,9 @@
 
                     </ul>
                 </li>
-
-
+                }
+                @if (currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Statistics) != 0)
+                {
                 <li class="admin-parent">
                     <a data-am-collapse="{target: '#统计'}" class="am-cf am-collapsed">
                         <span class="am-icon-calculator"></span> 统计
@@ -447,7 +453,9 @@
                         </li>
                     </ul>
                 </li>
-
+                }
+                @if (currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Config) != 0)
+                {
                 <li class="admin-parent">
                     <a data-am-collapse="{target: '#参数设置'}" class="am-cf am-collapsed">
                         <span class="am-icon-bars"></span> 参数设置
@@ -472,8 +480,7 @@
                         </li>
                     </ul>
                 </li>
-
-
+                }
 
             </ul>
         </div>
@@ -491,6 +498,13 @@
 
 
 
+    @if (WebHelper.CheckAgent())
+    {
+        <script>
+            $(".admin-header,.am-icon-btn,.admin-sidebar").remove();
+            $("#selectCount").remove();
+        </script>
+    }
 
     @RenderSection("scripts", false)
 </body>

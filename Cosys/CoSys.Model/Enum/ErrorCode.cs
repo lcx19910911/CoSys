@@ -75,31 +75,7 @@ namespace CoSys.Model
         [Description("手机号码已存在.")]
         datadatabase_mobile__had = 63,
 
-
-        /// <summary>
-        /// 已存在未确认的缴费记录
-        /// </summary>
-        [Description("已存在未确认的缴费记录.")]
-        unconfirm_payorder__had = 64,
-
-        /// <summary>
-        /// 不能删除，存在未确认的缴费记录
-        /// </summary>
-        [Description("不能删除，存在未确认的缴费记录.")]
-        cant_delete_unconfirm_payorder__had = 65,
-
-
-        /// <summary>
-        /// 不能申请退学，存在未确认的缴费记录
-        /// </summary>
-        [Description("不能申请退学，存在未确认的缴费记录.")]
-        cant_drop_unconfirm_payorder__had = 66,
-
-        /// <summary>
-        /// 制卡时间必须大于报名时间
-        /// </summary>
-        [Description("制卡时间必须大于报名时间.")]
-        make_card_time_error = 67,
+      
 
         
         #endregion

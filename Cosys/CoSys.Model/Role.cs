@@ -13,6 +13,9 @@ namespace CoSys.Model
     public class Role : BaseEntity
     {
 
+        public NewsAuditState AuditState { get; set; }
+        [NotMapped]
+        public string AuditStateStr { get; set; }
         /// <summary>
         /// 名称
         /// </summary>
@@ -27,17 +30,6 @@ namespace CoSys.Model
         [MaxLength(128)]
         [Column("Remark", TypeName = "varchar")]
         public string Remark { get; set; }
-
-
-        /// <summary>
-        /// 操作权限
-        /// </summary>
-        public long OperateFlag { get; set; }
-
-        /// <summary>
-        /// 部门权限
-        /// </summary>
-        public long DepartmentFlag { get; set; }
 
     }
 }

@@ -54,6 +54,8 @@ namespace CoSys.Model
         /// </summary>
         public string Content { get; set; }
 
+        public NewsAuditState AuditState { get; set; }
+
         public NewsState State { get; set; }
 
         [NotMapped]
@@ -99,13 +101,21 @@ namespace CoSys.Model
         [NotMapped]
         public List<SelectItem> DepartmentList { get; set; }
 
-        /// <summary>
-        /// 审核ID集合
-        /// </summary>
-        public string AuditAdminIDs { get; set; }
 
+        /// <summary>
+        /// 当前审核ID
+        /// </summary>
+        public string UpdateAdminID { get; set; }
+        /// <summary>
+        /// 当前审核员
+        /// </summary>
+        [NotMapped]
+        public string UpdateAdminName { get; set; }
 
         [NotMapped]
         public List<SelectItem> ChildrenDepartmentList { get; set; }
+
+        [NotMapped]
+        public YesOrNoCode CanAudit { get; set; } = YesOrNoCode.No;
     }
 }

@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "稿件管理";
+}
+
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>稿件管理</small></div>
+</div>
+<div id="searchDomain">
+
+    <div class="am-g">
+        <div class="am-u-lg-6 am-u-end">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">名称：</span>
+                <input type="text" class="am-form-field" placeholder="按名称搜索" style="width:100px;" name="name" ;>
+                <span class="am-input-group-btn am-margin-left-sm">
+                    <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
+                    <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                </span>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<div class="grid_container">
+    <table id="dataTable" class="am-table am-table-compact am-table-hover table-main">
+        <thead>
+            <tr>
+                <th dataname="ID" type="checkbox"></th>
+                <th dataname="Title">稿件名称</th>
+                <th dataname="CodeStr">类型</th>
+                <th dataname="UserName">创建人</th>      
+                <th dataname="UpdateAdminName">上节点审核人</th>           
+                <th dataname="StateStr">状态</th>
+                <th dataname="CreatedTime" datatype="jsondate">申请日期</th>
+                <th type="eventlist"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+
+        function ClearFilter() {
+            $("#searchDomain input").val("");
+        }
+
+        var grid = $.Nuoya.grid({
+            tableId: "dataTable",
+            //表格id
+            search: {
+                domainId: "searchDomain",
+                subId: "btnSearch"
+            },
+            ajaxUrl: "/News/GetAdminPageList",
+            //数据请求地址
+            events: [            
+                {
+                    className: "am-text-secondary",
+                    icon: "icon-pencil-square-o",
+                    name: "审核",
+                    formula: function (item) {
+                        if (item.CanAudit == 1) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    },
+                    click: function (item) {
+
+                        $.Nuoya.ajaxDialog({
+                            closeViaDimmer: false,
+                            addIframe:true,
+                            ajaxUrl: "/News/Aduit?id=" + item.ID,
+                            title: "审核",
+                            width: "1200px",
+                            height: "880px",
+                            callback: function (e) {
+                                setTimeout(function () {
+                                    $("#alrtIframe").contents().find(".view-select").remove();
+                                    $("#alrtIframe").contents().find(".trc-button").parent().remove();
+                                }, 2000);
+
+                            },
+                            buttons: [{
+                                label: "通过",
+                                className: "am-btn-success",
+                                callback: function (e) {
+                                    $.Nuoya.action("/News/Audit", { isPass: 1, id: item.ID }, function (data) {
+                                        if (!data.ErrorDesc) {
+                                            e.hide();
+                                            grid.reload();
+                                        }
+                                        else
+                                            alert(data.ErrorDesc);
+                                    });
+                                }
+                            },
+                            {
+                                label: "驳回",
+                                callback: function (e) {
+                                    $.Nuoya.action("/News/Audit", { isPass: 0, id: item.ID }, function (data) {
+                                        if (!data.ErrorDesc) {
+                                            e.hide();
+                                            grid.reload();
+                                        }
+                                        else
+                                            alert(data.ErrorDesc);
+                                    });
+
+                                }
+                            }]
+                        })
+                    }
+                },
+                 {
+                     className: "am-text-danger",
+                     icon: "icon-edit",
+                     name: "查看",
+                     click: function (item) {
+                         window.location.href="/News/Manage/" + item.ID;
+                     }
+                 }
+            ]
+        });
+
+    </script>
+}
