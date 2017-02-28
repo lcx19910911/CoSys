@@ -1,5 +1,9 @@
 ﻿@model News
 @{
+    if (LoginHelper.AdminIsLogin())
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
     var isFormPhone = WebHelper.CheckAgent();
     ViewBag.Title = Model.ID.IsNotNullOrEmpty() ? "编辑" : "投稿";
 }
@@ -84,18 +88,18 @@
                         </div>
                     </div>
 
-                                <div class="am-form-group">
-                                    <label for="user-email" class="am-u-sm-3 am-form-label"></label>
-                                    <div class="am-u-sm-9" id="div_imageShow">
-                                        @if (Model.Paths.IsNotNullOrEmpty())
-                                        {
-                                            foreach (var item in Model.Paths.Split(new string[','], StringSplitOptions.RemoveEmptyEntries))
-                                            {
-                                                <img src="@(item)" style="width:100px;height:60px;" />
-                                            }
-                                        }
-                                    </div>
-                                </div>
+                    <div class="am-form-group">
+                        <label for="user-email" class="am-u-sm-3 am-form-label"></label>
+                        <div class="am-u-sm-9" id="div_imageShow">
+                            @if (Model.Paths.IsNotNullOrEmpty())
+                            {
+                                foreach (var item in Model.Paths.Split(new string[','], StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <img src="@(item)" style="width:100px;height:60px;" />
+                                }
+                            }
+                        </div>
+                    </div>
                 }
                 else
                 {
@@ -117,50 +121,85 @@
                     <div class="am-form-group">
                         <div class="am-u-sm-12 am-u-sm-centered">
                             <pre class="am-pre-scrollable">
-                                        @foreach (var item in Model.Logs)
-                                        {
-                                            @(item.RoleName)  @(item.AdminName)  @(item.Code.GetDescription()) @(item.CreatedTime.ToString("yyyy-MM-DD hh:mm"))
-                                        }
-                                        </pre>
+                            @foreach (var item in Model.Logs)
+                            {
+                                @(item.RoleName)  @(item.AdminName)  @(item.Code.GetDescription()) @(item.CreatedTime.ToString("yyyy-MM-DD hh:mm"))
+                            }
+                            </pre>
                         </div>
                     </div>
                 }
-                @if (LoginHelper.AdminIsLogin() && Model.ID.IsNotNullOrEmpty())
+                @if (Model.ID.IsNotNullOrEmpty())
                 {
-                    <div class="am-form-group">
-                        <button type="button" class="am-btn am-u-sm-3">驳回</button>
-                        <div class="am-u-sm-9">
-                            <textarea name="Msg" rows="4">@(Model?.Msg)</textarea>
-                        </div>
-                    </div>
-                                <div class="am-form-group">
-                                    <button type="button" class="am-btn am-u-sm-3">发布</button>
-                                    <div class="am-u-sm-9">
-                                        <input type="checkbox" value="1" />微信
-                                        <input type="checkbox" value="2" />官网
-                                        <input type="checkbox" value="4" />人民日报
-                                    </div>
+                    if (LoginHelper.AdminIsLogin())
+                    {
+                        if (Model.State == NewsState.WaitAudit)
+                        {
+                            <div class="am-form-group">
+                                <button type="button" class="am-btn am-u-sm-3" id="rejectBtn">驳回</button>
+                                <div class="am-u-sm-9">
+                                    <textarea name="Msg" rows="4">@(Model.Msg)</textarea>
                                 </div>
-                                <div class="am-form-group">
+                            </div>
+                            <div class="am-form-group">
                                     <div class="am-u-sm-4 am-u-sm-push-2">
-                                        <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
+                                        <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存通过</button>
                                     </div>
-                                    <div class="am-u-sm-4">
-                                        <button id="cancleBtn" type="button" class="am-btn am-btn-lg">取消</button>
-                                    </div>
-
+                             </div>
+                        }
+                        else if (Model.State == NewsState.Pass)
+                        {
+                            <div class="am-form-group">
+                                <button type="button" class="am-btn am-u-sm-3" id="plushBtn">发布</button>
+                                <div class="am-u-sm-9">
+                                    @if (Model.MethodList != null && Model.MethodList.Count != 0)
+                                    {
+                                        foreach (var item in Model.MethodList)
+                                        {
+                                            <label class="am-checkbox">
+                                                <input type="checkbox" value="@(item.Value)" data-am-ucheck />@item.Text
+                                            </label>
+                                        }
+                                    }
                                 </div>
-                }
-                @if (LoginHelper.UserIsLogin())
-                {
-                    if (Model.ID.IsNotNullOrEmpty())
+                            </div>
+                        }
+                        else if (Model.State == NewsState.Plush)
+                        {
+                            <div class="am-form-group">
+                                <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>发布于</button>
+                                <div class="am-u-sm-9">
+                                    @if (Model.MethodList != null && Model.MethodList.Count != 0)
+                                    {
+                                        foreach (var item in Model.MethodList)
+                                        {
+                                            <label class="am-checkbox">
+                                                <input type="checkbox" value="@(item.Value)" data-am-ucheck @((Model.MethodFlag & 1) != 0 ? "checked" : "")/>@item.Text
+                                            </label>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else if (Model.State == NewsState.Reject)
+                        {
+                            <div class="am-form-group">
+                                <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>驳回原因</button>
+                                <div class="am-u-sm-9">
+                                    <textarea name="Msg" rows="4">@(Model.Msg)</textarea>
+                                </div>
+                            </div>                           
+                        }
+
+                    }
+                    else if (LoginHelper.UserIsLogin())
                     {
                         if (Model.State == NewsState.Reject)
                         {
                             <div class="am-form-group">
                                 <button type="button" class="am-btn am-u-sm-3">驳回原因</button>
                                 <div class="am-u-sm-9">
-                                    <textarea rows="4" readonly>@(Model?.Msg)</textarea>
+                                    <textarea rows="4" readonly>@(Model.Msg)</textarea>
                                 </div>
                             </div>
                             <div class="am-form-group">
@@ -168,36 +207,50 @@
                                     <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
                                 </div>
                                 <div class="am-u-sm-4">
-                                    <button id="cancleBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
+                                    <button id="submitBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
                                 </div>
-
                             </div>
                         }
-                        else if (Model.State != NewsState.None)
+                        else if (Model.State == NewsState.None)
                         {
                             <div class="am-form-group">
-                                <button type="button" class="am-btn am-u-sm-3">发布</button>
+                                <div class="am-u-sm-4 am-u-sm-push-2">
+                                    <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
+                                </div>
+                                <div class="am-u-sm-4">
+                                    <button id="submitBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
+                                </div>
+                            </div>
+                        }
+                        else if (Model.State == NewsState.Pass || Model.State == NewsState.Plush)
+                        {
+                            <<div class="am-form-group">
+                                <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>发布于</button>
                                 <div class="am-u-sm-9">
-                                    <input type="checkbox" value="1" />微信
-                                    <input type="checkbox" value="2" />官网
-                                    <input type="checkbox" value="4" />人民日报
+                                    @if (Model.MethodList != null && Model.MethodList.Count != 0)
+                                    {
+                                        foreach (var item in Model.MethodList)
+                                        {
+                                            <label class="am-checkbox">
+                                                <input type="checkbox" value="@(item.Value)" data-am-ucheck @((Model.MethodFlag & 1) != 0 ? "checked" : "")/>@item.Text
+                                            </label>
+                                        }
+                                    }
                                 </div>
                             </div>
                         }
                     }
-                    else
-                    {
-                        <div class="am-form-group">
-                            <div class="am-u-sm-4 am-u-sm-push-2">
-                                <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
-                            </div>
-                            <div class="am-u-sm-4">
-                                <button id="cancleBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
-                            </div>
-
+                }
+                else
+                {
+                    <div class="am-form-group">
+                        <div class="am-u-sm-4 am-u-sm-push-2">
+                            <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
                         </div>
-                    }
-
+                        <div class="am-u-sm-4">
+                            <button id="submitBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
+                        </div>
+                    </div>
                 }
             </form>
         </div>
@@ -209,18 +262,18 @@
     <script src="~/Scripts/UEditor/ueditor.config.js"></script>
     <script src="~/Scripts/UEditor/ueditor.all.js"></script>
     <script src="~/Scripts/UEditor/ueditor.parse.js"></script>
-        <script src="~/Scripts/UEditor/lang/zh-cn/zh-cn.js"></script>
-        <script>
-            $(function () {
-                var txtContentId = $.AMUI.utils.generateGUID("txtContent");
-                $(".txtContent").attr("id", txtContentId)
-                ue = UE.getEditor(txtContentId);
-                ue.addListener("ready", function () {
-                    // editor准备好之后才可以使用
-                    ue.setContent('@(Html.Raw(Model?.Content))');
-                });
-            })
-        </script>
+    <script src="~/Scripts/UEditor/lang/zh-cn/zh-cn.js"></script>
+    <script>
+        $(function () {
+            var txtContentId = $.AMUI.utils.generateGUID("txtContent");
+            $(".txtContent").attr("id", txtContentId)
+            ue = UE.getEditor(txtContentId);
+            ue.addListener("ready", function () {
+                // editor准备好之后才可以使用
+                ue.setContent('@(Html.Raw(Model?.Content))');
+            });
+        })
+    </script>
 }
 else
 {
@@ -272,7 +325,50 @@ else
             window.location.href = "/news/index"
         });
 
-        $("#saveBtn").on("click", function () {
+        $("#rejectBtn").on("click", function () {
+            var msg = $("[name='Msg']").text();
+            
+            $.Nuoya.action(url, {
+                isPass: 0,
+                id: '@(Model.ID)',
+                msg:msg
+            }, function (data) {
+                if (!data.ErrorDesc) {
+                    $.Nuoya.alert("驳回成功");
+                }
+                else
+                    $.Nuoya.alert(data.ErrorDesc);
+            });
+        });
+
+        $("#passBtn").on("click", function () {
+            $.Nuoya.action(url, {
+                isPass: 1,
+                id: '@(Model.ID)',
+            }, function (data) {
+                if (!data.ErrorDesc) {
+                    $.Nuoya.alert("审核成功");
+                }
+                else
+                    $.Nuoya.alert(data.ErrorDesc);
+            });
+        });
+        
+
+        $("#plushBtn").on("click", function () {
+            $.Nuoya.action(url, {
+                isPass: 1,
+                id: '@(Model.ID)',
+            }, function (data) {
+                if (!data.ErrorDesc) {
+                    $.Nuoya.alert("审核成功");
+                }
+                else
+                    $.Nuoya.alert(data.ErrorDesc);
+            });
+        });
+
+        $("#saveBtn,#submitBtn").on("click", function () {
             var id = '@(Model.ID)';
             var title = $("[name='Title']").val();
             if (title == "") {
@@ -313,6 +409,7 @@ else
                 $.Nuoya.alert("请填写内容");
                 return;
             }
+            var isAduit = $(this).prop("id") == "submitBtn";
             var url = '@(Model.ID.IsNotNullOrEmpty()? "/News/Update" : "/News/Add")';
             $.Nuoya.action(url, {
                 ID: id,

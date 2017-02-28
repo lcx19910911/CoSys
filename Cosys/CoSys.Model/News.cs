@@ -98,6 +98,11 @@ namespace CoSys.Model
 
         [NotMapped]
         public List<SelectItem> TypeList { get; set; }
+
+
+        [NotMapped]
+        public List<SelectItem> MethodList { get; set; }
+
         [NotMapped]
         public List<SelectItem> DepartmentList { get; set; }
 

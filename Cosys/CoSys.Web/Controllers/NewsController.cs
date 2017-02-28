@@ -8,11 +8,15 @@ using System.Web.Mvc;
 
 namespace CoSys.Web.Controllers
 {
-    //[LoginFilter]
+    [LoginFilter]
     public class NewsController : BaseController
     {
 
         public ViewResult Index()
+        {
+            return View();
+        }
+        public ViewResult Admin()
         {
             return View();
         }
@@ -31,13 +35,58 @@ namespace CoSys.Web.Controllers
                 model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
                 if (!model.UserID.Equals(Client.LoginUser.ID))
                     return View("Index");
-                if (model.DepartmentID.Split(',').Length == 2)
+                var department = new Department();
+                if (model.DepartmentID.Split(',').Length == 1)
+                {
+                    department = WebService.Find_Department(model.DepartmentID);
+                }
+                 else  if (model.DepartmentID.Split(',').Length == 2)
                 {
                     model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentID.Split(',')[0]);
+                    department = WebService.Find_Department(model.DepartmentID.Split(',')[1]);
                 }
+
+                if(department==null)
+                    return View("Index");
+
+                var admin = Client.LoginAdmin;
+                var user = Client.LoginUser;
+                if (user != null)
+                {
+                    if (user.ID != model.UserID)
+                    {
+                        return View("Index");
+                    }
+                }
+                if (admin != null)
+                {
+                    //判断角色
+                    var role = WebService.Find_Role(admin.RoleID);
+                    if (role == null)
+                    {
+                        return View("Index");
+                    }
+                    //审核中
+                    if (model.State == NewsState.WaitAudit)
+                    {
+                        //是否审核
+                        if(role.AuditState!=model.AuditState)
+                        {
+                            return View("Index");
+                        }
+                        //判断投递部门权限
+                        if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin)
+                        {
+                            return View("Index");
+                        }
+                    }
+
+                }
+
             }
 
             model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
+            model.MethodList= WebService.Get_DataDictorySelectItem(GroupCode.Channel); 
             return View(model);
         }
 
@@ -138,5 +187,16 @@ namespace CoSys.Web.Controllers
         {
             return JResult(WebService.Delete_News(ids));
         }
+        /// <summary>
+        /// 审核
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public ActionResult Audit(YesOrNoCode isPass, string id, string msg)
+        {
+            return JResult(WebService.Audit_News(isPass, id,msg));
+        }
+
+        
     }
 }

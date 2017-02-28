@@ -25,8 +25,6 @@ namespace CoSys.Model
         [Column("RoleID", TypeName = "char"), MaxLength(32)]
         public string RoleID { get; set; }
         [NotMapped]
-        public Role Role { get; set; }
-        [NotMapped]
         public string CodeStr { get; set; }
         /// <summary>
         /// ״̬
