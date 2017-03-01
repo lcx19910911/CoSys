@@ -21,8 +21,11 @@ namespace CoSys.Web.Controllers
             {
                 return RedirectToAction("Admin");
             }
-            else
-                return View();
+            if (Client.LoginUser == null)
+            {
+                return RedirectToAction("Login","Account");
+            }
+            return View();
         }
 
         public ActionResult Admin()

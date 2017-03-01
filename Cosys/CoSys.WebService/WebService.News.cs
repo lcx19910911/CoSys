@@ -62,8 +62,9 @@ namespace CoSys.Service
                 else
                 {
                     //判断权限加载相对应的新闻
-                    if (Client.LoginAdmin != null)
+                    if (Client.LoginAdmin != null&&!Client.LoginAdmin.IsSuperAdmin)
                     {
+
                         //角色的审核权限
                         var role = db.Role.Find(Client.LoginAdmin.RoleID);
                         if(role==null)
@@ -85,6 +86,7 @@ namespace CoSys.Service
                 userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID,x=>x.RealName);                 
                 var adminIds = list.Select(x => x.AdminID).ToList();
                 adminIds.AddRange(list.Select(x => x.UpdateAdminID).ToList());
+                adminIds.AddRange(list.Select(x => x.UserID).ToList());
                 adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
                 var departmentDic = db.Department.ToDictionary(x => x.ID);
                 list.ForEach(x =>
@@ -92,8 +94,8 @@ namespace CoSys.Service
                     x.StateStr = x.State.GetDescription();
                     if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
                         x.UserName = userDic.GetValue(x.UserID);
-                    else if (x.AdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.AdminID))
-                        x.UserName = adminDic.GetValue(x.AdminID);
+                    else if (x.UserID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UserID))
+                        x.UserName = adminDic.GetValue(x.UserID);
                     if (x.UpdateAdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UpdateAdminID))
                         x.UpdateAdminName = adminDic.GetValue(x.UpdateAdminID);
                     if (x.NewsTypeID.IsNotNullOrEmpty())

@@ -17,10 +17,18 @@ namespace CoSys.Web.Controllers
             //WebService.GetArea();
             return View();
         }
-        public ActionResult Register()
+        public ActionResult Register(string id)
         {
-            var model = new User();
+            var model = WebService.Find_User(id);
+            if(model==null)
+                new User();
             model.ProvinceItems = WebService.Get_AreaList("");
+            if (model.ID.IsNotNullOrEmpty())
+            {
+                model.CityItems = WebService.Get_AreaList(model.ProvoniceCode);
+                model.CountyItems = WebService.Get_AreaList(model.CityCode);
+                model.StreetItems = WebService.Get_AreaList(model.CountyCode);
+            }
             return View(model);
         }
 
@@ -42,8 +50,28 @@ namespace CoSys.Web.Controllers
                 return ParamsErrorJResult(ModelState);
             }
         }
+        [HttpPost]
+        public ActionResult Save(User model)
+        {
 
+            ModelState.Remove("ID");
+            ModelState.Remove("CreatedTime");
+            ModelState.Remove("IsDelete");
+            ModelState.Remove("Password");
+            ModelState.Remove("NewPassword");
+            ModelState.Remove("ConfirmPassword");
+            if (ModelState.IsValid)
+            {
+                var result = WebService.Update_User(model);
+                return JResult(result);
+            }
+            else
+            {
+                return ParamsErrorJResult(ModelState);
+            }
+        }
         
+
 
         /// <summary>
         /// 登录提交

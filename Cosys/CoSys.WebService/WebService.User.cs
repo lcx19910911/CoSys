@@ -194,7 +194,7 @@ namespace CoSys.Service
                 db.User.Add(model);
                 if (db.SaveChanges() > 0)
                 {
-                    Client.LoginUser = model;
+                    LoginHelper.CreateUser(model.ID);
                     return Result(true);
                 }
                 else
@@ -282,21 +282,42 @@ namespace CoSys.Service
         /// <returns></returns>
         public WebResult<bool> Update_User(User model)
         {
-            using (DbRepository entities = new DbRepository())
+            using (DbRepository db = new DbRepository())
             {
-                if (entities.User.AsQueryable().AsNoTracking().Where(x => x.Phone.Equals(model.Phone) && !x.ID.Equals(Client.LoginUser.ID) && !x.IsDelete).Any())
-                    return Result(false, ErrorCode.datadatabase_mobile__had);
-                var oldEntity = entities.User.Find(Client.LoginUser.ID);
+                //if (db.User.AsQueryable().AsNoTracking().Where(x => x.Phone.Equals(model.Phone) && !x.ID.Equals(Client.LoginUser.ID) && !x.IsDelete).Any())
+                //    return Result(false, ErrorCode.datadatabase_mobile__had);
+                var oldEntity = db.User.Find(Client.LoginUser.ID);
                 if (oldEntity != null)
                 {
-                    oldEntity.Position = model.Position;
                     oldEntity.Email = model.Email;
+                    oldEntity.RealName = model.RealName;
+                    oldEntity.PenName = model.PenName;
+                    oldEntity.IDCardAddres = model.IDCardAddres;
+                    oldEntity.IDCard = model.IDCard;
+                    oldEntity.PenName = model.PenName;
                     oldEntity.CompanyName = model.CompanyName;
+                    oldEntity.Position = model.Position;
+                    oldEntity.Zipcode = model.Zipcode;
+                    oldEntity.ProvoniceCode = model.ProvoniceCode;
+                    oldEntity.CityCode = model.CityCode;
+                    oldEntity.CountyCode = model.CountyCode;
+                    oldEntity.StreetCode = model.StreetCode;
+                    oldEntity.Code = model.Code;
+                    oldEntity.Addres = model.Addres;
+                    oldEntity.TelePhone = model.TelePhone;
+                    oldEntity.Phone = model.Phone;
+                    oldEntity.QQ = model.QQ;
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);
-                entities.SaveChanges();
-                return Result(true);
+                if (db.SaveChanges() > 0)
+                {
+                    return Result(true);
+                }
+                else
+                {
+                    return Result(false, ErrorCode.sys_fail);
+                }
             }
 
         }

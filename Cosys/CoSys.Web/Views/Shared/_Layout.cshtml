@@ -21,7 +21,7 @@
                 closeViaDimmer: false,
                 width: "800px",
                 height: "280px",
-                ajaxUrl: "/HtmlTemplates/User/ChangePassword.html",
+                ajaxUrl: "/HtmlTemplates/Admin/ChangePassword.html",
                 title: "修改密码",
                 buttons: [{
                     label: "保存",
@@ -53,303 +53,308 @@
             });
         }
 
+        function userSet()
+        {
+            window.open("/account/register/@(LoginHelper.GetCurrentUserID())")
+        }
+
         //获取Json的日期
         function RenderDate(data) {
             var da = eval('new ' + data.replace('/', '', 'g').replace('/', '', 'g'));
             return da.getFullYear() + "-" + (da.getMonth()+1) + "-" + da.getDate();
         }
-        //获取Json的时间
-        function RenderTime(data) {
-            var da = eval('new ' + data.replace('/', '', 'g').replace('/', '', 'g'));
-            return da.getFullYear() + "-" + (da.getMonth()+1) + "-" + da.getDate() + " " + da.getHours() + ":" + da.getSeconds() + ":" + da.getMinutes();
-        }
-        //关闭/展示菜单
-        function unState() {
-            var state = $(".admin-sidebar").css("display");
-            if (state == "none")
-                $('.admin-sidebar').show();
-            else
-                $('.admin-sidebar').hide();
-        }
-
-        //加载省份
-        function LoadProvince(isIndex, dataitem) {
-            if (isIndex) {
-                $.Nuoya.action("/Area/GetAreaCodeSelectItem", {}, function (json) {
-                    $(json).each(function () {
-                        $("#searchDomain select[name='ProvinceCode']").append("<option value='" + this.Value + "'>" + this.Text + "</option>");
-                    });
-                });
+            //获取Json的时间
+            function RenderTime(data) {
+                var da = eval('new ' + data.replace('/', '', 'g').replace('/', '', 'g'));
+                return da.getFullYear() + "-" + (da.getMonth()+1) + "-" + da.getDate() + " " + da.getHours() + ":" + da.getSeconds() + ":" + da.getMinutes();
             }
-            else {
-                $.Nuoya.action("/Area/GetAreaCodeSelectItem", {}, function (json) {
+            //关闭/展示菜单
+            function unState() {
+                var state = $(".admin-sidebar").css("display");
+                if (state == "none")
+                    $('.admin-sidebar').show();
+                else
+                    $('.admin-sidebar').hide();
+            }
 
-                    $(json).each(function () {
-                        if (dataitem != null && dataitem.EnteredProvinceCode == this.Value) {
-                            $("#form select[name='EnteredProvinceCode']").append("<option  value='" + this.Value + "' selected='selected' >" + this.Text + "</option>");
-                        } else {
-                            $("#form select[name='EnteredProvinceCode']").append("<option  value='" + this.Value + "' >" + this.Text + "</option>");
+            //加载省份
+            function LoadProvince(isIndex, dataitem) {
+                if (isIndex) {
+                    $.Nuoya.action("/Area/GetAreaCodeSelectItem", {}, function (json) {
+                        $(json).each(function () {
+                            $("#searchDomain select[name='ProvinceCode']").append("<option value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
+                }
+                else {
+                    $.Nuoya.action("/Area/GetAreaCodeSelectItem", {}, function (json) {
+
+                        $(json).each(function () {
+                            if (dataitem != null && dataitem.EnteredProvinceCode == this.Value) {
+                                $("#form select[name='EnteredProvinceCode']").append("<option  value='" + this.Value + "' selected='selected' >" + this.Text + "</option>");
+                            } else {
+                                $("#form select[name='EnteredProvinceCode']").append("<option  value='" + this.Value + "' >" + this.Text + "</option>");
+                            }
+                        });
+                        if (dataitem != null) {
+                            ShowCity(false, 2, dataitem.EnteredCityCode);
                         }
                     });
-                    if (dataitem != null) {
-                        ShowCity(false, 2, dataitem.EnteredCityCode);
-                    }
-                });
 
-            }
-        }
-
-        //显示省份下方的市
-        function ShowCity(isIndex, tabe, setVaule) {
-            var value = "";
-            if (isIndex) {
-                {
-                    value = $("#searchDomain select[name='ProvinceCode']").val();
-                    $("#searchDomain select[name='CityCode']").empty();
                 }
             }
-            else {
-                if (tabe == 1) {
-                    value = $("#form select[name='ProvinceCode']").val();
-                    $("#form select[name='CityCode']").empty();
-                }
-                else if (tabe == 2) {
-                    value = $("#form select[name='EnteredProvinceCode']").val();
-                    $("#form select[name='EnteredCityCode']").empty();
-                }
 
-            }
-
-            if (value == "0")
-                return false;
-            $.Nuoya.action("/Area/GetAreaCodeSelectItem", { value: value }, function (json) {
-                $(json).each(function () {
-                    if (isIndex) {
-                        $("#searchDomain select[name='CityCode']").append("<option value='" + this.Value + "'>" + this.Text + "</option>");
-                    }
-                    else {
-                        if (tabe == 1) {
-                            if (setVaule != null && setVaule == this.Value) {
-                                $("#form select[name='CityCode']").append("<option value='" + this.Value + "'  selected='selected' >" + this.Text + "</option>");
-                            }
-                            else {
-                                $("#form select[name='CityCode']").append("<option value='" + this.Value + "' >" + this.Text + "</option>");
-                            }
-                        } else if (tabe == 2) {
-                            if (setVaule != null && setVaule == this.Value) {
-                                $("#form select[name='EnteredCityCode']").append("<option value='" + this.Value + "'  selected='selected' >" + this.Text + "</option>");
-                            }
-                            else {
-                                $("#form select[name='EnteredCityCode']").append("<option value='" + this.Value + "' >" + this.Text + "</option>");
-                            }
-                        }
-                    }
-                });
-                if (!isIndex) {
-                    if (tabe == 1) {
-                        if (setVaule == "")
-                            $("#form select[name='CityCode']").find('option').eq(0).attr('selected', true);
-                        ShowArea(false, $("#form select[name='CityCode']"))
-                    }
-                    else {
-
+            //显示省份下方的市
+            function ShowCity(isIndex, tabe, setVaule) {
+                var value = "";
+                if (isIndex) {
+                    {
+                        value = $("#searchDomain select[name='ProvinceCode']").val();
+                        $("#searchDomain select[name='CityCode']").empty();
                     }
                 }
                 else {
-                    ShowArea(true, $("select[name='CityCode']"))
-                }
-            });
-        }
+                    if (tabe == 1) {
+                        value = $("#form select[name='ProvinceCode']").val();
+                        $("#form select[name='CityCode']").empty();
+                    }
+                    else if (tabe == 2) {
+                        value = $("#form select[name='EnteredProvinceCode']").val();
+                        $("#form select[name='EnteredCityCode']").empty();
+                    }
 
-        //显示市下方的县区
-        function ShowArea(isIndex, obj) {
-            if (isIndex) {
-                $("#searchDomain select[name='DistrictCode']").empty();
-            }
-            else {
-                $("#form select[name='DistrictCode']").empty();
-            }
-            var value = $(obj).val();
-            if (value != "0") {
+                }
+
+                if (value == "0")
+                    return false;
                 $.Nuoya.action("/Area/GetAreaCodeSelectItem", { value: value }, function (json) {
                     $(json).each(function () {
                         if (isIndex) {
-                            $("#searchDomain select[name='DistrictCode']").append("<option value='" + this.Value + "' selected>" + this.Text + "</option>");
+                            $("#searchDomain select[name='CityCode']").append("<option value='" + this.Value + "'>" + this.Text + "</option>");
                         }
                         else {
-                            $("#form select[name='DistrictCode']").append("<option value='" + this.Value + "' selected>" + this.Text + "</option>");
-                        }
-                    });
-                });
-            }
-        }
-
-        //图片方法 缩小
-        function ShowThum(item) {
-            return "<a onclick='ShowImage(\"" + item.VoucherThum + "\")'><img src='" + item.VoucherThum + "' style='width:100px; height:40px;'/></a>"
-        }
-
-        //展示图片
-        function ShowImage(src) {
-            $("#imgDiv img").attr("src", src);
-            $("#imgDiv").show();
-        }
-        $(function () {
-            $("#imgDiv").click(function () {
-                $("#imgDiv").hide();
-            });
-        });
-
-        //获取页面路径
-        function GetUrlRelativePath() {
-            var url = document.location.toString();
-            var arrUrl = url.split("//");
-
-            var start = arrUrl[1].indexOf("/");
-            var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
-
-            if (relUrl.indexOf("?") != -1) {
-                relUrl = relUrl.split("?")[0];
-            }
-            return relUrl;
-        }
-
-
-        //显示性别
-        function Gender(item) {
-            if (item.GenderCode == 1)
-                return "男";
-            else if (item.GenderCode == 2)
-                return "女";
-            else
-                return "未知";
-        }
-
-        //加载是否框
-        function LoadYesOrNoSelectItem(obj, key) {
-            if (key == 0) {
-                $(obj).append("<option value='0' selected>否</option>");
-                $(obj).append("<option value='1' >是</option>");
-            }
-            else {
-                $(obj).append("<option value='0'>否</option>");
-                $(obj).append("<option value='1' selected>是</option>");
-            }
-        }
-
-
-        //验证身份证
-        function isCardID(obj, sexObj) {
-            var sId = $(obj).val();
-            if (sId != "") {
-                if (sId.length == 10) {
-
-                    if (!/^\d{6}19\d{2}$/.test(sId) && !/^\d{6}20\d{2}$/.test(sId)) {
-
-                        //10位全数字 澳门
-                        if (/^[1|5|7][0-9]{2}/.test(sId.substr(0, 3))) {
-                            if (!/^[1|5|7][0-9]{6}\([0-9Aa]\)/.test(sId)) {
-                                $.Nuoya.alert("你输入的澳门身份证身份证长度或格式错误")
-                                return false;
-                            } else {
-                                $("#form #ProvinceName").val("澳门");
-                                $("#form #ProvinceCode").val("820000");
-                                $("#form #CityName").val("澳门");
-                                $("#form #CityCode").val("821000");
+                            if (tabe == 1) {
+                                if (setVaule != null && setVaule == this.Value) {
+                                    $("#form select[name='CityCode']").append("<option value='" + this.Value + "'  selected='selected' >" + this.Text + "</option>");
+                                }
+                                else {
+                                    $("#form select[name='CityCode']").append("<option value='" + this.Value + "' >" + this.Text + "</option>");
+                                }
+                            } else if (tabe == 2) {
+                                if (setVaule != null && setVaule == this.Value) {
+                                    $("#form select[name='EnteredCityCode']").append("<option value='" + this.Value + "'  selected='selected' >" + this.Text + "</option>");
+                                }
+                                else {
+                                    $("#form select[name='EnteredCityCode']").append("<option value='" + this.Value + "' >" + this.Text + "</option>");
+                                }
                             }
                         }
-                            //台湾和香港为第一位引英文。但是台湾后面全为数字 香港后面跟着6个数字
-                            //台湾
-                        else if (/^[a-zA-Z][0-9]{7}$/.test(sId.substr(0, 8))) {
-                            if (!/^[a-zA-Z][0-9]{9}$/.test(sId)) {
-                                $.Nuoya.alert("你输入的台湾身份证身份证长度或格式错误")
+                    });
+                    if (!isIndex) {
+                        if (tabe == 1) {
+                            if (setVaule == "")
+                                $("#form select[name='CityCode']").find('option').eq(0).attr('selected', true);
+                            ShowArea(false, $("#form select[name='CityCode']"))
+                        }
+                        else {
+
+                        }
+                    }
+                    else {
+                        ShowArea(true, $("select[name='CityCode']"))
+                    }
+                });
+            }
+
+            //显示市下方的县区
+            function ShowArea(isIndex, obj) {
+                if (isIndex) {
+                    $("#searchDomain select[name='DistrictCode']").empty();
+                }
+                else {
+                    $("#form select[name='DistrictCode']").empty();
+                }
+                var value = $(obj).val();
+                if (value != "0") {
+                    $.Nuoya.action("/Area/GetAreaCodeSelectItem", { value: value }, function (json) {
+                        $(json).each(function () {
+                            if (isIndex) {
+                                $("#searchDomain select[name='DistrictCode']").append("<option value='" + this.Value + "' selected>" + this.Text + "</option>");
+                            }
+                            else {
+                                $("#form select[name='DistrictCode']").append("<option value='" + this.Value + "' selected>" + this.Text + "</option>");
+                            }
+                        });
+                    });
+                }
+            }
+
+            //图片方法 缩小
+            function ShowThum(item) {
+                return "<a onclick='ShowImage(\"" + item.VoucherThum + "\")'><img src='" + item.VoucherThum + "' style='width:100px; height:40px;'/></a>"
+            }
+
+            //展示图片
+            function ShowImage(src) {
+                $("#imgDiv img").attr("src", src);
+                $("#imgDiv").show();
+            }
+            $(function () {
+                $("#imgDiv").click(function () {
+                    $("#imgDiv").hide();
+                });
+            });
+
+            //获取页面路径
+            function GetUrlRelativePath() {
+                var url = document.location.toString();
+                var arrUrl = url.split("//");
+
+                var start = arrUrl[1].indexOf("/");
+                var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+                if (relUrl.indexOf("?") != -1) {
+                    relUrl = relUrl.split("?")[0];
+                }
+                return relUrl;
+            }
+
+
+            //显示性别
+            function Gender(item) {
+                if (item.GenderCode == 1)
+                    return "男";
+                else if (item.GenderCode == 2)
+                    return "女";
+                else
+                    return "未知";
+            }
+
+            //加载是否框
+            function LoadYesOrNoSelectItem(obj, key) {
+                if (key == 0) {
+                    $(obj).append("<option value='0' selected>否</option>");
+                    $(obj).append("<option value='1' >是</option>");
+                }
+                else {
+                    $(obj).append("<option value='0'>否</option>");
+                    $(obj).append("<option value='1' selected>是</option>");
+                }
+            }
+
+
+            //验证身份证
+            function isCardID(obj, sexObj) {
+                var sId = $(obj).val();
+                if (sId != "") {
+                    if (sId.length == 10) {
+
+                        if (!/^\d{6}19\d{2}$/.test(sId) && !/^\d{6}20\d{2}$/.test(sId)) {
+
+                            //10位全数字 澳门
+                            if (/^[1|5|7][0-9]{2}/.test(sId.substr(0, 3))) {
+                                if (!/^[1|5|7][0-9]{6}\([0-9Aa]\)/.test(sId)) {
+                                    $.Nuoya.alert("你输入的澳门身份证身份证长度或格式错误")
+                                    return false;
+                                } else {
+                                    $("#form #ProvinceName").val("澳门");
+                                    $("#form #ProvinceCode").val("820000");
+                                    $("#form #CityName").val("澳门");
+                                    $("#form #CityCode").val("821000");
+                                }
+                            }
+                                //台湾和香港为第一位引英文。但是台湾后面全为数字 香港后面跟着6个数字
+                                //台湾
+                            else if (/^[a-zA-Z][0-9]{7}$/.test(sId.substr(0, 8))) {
+                                if (!/^[a-zA-Z][0-9]{9}$/.test(sId)) {
+                                    $.Nuoya.alert("你输入的台湾身份证身份证长度或格式错误")
+                                    return false;
+                                }
+                                else {
+                                    var sex = sId.substr(1, 1);
+                                    //$(sexObj).find('option').eq(parseInt(sex)).attr('selected', true);
+                                    CreateSexSelect(sexObj, sex);
+                                    $("#form #ProvinceName").val("台湾");
+                                    $("#form #ProvinceCode").val("710000");
+                                    $("#form #CityName").val("台湾");
+                                    $("#form #CityCode").val("711000");
+                                }
+                            }
+                            else if (!/^((\s?[A-Za-z])|([A-Za-z]{2}))\d{6}\(([0−9aA])|([0-9aA])\)$/.test(sId)) {
+                                $.Nuoya.alert("你输入的香港身份证身份证长度或格式错误")
                                 return false;
                             }
                             else {
                                 var sex = sId.substr(1, 1);
-                                //$(sexObj).find('option').eq(parseInt(sex)).attr('selected', true);
                                 CreateSexSelect(sexObj, sex);
-                                $("#form #ProvinceName").val("台湾");
-                                $("#form #ProvinceCode").val("710000");
-                                $("#form #CityName").val("台湾");
-                                $("#form #CityCode").val("711000");
+                                //$(sexObj).find('option').eq(parseInt(sex)).attr('selected', true);
+                                $("#form #ProvinceName").val("香港");
+                                $("#form #ProvinceCode").val("810000");
+                                $("#form #CityName").val("香港");
+                                $("#form #CityCode").val("811000");
                             }
+
                         }
-                        else if (!/^((\s?[A-Za-z])|([A-Za-z]{2}))\d{6}\(([0−9aA])|([0-9aA])\)$/.test(sId)) {
-                            $.Nuoya.alert("你输入的香港身份证身份证长度或格式错误")
+                    }
+                    else if (sId.length == 18) {
+                        var iSum = 0;
+                        var info = "";
+
+                        if (!/^\d{17}(\d|x)$/i.test(sId)) {
+                            $.Nuoya.alert("你输入的身份证长度或格式错误")
                             return false;
                         }
-                        else {
-                            var sex = sId.substr(1, 1);
-                            CreateSexSelect(sexObj, sex);
-                            //$(sexObj).find('option').eq(parseInt(sex)).attr('selected', true);
-                            $("#form #ProvinceName").val("香港");
-                            $("#form #ProvinceCode").val("810000");
-                            $("#form #CityName").val("香港");
-                            $("#form #CityCode").val("811000");
+                        sId = sId.replace(/x$/i, "a");
+                        if (parseInt(sId.substr(0, 2)) == null) {
+                            $.Nuoya.alert("你的身份证地区非法")
+                            return false;
                         }
+                        var sBirthday = sId.substr(6, 4) + "-" + Number(sId.substr(10, 2)) + "-" + Number(sId.substr(12, 2));
+                        var d = new Date(sBirthday.replace(/-/g, "/"));
+                        if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate())) {
+                            $.Nuoya.alert("身份证上的出生日期非法")
+                            return false;
+                        }
+                        for (var i = 17; i >= 0; i--) iSum += (Math.pow(2, i) % 11) * parseInt(sId.charAt(17 - i), 11);
+                        if (iSum % 11 != 1) {
+                            $.Nuoya.alert("你输入的身份证号非法");
+                            return false;
+                        }
+                        //此次还可以判断出输入的身份证号的人性别
+                        var sex = parseInt(sId.substr(16, 1)) % 2;
+                        {
+                            CreateSexSelect(sexObj, sex);
+                        }
+                        var cityCode = sId.substr(0, 4) + "00";
+                        var provinceCode = sId.substr(0, 2) + "0000";
 
-                    }
-                }
-                else if (sId.length == 18) {
-                    var iSum = 0;
-                    var info = "";
+                        $("#form #ProvinceCode").val(provinceCode);
+                        $("#form #CityCode").val(cityCode);
+                        if (cityCode == "352200") {
+                            $("#form #ProvinceName").val("福建省");
+                            $("#form #CityName").val("宁德市（旧）");
+                        }
+                        else {
 
-                    if (!/^\d{17}(\d|x)$/i.test(sId)) {
-                        $.Nuoya.alert("你输入的身份证长度或格式错误")
-                        return false;
-                    }
-                    sId = sId.replace(/x$/i, "a");
-                    if (parseInt(sId.substr(0, 2)) == null) {
-                        $.Nuoya.alert("你的身份证地区非法")
-                        return false;
-                    }
-                    var sBirthday = sId.substr(6, 4) + "-" + Number(sId.substr(10, 2)) + "-" + Number(sId.substr(12, 2));
-                    var d = new Date(sBirthday.replace(/-/g, "/"));
-                    if (sBirthday != (d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate())) {
-                        $.Nuoya.alert("身份证上的出生日期非法")
-                        return false;
-                    }
-                    for (var i = 17; i >= 0; i--) iSum += (Math.pow(2, i) % 11) * parseInt(sId.charAt(17 - i), 11);
-                    if (iSum % 11 != 1) {
-                        $.Nuoya.alert("你输入的身份证号非法");
-                        return false;
-                    }
-                    //此次还可以判断出输入的身份证号的人性别
-                    var sex = parseInt(sId.substr(16, 1)) % 2;
-                    {
-                        CreateSexSelect(sexObj, sex);
-                    }
-                    var cityCode = sId.substr(0, 4) + "00";
-                    var provinceCode = sId.substr(0, 2) + "0000";
+                            $.Nuoya.action("/Area/GetByCityCode", { cityCode: cityCode }, function (json) {
+                                $("#form #ProvinceName").val(json.Item1);
+                                $("#form #CityName").val(json.Item2);
 
-                    $("#form #ProvinceCode").val(provinceCode);
-                    $("#form #CityCode").val(cityCode);
-                    if (cityCode == "352200") {
-                        $("#form #ProvinceName").val("福建省");
-                        $("#form #CityName").val("宁德市（旧）");
+                            });
+                        }
+                        return true;
                     }
                     else {
-
-                        $.Nuoya.action("/Area/GetByCityCode", { cityCode: cityCode }, function (json) {
-                            $("#form #ProvinceName").val(json.Item1);
-                            $("#form #CityName").val(json.Item2);
-
-                        });
+                        return false;
                     }
-                    return true;
                 }
-                else {
-                    return false;
-                }
+                return false;
             }
-            return false;
-        }
 
-        //返回上一页
-        function BackUrl() {
-            history.go(-1);
-        }
+            //返回上一页
+            function BackUrl() {
+                history.go(-1);
+            }
 
     </script>
 
@@ -415,7 +420,7 @@
                     </a>
                     <ul class="am-list admin-sidebar-sub am-collapse" id="个人信息管理">
                         <li>
-                            <a data-am-collapse="{target: '#个人信息修改'}" class="am-cf am-collapsed" href="/user/Index">
+                            <a data-am-collapse="{target: '#个人信息修改'}" class="am-cf am-collapsed" href="javascript:userSet()">
                                 <span class="am-icon-user"></span> 个人信息修改
                             </a>
                         </li>

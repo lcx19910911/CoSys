@@ -20,14 +20,14 @@
                 <div class="am-form-group">
                     <label for="user-name" class="am-u-sm-3 am-form-label">标题<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <input type="text" name="Title" placeholder="标题" maxlength="64" value="@(Model?.Title)">
+                        <input type="text" name="Title" placeholder="标题"  maxlength="64" value="@(Model?.Title)" @(Model.ID.IsNotNullOrEmpty()?"readonly":"")>
                     </div>
                 </div>
 
                 <div class="am-form-group">
                     <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <select name="NewsTypeID">
+                        <select name="NewsTypeID"  @(Model.ID.IsNotNullOrEmpty()? "disabled" : "")>
                             @if (Model.TypeList != null && Model.TypeList.Count != 0)
                             {
                                 foreach (var item in Model.TypeList)
@@ -47,7 +47,7 @@
                 <div class="am-form-group">
                     <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <select name="DepartmentID" onchange="loadChildren(this)">
+                        <select name="DepartmentID" onchange="loadChildren(this)"  @(Model.ID.IsNotNullOrEmpty()? "disabled" : "")>
                             @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
                             {
                                 foreach (var item in Model.DepartmentList)
@@ -61,10 +61,10 @@
                 <div class="am-form-group" id="childrenDiv" style="@(Model.ChildrenDepartmentList!=null&&Model.ChildrenDepartmentList.Count>0?"":"display:none;")">
                     <label for="user-email" class="am-u-sm-3 am-form-label">小组<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <select name="ChildrenDepartmentID">
+                        <select name="ChildrenDepartmentID" @(Model.ID.IsNotNullOrEmpty()? "disabled" : "")>
                             @if (Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count != 0)
                             {
-                                foreach (var item in Model.DepartmentList)
+                                foreach (var item in Model.ChildrenDepartmentList)
                                 {
                                     <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
                                 }
@@ -76,11 +76,11 @@
                 {
                     <div class="am-form-group">
                         <div class="am-u-sm-12">
-                            <textarea name="Content" rows="8">@(Model?.Content)</textarea>
+                            <textarea name="Content" rows="8" @(Model.ID.IsNotNullOrEmpty()? "readonly" : "")>@(Model?.Content)</textarea>
                         </div>
                     </div>
                     <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
-                    <div class="am-form-group">
+                    <div class="am-form-group"  style="@(Model.ID.IsNotNullOrEmpty()? "display:none" : "")">
                         <label for="user-email" class="am-u-sm-3 am-form-label">图片</label>
                         <div class="am-u-sm-9">
                             <a id="imageFile" class="am-icon-plus am-text-lg" style="line-height:30px;">上传图片</a>
@@ -387,6 +387,7 @@ else
             }
             var children = $("[name='ChildrenDepartmentID']").val();
             var penName = $("[name='PenName']").val();
+            debugger
             if (children != "") {
                 departmentID += ";" + children;
             }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CoSys.Core;
 
 namespace CoSys.Web.Controllers
 {
@@ -21,7 +22,7 @@ namespace CoSys.Web.Controllers
             return View();
         }
 
-        public ViewResult Manage(string id)
+        public ActionResult Manage(string id)
         {
             var model = WebService.Find_News(id);
             if (model == null)
@@ -29,28 +30,40 @@ namespace CoSys.Web.Controllers
                 model = new News();
                 model.ChildrenDepartmentList = new List<SelectItem>();
                 model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
+                if(model.DepartmentList!=null&& model.DepartmentList.Count>0)
+                model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentList[0].Value);
             }
             else
             {
+                var admin = Client.LoginAdmin;
+                var user = Client.LoginUser;
                 model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
-                if (!model.UserID.Equals(Client.LoginUser.ID))
-                    return View("Index");
+                if (model.UserID.IsNotNullOrEmpty())
+                {
+                    if (user!=null&&!model.UserID.Equals(user.ID))
+                        return View("Index");
+                }
+                if (model.AdminID.IsNotNullOrEmpty())
+                {
+                    if (admin == null)
+                        return RedirectToAction("Login", "Account");
+                    if (!model.AdminID.Equals(admin.ID))
+                        return View("Index");
+                }
                 var department = new Department();
-                if (model.DepartmentID.Split(',').Length == 1)
+                if (model.DepartmentID.Split(';').Length == 1)
                 {
                     department = WebService.Find_Department(model.DepartmentID);
                 }
-                 else  if (model.DepartmentID.Split(',').Length == 2)
+                 else  if (model.DepartmentID.Split(';').Length == 2)
                 {
-                    model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentID.Split(',')[0]);
-                    department = WebService.Find_Department(model.DepartmentID.Split(',')[1]);
+                    model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentID.Split(';')[0]);
+                    department = WebService.Find_Department(model.DepartmentID.Split(';')[1]);
                 }
 
                 if(department==null)
                     return View("Index");
 
-                var admin = Client.LoginAdmin;
-                var user = Client.LoginUser;
                 if (user != null)
                 {
                     if (user.ID != model.UserID)
@@ -60,27 +73,29 @@ namespace CoSys.Web.Controllers
                 }
                 if (admin != null)
                 {
-                    //判断角色
-                    var role = WebService.Find_Role(admin.RoleID);
-                    if (role == null)
+                    if (!admin.IsSuperAdmin)
                     {
-                        return View("Index");
-                    }
-                    //审核中
-                    if (model.State == NewsState.WaitAudit)
-                    {
-                        //是否审核
-                        if(role.AuditState!=model.AuditState)
+                        //判断角色
+                        var role = WebService.Find_Role(admin.RoleID);
+                        if (role == null)
                         {
                             return View("Index");
                         }
-                        //判断投递部门权限
-                        if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin)
+                        //审核中
+                        if (model.State == NewsState.WaitAudit)
                         {
-                            return View("Index");
+                            //是否审核
+                            if (role.AuditState != model.AuditState)
+                            {
+                                return View("Index");
+                            }
+                            //判断投递部门权限
+                            if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin)
+                            {
+                                return View("Index");
+                            }
                         }
                     }
-
                 }
 
             }

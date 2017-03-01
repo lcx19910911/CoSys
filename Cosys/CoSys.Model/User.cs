@@ -172,6 +172,12 @@ namespace CoSys.Model
 
         [NotMapped]
         public List<SelectItem> ProvinceItems { get; set; }
+        [NotMapped]
+        public List<SelectItem> CityItems { get; set; }
+        [NotMapped]
+        public List<SelectItem> CountyItems { get; set; }
+        [NotMapped]
+        public List<SelectItem> StreetItems { get; set; }
 
 
         [NotMapped]
