@@ -17,20 +17,24 @@ namespace CoSys.Web.Controllers
         // GET: 
         public ActionResult Index()
         {
-            if (Client.LoginAdmin != null)
+            if (Client.LoginAdmin != null && Client.LoginUser == null)
             {
                 return RedirectToAction("Admin");
             }
             if (Client.LoginUser == null)
             {
-                return RedirectToAction("Login","Account");
+                return RedirectToAction("Login", "Account");
             }
-            return View();
+            return View(WebService.Get_UserNews());
         }
 
         public ActionResult Admin()
         {
-            return View();
+            if (Client.LoginAdmin == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            return View(WebService.Get_UserNews());
         }
     }
 }

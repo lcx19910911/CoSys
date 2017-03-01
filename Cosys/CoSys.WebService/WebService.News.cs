@@ -239,6 +239,22 @@ namespace CoSys.Service
             }
         }
 
+        /// <summary>
+        /// 查找实体
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<News> Get_UserNews()
+        {
+            using (DbRepository db = new DbRepository())
+            {
+                if(Client.LoginUser!=null)
+                    return db.News.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginUser.ID)).ToList();
+                if (Client.LoginAdmin != null)
+                    return db.News.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginAdmin.ID)).ToList();
+                return new List<News>();
+            }
+        }
 
         /// <summary>
         /// 删除

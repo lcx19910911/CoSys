@@ -1,9 +1,76 @@
-﻿@{
+﻿@model List<News>
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "管理后台";
     var admin = LoginHelper.GetCurrentAdmin();
+    var auditCount = Model.Where(x => x.State == NewsState.WaitAudit).Count();
+    var passCount = Model.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush).Count();
+    var rejectCount = Model.Where(x => x.State == NewsState.Reject).Count();
+    var nonoCount = Model.Where(x => x.State == NewsState.None).Count();
 }
+@if (WebHelper.CheckAgent())
+{
+<div class="am-cf am-padding am-padding-top-sm am-padding-bottom-sm">
+    <div class="am-fl am-cf">
+        <strong class="am-text-primary  am-text-lg">返回</strong>/<small>个人中心</small>
+    </div>
+</div>
+}
+<div class="am-g">
+    <div class="am-u-md-12">
+        <div class="am-panel am-panel-default">
+            <div class="am-panel-hd am-cf" data-am-collapse="{target: '#collapse-panel-1'}">管理员<span class="am-icon-chevron-down am-fr"></span></div>
+            <div class="am-panel-bd am-collapse am-in" id="collapse-panel-1">
+                <div class="am-cf am-padding am-padding-bottom-0">
+                    <div class="am-fl am-cf">
+                        <strong class="am-text-primary  am-text-lg">稿件审核数</strong> :<span class="am-text-danger am-text-lg">@(admin?.AuditCount)</span>篇
+                    </div>
+                </div>
+                <div class="am-cf am-padding am-padding-bottom-0">
+                    <div class="am-fl am-cf">
+                        <strong class="am-text-primary am-text-lg">由你发布数</strong> :<span class="am-text-danger am-text-lg">@(admin?.PlushCount)</span>篇
+                    </div>
+                </div>
+                <div class="am-cf am-padding am-padding-bottom-sm">
+                    <div class="am-fl am-cf">
+                        <strong class="am-text-primary am-text-lg">修改数</strong> :<span class="am-text-danger am-text-lg">@(admin?.EditCount)</span>篇
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="am-panel am-panel-default">
+            <div class="am-panel-hd am-cf" data-am-collapse="{target: '#collapse-panel-2'}">用户投稿<span class="am-icon-chevron-down am-fr"></span></div>
+            <div id="collapse-panel-2" class="am-in">
 
-<h2>稿件审核数:</h2><p>@(admin?.AuditCount)</p>
-<h2>由你发布数</h2><p>@(admin?.PlushCount)</p>
-<h2>修改数</h2><p>@(admin?.EditCount)</p>
+                <div class="am-cf am-padding am-padding-bottom-0">
+                    <div class="am-fl am-cf">
+                        <strong class="am-text-primary  am-text-lg">累计投稿</strong> :<span class="am-text-danger am-text-lg">@(Model.Count)</span>篇
+                    </div>
+                </div>
+                <div class="am-cf am-padding am-padding-bottom-0">
+                    <div class="am-fl am-cf">
+                        <strong class="am-text-primary am-text-lg">稿件审核中</strong> :<span class="am-text-danger am-text-lg">@(auditCount)</span>篇
+                    </div>
+                </div>
+                <div class="am-cf am-padding am-padding-bottom-0">
+                    <div class="am-fl am-cf">
+                        <strong class="am-text-primary am-text-lg">通过稿件数</strong> :<span class="am-text-danger am-text-lg">@(passCount)</span>篇
+                    </div>
+                </div>
+                <div class="am-cf am-padding am-padding-bottom-0">
+                    <div class="am-fl am-cf">
+                        <strong class="am-text-primary am-text-lg">被退稿件</strong> :<span class="am-text-danger am-text-lg">@(rejectCount)</span>篇
+                    </div>
+                </div>
+                <div class="am-cf am-padding am-padding-bottom-sm">
+                    <div class="am-fl am-cf">
+                        <strong class="am-text-primary am-text-lg">草稿箱</strong> :<span class="am-text-danger am-text-lg">@(nonoCount)</span>篇
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
