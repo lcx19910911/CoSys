@@ -58,18 +58,16 @@ namespace CoSys.Service
 
         }
      
-        /// 获取学员缴费记录
+        /// 获取记录
         /// </summary>
         /// <param name="">门店id</param>
         /// <returns></returns>
-        public WebResult<PageList<Log>> Get_LogByStudentId(int pageIndex,
-            int pageSize, string newId)
+        public List<Log> Get_LogByNewsId(string newId)
         {
             using (DbRepository db = new DbRepository())
             {
-                var query = db.Log.AsQueryable().AsNoTracking().Where(x => x.NewsID.Equals(newId)).OrderByDescending(x => x.CreatedTime);
-                var count = query.Count();
-                var list = query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+                var list = db.Log.AsQueryable().AsNoTracking().Where(x => x.NewsID.Equals(newId)).OrderByDescending(x => x.CreatedTime).ToList();
                 var adminIds = list.Select(x => x.AdminID).ToList();
                 var adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID);
                 var roleDic = db.Role.ToDictionary(x => x.ID);
@@ -81,9 +79,10 @@ namespace CoSys.Service
                         x.AdminName = admin.Name;
                         if (admin.RoleID.IsNotNullOrEmpty() && roleDic.ContainsKey(admin.RoleID))
                             x.RoleName = roleDic[admin.RoleID].Name;
+
                     }
                 });
-                return ResultPageList(list, pageIndex, pageSize, count);
+                return list;
             }
         }
     }

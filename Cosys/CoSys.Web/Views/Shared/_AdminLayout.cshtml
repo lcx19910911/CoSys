@@ -362,7 +362,7 @@
 <body>
     <header class="am-topbar am-topbar-inverse admin-header">
         <div class="am-topbar-brand">
-            <a href="/home/index"><strong>@CustomHelper.GetValue("Website-Titlte")---@ViewBag.Title</strong></a>
+            <a href="/home/admin"><strong>@CustomHelper.GetValue("Website-Titlte")---@ViewBag.Title</strong></a>
         </div>
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
@@ -394,18 +394,18 @@
             <ul class="am-list admin-sidebar-list">
 
                 <li class="admin-parent">
-                    <a data-am-collapse="{target: '#投稿管理'}" class="am-cf am-collapsed">
+                    <a data-am-collapse="{target: '#投稿管理'}" class="am-cf">
                         <span class="am-icon-calculator"></span> 投稿管理
                         <span class="am-icon-angle-right am-fr am-margin-right"></span>
                     </a>
-                    <ul class="am-list admin-sidebar-sub am-collapse" id="投稿管理">
+                    <ul class="am-list admin-sidebar-sub " id="投稿管理">
                         <li>
                             <a data-am-collapse="{target: '#投稿管理'}" class="am-cf am-collapsed" href="/News/admin">
                                 <span class="am-icon-user"></span> 投稿管理
                             </a>
                         </li>
                         <li>
-                            <a data-am-collapse="{target: '#在线投稿'}" class="am-cf am-collapsed" href="/news/manage">
+                            <a data-am-collapse="{target: '#在线投稿'}" class="am-cf am-collapsed" href="/news/adminmanage">
                                 <span class="am-icon-user"></span> 在线投稿
                             </a>
                         </li>
@@ -416,11 +416,11 @@
                     if (currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Admin) != 0)
                     {
                         <li class="admin-parent">
-                            <a data-am-collapse="{target: '#用户管理'}" class="am-cf am-collapsed">
+                            <a data-am-collapse="{target: '#用户管理'}" class="am-cf ">
                                 <span class="am-icon-calculator"></span> 用户管理
                                 <span class="am-icon-angle-right am-fr am-margin-right"></span>
                             </a>
-                            <ul class="am-list admin-sidebar-sub am-collapse" id="用户管理">
+                            <ul class="am-list admin-sidebar-sub " id="用户管理">
                                 <li>
                                     <a data-am-collapse="{target: '#投递部门管理'}" class="am-cf am-collapsed" href="/Department/Index">
                                         <span class="am-icon-user"></span> 投递部门管理
@@ -443,11 +443,11 @@
                     if (currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Statistics) != 0)
                     {
                         <li class="admin-parent">
-                            <a data-am-collapse="{target: '#统计'}" class="am-cf am-collapsed">
+                            <a data-am-collapse="{target: '#统计'}" class="am-cf">
                                 <span class="am-icon-calculator"></span> 统计
                                 <span class="am-icon-angle-right am-fr am-margin-right"></span>
                             </a>
-                            <ul class="am-list admin-sidebar-sub am-collapse" id="统计">
+                            <ul class="am-list admin-sidebar-sub " id="统计">
                                 <li>
                                     <a data-am-collapse="{target: '#平台佣金设置'}" class="am-cf am-collapsed" href="/Admin/Config/Index?code=">
                                         <span class="am-icon-user"></span> 平台佣金设置
@@ -459,11 +459,11 @@
                     if (currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Config) != 0)
                     {
                         <li class="admin-parent">
-                            <a data-am-collapse="{target: '#参数设置'}" class="am-cf am-collapsed">
+                            <a data-am-collapse="{target: '#参数设置'}" class="am-cf ">
                                 <span class="am-icon-bars"></span> 参数设置
                                 <span class="am-icon-angle-right am-fr am-margin-right"></span>
                             </a>
-                            <ul class="am-list admin-sidebar-sub am-collapse" id="参数设置">
+                            <ul class="am-list admin-sidebar-sub" id="参数设置">
 
                                 <li>
                                     <a data-am-collapse="{target: '#地区管理'}" class="am-cf am-collapsed" href="/Area/Index">

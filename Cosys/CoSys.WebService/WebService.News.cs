@@ -54,22 +54,22 @@ namespace CoSys.Service
                     {
                         query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginUser.ID));
                     }
-                    if (Client.LoginAdmin != null)
+                    else if (Client.LoginAdmin != null)
                     {
                         query = query.Where(x => !string.IsNullOrEmpty(x.AdminID) && x.AdminID.Equals(Client.LoginAdmin.ID));
                     }
                 }
                 else
                 {
+                    query = query.Where(x => x.State == NewsState.WaitAudit);
                     //判断权限加载相对应的新闻
-                    if (Client.LoginAdmin != null&&!Client.LoginAdmin.IsSuperAdmin)
+                    if (Client.LoginAdmin != null && !Client.LoginAdmin.IsSuperAdmin && Client.LoginUser==null)
                     {
-
                         //角色的审核权限
                         var role = db.Role.Find(Client.LoginAdmin.RoleID);
                         if(role==null)
                             return ResultPageList(new List<News>(), pageIndex, pageSize, 0);
-                        var departmentIds = db.Department.Where(x => (Client.LoginAdmin.DepartmentFlag & x.Flag) != 0 && x.ParentID.IsNotNullOrEmpty()).Select(x => x.ParentID+";"+x.ID).ToList();
+                        var departmentIds = db.Department.Where(x => (Client.LoginAdmin.DepartmentFlag & x.Flag) != 0 &&!string.IsNullOrEmpty(x.ParentID)).Select(x => x.ParentID+";"+x.ID).ToList();
                         query = query.Where(x =>(x.State==NewsState.Pass||x.AuditState==role.AuditState)&& departmentIds.Contains(x.DepartmentID));
                     }
                 }
@@ -185,7 +185,7 @@ namespace CoSys.Service
                     oldEntity.DepartmentID = model.DepartmentID;
                     oldEntity.Msg = model.Msg;
                     oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
-                    if (oldEntity.State == NewsState.Reject)
+                    if (oldEntity.State == NewsState.Reject|| oldEntity.State == NewsState.None)
                     {
                         if (isAudit)
                             oldEntity.State = NewsState.WaitAudit;
@@ -321,6 +321,7 @@ namespace CoSys.Service
                             }
                             else
                             {
+                                news.Msg = msg;
                                 news.State = NewsState.Reject;
                             }
                         }
@@ -339,6 +340,7 @@ namespace CoSys.Service
                             }
                             else
                             {
+                                news.Msg = msg;
                                 news.AuditState = NewsAuditState.EditorAudit;                             
                             }
                         }
@@ -356,6 +358,7 @@ namespace CoSys.Service
                             }
                             else
                             {
+                                news.Msg = msg;
                                 news.AuditState = NewsAuditState.MinisterAudit;
                             }
                         }

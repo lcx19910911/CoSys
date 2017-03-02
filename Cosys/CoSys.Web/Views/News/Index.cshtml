@@ -29,9 +29,9 @@
             <tr>
                 <th dataname="ID" type="checkbox"></th>
                 <th dataname="Title">稿件名称</th>
-                <th dataname="CodeStr">类型</th>           
+                <th dataname="NewsTypeName">类型</th>           
                 <th dataname="StateStr">状态</th>
-                <th dataname="CreatedTime" datatype="jsondate">申请日期</th>
+                <th dataname="CreatedTime" datatype="jsondate">创建日期</th>
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -55,7 +55,7 @@
             },
             ajaxUrl: "/News/GetPageList",
             //数据请求地址
-            events: [            
+            events: [
                 {
                      className: "am-text-danger",
                      icon: "icon-edit",

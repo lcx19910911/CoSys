@@ -1,7 +1,7 @@
 ﻿(function ($) {
     var dialogTemplates = {
         dialog:
-            '<div class="am-modal am-modal-alert" tabindex="-1">' +
+            '<div class="am-modal am-modal-alert" tabindex="-1" style="z-index:1001">' +
                 '<div class="am-modal-dialog">' +
                     '<div class="am-modal-bd">' +
                     '</div>' +

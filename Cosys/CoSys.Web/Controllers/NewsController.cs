@@ -13,12 +13,16 @@ namespace CoSys.Web.Controllers
     public class NewsController : BaseController
     {
 
-        public ViewResult Index()
+        public ActionResult Index()
         {
+            if (Client.LoginUser==null)
+                return RedirectToAction("Login", "Account");
             return View();
         }
-        public ViewResult Admin()
+        public ActionResult Admin()
         {
+            if (Client.LoginAdmin == null)
+                return RedirectToAction("Login", "Account");
             return View();
         }
 
@@ -35,21 +39,12 @@ namespace CoSys.Web.Controllers
             }
             else
             {
-                var admin = Client.LoginAdmin;
                 var user = Client.LoginUser;
                 model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
-                if (model.UserID.IsNotNullOrEmpty())
-                {
-                    if (user!=null&&!model.UserID.Equals(user.ID))
-                        return View("Index");
-                }
-                if (model.AdminID.IsNotNullOrEmpty())
-                {
-                    if (admin == null)
-                        return RedirectToAction("Login", "Account");
-                    if (!model.AdminID.Equals(admin.ID))
-                        return View("Index");
-                }
+                if (user == null)
+                    return RedirectToAction("Login", "Account");
+                if (!model.UserID.Equals(user.ID))
+                    return View("Index");
                 var department = new Department();
                 if (model.DepartmentID.Split(';').Length == 1)
                 {
@@ -63,45 +58,82 @@ namespace CoSys.Web.Controllers
 
                 if(department==null)
                     return View("Index");
+                model.Logs = WebService.Get_LogByNewsId(model.ID);
+            }
 
-                if (user != null)
+            model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
+            model.MethodList= WebService.Get_DataDictorySelectItem(GroupCode.Channel); 
+            return View(model);
+        }
+
+        public ActionResult AdminManage(string id)
+        {
+            var model = WebService.Find_News(id);
+            ViewBag.CanEdit = false;;
+            if (model == null)
+            {
+                model = new News();
+                model.ChildrenDepartmentList = new List<SelectItem>();
+                model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
+                if (model.DepartmentList != null && model.DepartmentList.Count > 0)
+                    model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentList[0].Value);
+            }
+            else
+            {
+                var admin = Client.LoginAdmin;
+                model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
+
+                if (admin == null)
+                    return RedirectToAction("Login", "Account");
+                var department = new Department();
+                if (model.DepartmentID.Split(';').Length == 1)
                 {
-                    if (user.ID != model.UserID)
+                    department = WebService.Find_Department(model.DepartmentID);
+                }
+                else if (model.DepartmentID.Split(';').Length == 2)
+                {
+                    model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentID.Split(';')[0]);
+                    department = WebService.Find_Department(model.DepartmentID.Split(';')[1]);
+                }
+
+                if (department == null)
+                    return View("Index");
+                model.Logs = WebService.Get_LogByNewsId(model.ID);
+                if ((model.State==NewsState.None||model.State==NewsState.Reject)&&!model.UserID.Equals(admin.ID))
+                    return View("Index");
+                if (!admin.IsSuperAdmin)
+                {
+                    //判断角色
+                    var role = WebService.Find_Role(admin.RoleID);
+                    if (role == null)
                     {
                         return View("Index");
                     }
-                }
-                if (admin != null)
-                {
-                    if (!admin.IsSuperAdmin)
+                    //审核中
+                    if (model.State == NewsState.WaitAudit)
                     {
-                        //判断角色
-                        var role = WebService.Find_Role(admin.RoleID);
-                        if (role == null)
+                        //是否审核
+                        if (role.AuditState != model.AuditState)
                         {
                             return View("Index");
                         }
-                        //审核中
-                        if (model.State == NewsState.WaitAudit)
+                        //判断投递部门权限
+                        if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin)
                         {
-                            //是否审核
-                            if (role.AuditState != model.AuditState)
-                            {
-                                return View("Index");
-                            }
-                            //判断投递部门权限
-                            if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin)
-                            {
-                                return View("Index");
-                            }
+                            return View("Index");
                         }
+                        ViewBag.CanEdit = true;
                     }
+                }
+                else
+                {
+                    ViewBag.CanEdit = true;
                 }
 
             }
 
             model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
-            model.MethodList= WebService.Get_DataDictorySelectItem(GroupCode.Channel); 
+            model.MethodList = WebService.Get_DataDictorySelectItem(GroupCode.Channel);
             return View(model);
         }
 

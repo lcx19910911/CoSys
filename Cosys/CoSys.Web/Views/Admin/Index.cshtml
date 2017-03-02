@@ -12,7 +12,7 @@
     }
 </style>
 <div class="am-cf am-padding">
-    <div class="am-fl am-cf"><a href="/"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>管理员管理</small></div>
+    <div class="am-fl am-cf"><a href="/home/admin"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>管理员管理</small></div>
 </div>
 <div id="searchDomain">
 
@@ -144,9 +144,9 @@
                 }
             });
 
-            $.Nuoya.action("/Role/GetSelectItem", { id: dataitem ? dataitem.RoleId : "" }, function (json) {
+            $.Nuoya.action("/Role/GetSelectItem", { id: dataitem ? dataitem.RoleID : "" }, function (json) {
                 $(json).each(function () {
-                    $("select[name='RoleId']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                    $("select[name='RoleID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                 });
             });
             $("#form [name='DepartmentFlagSelect']").ztreeSelect($("[name='DepartmentFlag']"), "/Department/GetZTreeChildren", dataitem != null ? dataitem.DepartmentFlag : 0, true, true);
@@ -253,6 +253,7 @@
                                     $.Nuoya.form("form").dataLoad({
                                         data: model
                                     });
+                                    $("[name='Account']").prop("readonly", true);
                                 });
                             },
                             buttons: [{
