@@ -12,6 +12,9 @@ namespace CoSys.Model
     /// </summary>
     public enum NewsAuditState
     {
+
+        None=0,
+
         /// <summary>
         /// 编辑审核
         /// </summary>

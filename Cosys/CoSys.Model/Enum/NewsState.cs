@@ -20,7 +20,7 @@ namespace CoSys.Model
         /// <summary>
         /// 待审核
         /// </summary>
-        [Description("审核中")]
+        [Description("待审核")]
         WaitAudit = 1,
 
         /// <summary>

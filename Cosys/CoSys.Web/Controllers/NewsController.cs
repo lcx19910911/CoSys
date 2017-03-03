@@ -104,32 +104,35 @@ namespace CoSys.Web.Controllers
                 }
 
                 if (department == null)
-                    return View("Index");
+                    return View("Admin");
                 model.Logs = WebService.Get_LogByNewsId(model.ID);
                 if ((model.State==NewsState.None||model.State==NewsState.Reject)&&!model.UserID.Equals(admin.ID))
-                    return View("Index");
+                    return View("Admin");
                 if (!admin.IsSuperAdmin)
                 {
                     //判断角色
                     var role = WebService.Find_Role(admin.RoleID);
                     if (role == null)
                     {
-                        return View("Index");
+                        return View("Admin");
                     }
                     //审核中
                     if (model.State == NewsState.WaitAudit)
                     {
-                        //是否审核
-                        if (role.AuditState != model.AuditState)
-                        {
-                            return View("Index");
-                        }
                         //判断投递部门权限
                         if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin)
                         {
-                            return View("Index");
+                            return View("Admin");
                         }
-                        ViewBag.CanEdit = true;
+                        //是否审核
+                        if (role.AuditState != model.AuditState)
+                        {
+                            ViewBag.CanEdit = false;
+                        }
+                        else
+                        {
+                            ViewBag.CanEdit = true;
+                        }
                     }
                 }
                 else
@@ -255,9 +258,9 @@ namespace CoSys.Web.Controllers
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public ActionResult Plush(string id, long flag)
+        public ActionResult Plush(string id, long flag, string msg)
         {
-            return JResult(WebService.Plush_News(id, flag));
+            return JResult(WebService.Plush_News(id, flag, msg));
         }
         
     }

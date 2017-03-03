@@ -350,7 +350,8 @@ else
                 isAduit: isAduit,
             }, function (data) {
                 if (!data.ErrorDesc) {
-                    $.Nuoya.alert(isAduit?"投稿成功":"保存成功");
+                    $.Nuoya.alert(isAduit ? "投稿成功" : "保存成功");
+                    window.location.href = "/news/admin";
                 }
                 else
                     $.Nuoya.alert(data.ErrorDesc);

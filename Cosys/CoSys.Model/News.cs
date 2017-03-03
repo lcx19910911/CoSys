@@ -54,7 +54,7 @@ namespace CoSys.Model
         /// </summary>
         public string Content { get; set; }
 
-        public NewsAuditState AuditState { get; set; }
+        public NewsAuditState AuditState { get; set; } = NewsAuditState.None;
 
         public NewsState State { get; set; }
 

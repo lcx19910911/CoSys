@@ -5,7 +5,7 @@
     var isFormPhone = WebHelper.CheckAgent();
 
     string title = string.Empty;
-    bool canEdit = false;
+    bool canEdit = ViewBag.CanEdit;
     if (Model.ID.IsNotNullOrEmpty())
     {
         if (Model.UserID.Equals(admin.ID))
@@ -15,11 +15,6 @@
                 title = "编辑";
                 canEdit = true;
             }
-        }
-        else
-        {
-            canEdit = true;
-            title = "审核";
         }
     }
     else
@@ -179,7 +174,7 @@
                     }
                     else
                     {
-                        if (Model.Msg.IsNotNullOrEmpty())
+                        if (Model.Msg.IsNotNullOrEmpty()&&canEdit)
                         {
                             <div class="am-form-group">
                                 <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>意见</button>
@@ -221,6 +216,8 @@
                         }
                         else if (Model.State == NewsState.Plush)
                         {
+                            if (canEdit)
+                            {
                             <div class="am-form-group">
                                 <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>发布于</button>
                                 <div class="am-u-sm-9">
@@ -235,6 +232,7 @@
                                     }
                                 </div>
                             </div>
+                            }
                         }
                         else if (Model.State == NewsState.WaitAudit)
                         {
@@ -273,6 +271,9 @@
                                 }
                                 else
                                 {
+
+                                    if (canEdit)
+                                    { 
                                     <div class="am-form-group">
                                         <div class="am-u-sm-4 am-u-sm-push-2">
                                             <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核通过</button>
@@ -281,6 +282,7 @@
                                             <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核驳回</button>
                                         </div>
                                     </div>
+                                    }
                                 }
                             }
                         }
@@ -384,6 +386,7 @@ else
             }, function (data) {
                 if (!data.ErrorDesc) {
                     $.Nuoya.alert("驳回成功");
+                    window.location.href = "/news/admin";
                 }
                 else
                     $.Nuoya.alert(data.ErrorDesc);
@@ -391,11 +394,15 @@ else
         });
 
         $("#passBtn").on("click", function () {
-            $.Nuoya.action("/news/Plush", {
+            var msg = $("[name='Msg']").val();
+            $.Nuoya.action("/news/Audit", {
                 id: '@(Model.ID)',
+                isPass: 1,
+                msg: msg
             }, function (data) {
                 if (!data.ErrorDesc) {
                     $.Nuoya.alert("审核成功");
+                    window.location.href = "/news/admin";
                 }
                 else
                     $.Nuoya.alert(data.ErrorDesc);
@@ -404,13 +411,16 @@ else
 
 
         $("#plushBtn").on("click", function () {
+            var msg = $("[name='Msg']").val();
             $.Nuoya.action("/news/Audit", {
                 isPass: 1,
                 id: '@(Model.ID)',
-                isPlush: 1
+                flag: 1,
+                msg:msg
             }, function (data) {
                 if (!data.ErrorDesc) {
                     $.Nuoya.alert("发布成功");
+                    window.location.href = "/news/admin";
                 }
                 else
                     $.Nuoya.alert(data.ErrorDesc);
@@ -473,6 +483,7 @@ else
             }, function (data) {
                 if (!data.ErrorDesc) {
                     $.Nuoya.alert("保存成功");
+                    window.location.href = "/news/admin";
                 }
                 else
                     $.Nuoya.alert(data.ErrorDesc);
