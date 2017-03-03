@@ -13,6 +13,7 @@ using System.Threading;
 using System.Web.UI;
 using System.IO;
 using System.Web;
+using System.Net.Mail;
 
 namespace CoSys.Core
 {
@@ -1175,6 +1176,63 @@ namespace CoSys.Core
                     return false;
                 }
             }
+        }
+
+
+        /// <summary>
+        /// 发送邮件
+        /// </summary>
+        /// <param name="receiveAddress">接收人邮箱</param>
+        /// <param name="topic">标题</param>
+        /// <param name="body">内容</param>
+        /// <param name="attachmentFilePath">附件文件路径</param>
+        /// <returns></returns>
+        public static bool SendMail(string receiveAddress, string topic, string body, string attachmentFilePath)
+        {
+            if (string.IsNullOrEmpty(topic) || string.IsNullOrEmpty(body) || !IsValidEmail(receiveAddress))
+                return false;
+            string sendAddress = CustomHelper.GetValue("Company_Email"); ;//发件者邮箱地址
+            string sendPassword = CustomHelper.GetValue("Company_Email_Password"); ;//发件者邮箱密码
+            string[] sendUsername = sendAddress.Split('@');
+
+            SmtpClient client = new SmtpClient("smtp." + sendUsername[1].ToString()); //设置邮件协议
+            client.UseDefaultCredentials = false;//这一句得写前面
+            //client.EnableSsl = true;//服务器不支持SSL连接
+
+            client.DeliveryMethod = SmtpDeliveryMethod.Network; //通过网络发送到Smtp服务器
+            client.Credentials = new NetworkCredential(sendUsername[0].ToString(), sendPassword); //通过用户名和密码 认证
+            MailMessage mmsg = new MailMessage(new MailAddress(sendAddress), new MailAddress(receiveAddress)); //发件人和收件人的邮箱地址
+            mmsg.Subject = topic;//邮件主题
+            mmsg.SubjectEncoding = Encoding.UTF8;//主题编码
+            mmsg.Body = body;//邮件正文
+            mmsg.BodyEncoding = Encoding.UTF8;//正文编码
+            mmsg.IsBodyHtml = false;//设置为HTML格式 
+            mmsg.Priority = MailPriority.High;//优先级
+            if (attachmentFilePath.Trim() != "")
+            {
+                mmsg.Attachments.Add(new Attachment(attachmentFilePath));//增加附件
+            }
+            try
+            {
+                client.Send(mmsg);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 验证是否是邮箱
+        /// </summary>
+        /// <param name="strIn"></param>
+        /// <returns></returns>
+        public static bool IsValidEmail(string strIn)
+        {
+            if (string.IsNullOrEmpty(strIn))
+                return false;
+            return System.Text.RegularExpressions.Regex.IsMatch(strIn, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
         }
     }
 }

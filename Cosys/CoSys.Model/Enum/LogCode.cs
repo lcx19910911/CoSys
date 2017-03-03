@@ -39,5 +39,8 @@ namespace CoSys.Model
 
         [Description("录用")]
         AuditPass = 5,
+
+        [Description("发布")]
+        Plush = 6,
     }
 }

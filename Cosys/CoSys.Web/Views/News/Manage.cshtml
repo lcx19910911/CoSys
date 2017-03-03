@@ -137,18 +137,31 @@
                 <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
 
                 @if (Model.ID.IsNotNullOrEmpty())
-                {
-                    <div class="am-form-group">
-                        <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
-                        <div class="am-u-sm-9 am-u-sm-centered">
-                            <pre class="am-pre-scrollable">
-                            @foreach (var item in Model.Logs)
-                            {
-                                <span class="am-text-success">@("审核人："+item.AdminName)</span> <span class="am-text-danger">@("      操作："+item.Code.GetDescription())</span>@("      对象："+item.RoleName)@(  "      审核时间：" + item.CreatedTime.ToString("yyyy-MM-dd hh:mm"))<br />
-                            }
-                            </pre>
+                { <div class="am-form-group">
+                    <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
+
+                    <div class="am-u-md-9">
+                        <div class="am-panel am-panel-default">
+                            <div class="am-panel-bd am-collapse am-in am-cf" id="collapse-panel-3">
+                                <ul class="am-comments-list admin-content-comment">
+                                    @foreach (var item in Model.Logs)
+                                    {
+                                        <li class="am-comment">
+                                            <div class="">
+                                                <header class="am-comment-hd">
+                                                    <div class="am-text-lg"><a href="#" class="am-text-success">@item.AdminName</a><a href="#" class="am-text-warning">角色 @item.RoleName</a>操作：<span class="am-text-danger">@(item.Code.GetDescription()) </span> 于 <time>@item.CreatedTime.ToString("yyyy-MM-dd hh:mm")</time></div>
+                                                </header>
+                                                <div class="am-comment-bd">
+                                                    <p>@item.Remark</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
                         </div>
                     </div>
+                </div>
                 }
 
                 @if (Model.ID.IsNotNullOrEmpty())
@@ -156,7 +169,7 @@
                     if (Model.State == NewsState.Reject)
                     {
                         <div class="am-form-group">
-                            <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">驳回原因</label>
+                            <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">意见</label>
                             <div class="am-u-sm-9">
                                 <textarea rows="4" readonly>@(Model.Msg)</textarea>
                             </div>
@@ -191,7 +204,7 @@
                                     foreach (var item in Model.MethodList)
                                     {
                                         <label class="am-checkbox">
-                                            <input type="checkbox" value="@(item.Value)" data-am-ucheck @((Model.MethodFlag & 1) != 0 ? "checked" : "") />@item.Text
+                                            <input type="checkbox" value="@(item.Value)" data-am-ucheck @((Model.PlushMethodFlag & 1) != 0 ? "checked" : "") />@item.Text
                                         </label>
                                     }
                                 }

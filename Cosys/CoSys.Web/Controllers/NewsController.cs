@@ -26,6 +26,13 @@ namespace CoSys.Web.Controllers
             return View();
         }
 
+        public ActionResult My()
+        {
+            if (Client.LoginAdmin == null)
+                return RedirectToAction("Login", "Account");
+            return View();
+        }
+
         public ActionResult Manage(string id)
         {
             var model = WebService.Find_News(id);
@@ -198,7 +205,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult GetPageList(int pageIndex, int pageSize, string title,string newsTypeId,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
         {
-            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, false, state, createdTimeStart, createdTimeEnd));
+            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, state, createdTimeStart, createdTimeEnd));
         }
 
         /// <summary>
@@ -209,9 +216,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title, string newsTypeId, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title, string newsTypeId, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, bool isAudit=true)
         {
-            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, true, state, createdTimeStart, createdTimeEnd));
+            return JResult(WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, newsTypeId, isAudit, state, createdTimeStart, createdTimeEnd));
         }
 
 
@@ -243,7 +250,15 @@ namespace CoSys.Web.Controllers
         {
             return JResult(WebService.Audit_News(isPass, id,msg));
         }
-
+        /// <summary>
+        /// 发布
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public ActionResult Plush(string id, long flag)
+        {
+            return JResult(WebService.Plush_News(id, flag));
+        }
         
     }
 }

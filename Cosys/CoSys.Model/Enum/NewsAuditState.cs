@@ -19,16 +19,22 @@ namespace CoSys.Model
         EditorAudit = 1,
 
         /// <summary>
-        /// 部长/编委会审核
+        /// 部长
         /// </summary>
-        [Description("部长/编委会审核")]
+        [Description("部长")]
         MinisterAudit = 2,
+
+        /// <summary>
+        /// 编委会审核
+        /// </summary>
+        [Description("编委会审核")]
+        EditorialAudit = 3,
 
         /// <summary>
         /// 稿件审核员审核
         /// </summary>
         [Description("稿件审核员/协会领导审核")]
-        LastAudit = 3,
+        LastAudit = 4,
 
     }
 }

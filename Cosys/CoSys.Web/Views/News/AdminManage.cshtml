@@ -139,13 +139,27 @@
                 {
                     <div class="am-form-group">
                         <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
-                        <div class="am-u-sm-9 am-u-sm-centered">
-                            <pre class="am-pre-scrollable">
-                            @foreach (var item in Model.Logs)
-                            {
-                            <span class="am-text-success">@("审核人："+item.AdminName)</span> <span class="am-text-danger">@("      操作："+item.Code.GetDescription())</span>@("      对象："+item.RoleName)@(  "      审核时间：" + item.CreatedTime.ToString("yyyy-MM-dd hh:mm"))<br />
-                            }
-                            </pre>
+
+                        <div class="am-u-md-9">
+                            <div class="am-panel am-panel-default">
+                                <div class="am-panel-bd am-collapse am-in am-cf" id="collapse-panel-3">
+                                    <ul class="am-comments-list admin-content-comment">
+                                        @foreach (var item in Model.Logs)
+                                        {
+                                        <li class="am-comment">
+                                            <div class="">
+                                                <header class="am-comment-hd">
+                                                    <div class="am-text-lg"><a href="#" class="am-text-success">@item.AdminName</a><a href="#" class="am-text-warning">角色 @item.RoleName</a>操作：<span class="am-text-danger">@(item.Code.GetDescription()) </span> 于 <time>@item.CreatedTime.ToString("yyyy-MM-dd hh:mm")</time></div>
+                                                </header>
+                                                <div class="am-comment-bd">
+                                                    <p>@item.Remark</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
@@ -168,7 +182,7 @@
                         if (Model.Msg.IsNotNullOrEmpty())
                         {
                             <div class="am-form-group">
-                                <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>驳回原因</button>
+                                <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>意见</button>
                                 <div class="am-u-sm-9">
                                     <textarea name="Msg" rows="4">@(Model.Msg)</textarea>
                                 </div>
@@ -187,11 +201,11 @@
                         }
                         else if (Model.State == NewsState.Pass)
                         {
-                            if (ViewBag.CanEdit&&(admin.OperateFlag&(long)OperateFlag.Plush)!=0)
+                            if (ViewBag.CanEdit && (admin.OperateFlag & (long)OperateFlag.Plush) != 0)
                             {
                                 <div class="am-form-group">
                                     <button type="button" class="am-btn am-u-sm-3" id="plushBtn">发布</button>
-                                    <div class="am-u-sm-9">
+                                    <div class="am-u-sm-9" id="plushFlagDiv">
                                         @if (Model.MethodList != null && Model.MethodList.Count != 0)
                                         {
                                             foreach (var item in Model.MethodList)
@@ -215,7 +229,7 @@
                                         foreach (var item in Model.MethodList)
                                         {
                                             <label class="am-checkbox">
-                                                <input type="checkbox" value="@(item.Value)" data-am-ucheck @((Model.MethodFlag & 1) != 0 ? "checked" : "") />@item.Text
+                                                <input type="checkbox" value="@(item.Value)" data-am-ucheck @((Model.PlushMethodFlag & 1) != 0 ? "checked" : "") />@item.Text
                                             </label>
                                         }
                                     }
@@ -225,21 +239,49 @@
                         else if (Model.State == NewsState.WaitAudit)
                         {
                             <div class="am-form-group">
-                                <label for="user-email" class="am-u-sm-3 am-form-label">驳回原因</label>
+                                <label for="user-email" class="am-u-sm-3 am-form-label">意见</label>
                                 <div class="am-u-sm-9">
                                     <textarea name="Msg" rows="4">@(Model.Msg)</textarea>
                                 </div>
                             </div>
-                            if((admin.OperateFlag & (long)OperateFlag.Audit) != 0)
-                            { 
-                            <div class="am-form-group">                                
-                                <div class="am-u-sm-4 am-u-sm-push-2">
-                                    <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核通过</button>
-                                </div>
-                                <div class="am-u-sm-4">
-                                    <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核驳回</button>
-                                </div>
-                            </div>
+                            if ((admin.OperateFlag & (long)OperateFlag.Audit) != 0)
+                            {
+                                if (Model.AuditState == NewsAuditState.EditorialAudit)
+                                {
+                                    <div class="am-form-group">
+                                        <button type="button" class="am-btn am-u-sm-3" id="plushBtn">发布</button>
+                                        <div class="am-u-sm-9">
+                                            @if (Model.MethodList != null && Model.MethodList.Count != 0)
+                                            {
+                                                foreach (var item in Model.MethodList)
+                                                {
+                                                    <label class="am-checkbox">
+                                                        <input type="checkbox" value="@(item.Value)" data-am-ucheck />@item.Text
+                                                    </label>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="am-form-group">
+                                        <div class="am-u-sm-4">
+                                            <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核驳回</button>
+                                        </div>
+                                        <div class="am-u-sm-4">
+                                            <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核通过(到稿件审核员)</button>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="am-form-group">
+                                        <div class="am-u-sm-4 am-u-sm-push-2">
+                                            <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核通过</button>
+                                        </div>
+                                        <div class="am-u-sm-4">
+                                            <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核驳回</button>
+                                        </div>
+                                    </div>
+                                }
                             }
                         }
                     }
@@ -264,7 +306,7 @@
 {
     <script src="~/Scripts/UEditor/ueditor.config.js"></script>
     <script src="~/Scripts/UEditor/ueditor.all.js"></script>
-        <script src="~/Scripts/UEditor/ueditor.parse.js"></script>
+    <script src="~/Scripts/UEditor/ueditor.parse.js"></script>
         <script src="~/Scripts/UEditor/lang/zh-cn/zh-cn.js"></script>
         <script>
             $(function () {
@@ -331,8 +373,7 @@ else
         $("#rejectBtn").on("click", function () {
             var msg = $("[name='Msg']").val();
 
-            if (msg == "")
-            {
+            if (msg == "") {
                 $.Nuoya.alert("请输入驳回意见");
                 return;
             }
@@ -350,8 +391,7 @@ else
         });
 
         $("#passBtn").on("click", function () {
-            $.Nuoya.action("/news/Audit", {
-                isPass: 1,
+            $.Nuoya.action("/news/Plush", {
                 id: '@(Model.ID)',
             }, function (data) {
                 if (!data.ErrorDesc) {
@@ -364,12 +404,13 @@ else
 
 
         $("#plushBtn").on("click", function () {
-            $.Nuoya.action(url, {
+            $.Nuoya.action("/news/Audit", {
                 isPass: 1,
                 id: '@(Model.ID)',
+                isPlush: 1
             }, function (data) {
                 if (!data.ErrorDesc) {
-                    $.Nuoya.alert("审核成功");
+                    $.Nuoya.alert("发布成功");
                 }
                 else
                     $.Nuoya.alert(data.ErrorDesc);

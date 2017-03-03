@@ -90,8 +90,16 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult Quit()
         {
-            LoginHelper.ClearAdmin();
             LoginHelper.ClearUser();
+            return View("Login");
+        }
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult AdminQuit()
+        {
+            LoginHelper.ClearAdmin();
             return View("Login");
         }
 

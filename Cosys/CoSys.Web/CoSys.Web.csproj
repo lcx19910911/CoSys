@@ -603,6 +603,7 @@
     <None Include="Properties\PublishProfiles\cosys.pubxml" />
     <Content Include="Views\News\Admin.cshtml" />
     <Content Include="Views\News\AdminManage.cshtml" />
+    <Content Include="Views\News\My.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

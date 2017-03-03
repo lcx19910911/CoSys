@@ -370,7 +370,7 @@
                 <li><a href="javascript:;"><span class="am-icon-user">@(currentAdmin?.Name)</span></a></li>
 
                 <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
-                <li><a href="/account/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
+                <li><a href="/account/AdminQuit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>
         </div>
     </header>
@@ -407,6 +407,11 @@
                         <li>
                             <a data-am-collapse="{target: '#在线投稿'}" class="am-cf am-collapsed" href="/news/adminmanage">
                                 <span class="am-icon-user"></span> 在线投稿
+                            </a>
+                        </li>
+                        <li>
+                            <a data-am-collapse="{target: '#个人稿件'}" class="am-cf am-collapsed" href="/news/my">
+                                <span class="am-icon-user"></span> 个人稿件
                             </a>
                         </li>
                     </ul>

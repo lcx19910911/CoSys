@@ -1,0 +1,76 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "个人稿件";
+}
+
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><a href="/home/admin"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>个人稿件</small></div>
+</div>
+<div id="searchDomain">
+
+    <div class="am-g">
+        <div class="am-u-lg-6 am-u-end">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">名称：</span>
+                <input type="text" class="am-form-field" placeholder="按名称搜索" style="width:100px;" name="name" ;>
+                <span class="am-input-group-btn am-margin-left-sm">
+                    <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
+                    <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                </span>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<div class="grid_container">
+    <table id="dataTable" class="am-table am-table-compact am-table-hover table-main">
+        <thead>
+            <tr>
+                <th dataname="ID" type="checkbox"></th>
+                <th dataname="Title">稿件名称</th>
+                <th dataname="NewsTypeName">投稿类型</th>
+                <th dataname="UpdateAdminName">上节点审核人</th>           
+                <th dataname="StateStr">状态</th>
+                <th dataname="CreatedTime" datatype="jsondate">申请日期</th>
+                <th type="eventlist"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+
+        function ClearFilter() {
+            $("#searchDomain input").val("");
+        }
+
+        var grid = $.Nuoya.grid({
+            tableId: "dataTable",
+            //表格id
+            search: {
+                domainId: "searchDomain",
+                subId: "btnSearch"
+            },
+            ajaxUrl: "/News/GetAdminPageList",
+            params: {
+                isAudit:false
+            },
+            //数据请求地址
+            events: [       
+                 {
+                     className: "am-text-danger",
+                     icon: "icon-edit",
+                     name: "查看",
+                     click: function (item) {
+                         window.location.href="/News/AdminManage/" + item.ID;
+                     }
+                 }
+            ]
+        });
+
+    </script>
+}
