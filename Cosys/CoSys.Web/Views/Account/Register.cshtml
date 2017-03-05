@@ -83,7 +83,7 @@
                     <select class="area" onchange="loadArea(this)" name="ProvoniceCode">
                         @foreach (var item in Model.ProvinceItems)
                         {
-                            <option value="@item.Value" @(Model.ProvoniceCode.Equals(item.Value)?"selected":"")>@item.Text</option>
+                            <option value="@item.Value" @(Model.ProvoniceCode.IsNotNullOrEmpty()&&Model.ProvoniceCode.Equals(item.Value)?"selected":"")>@item.Text</option>
                         }
                     </select>
                     @*<input type="text" placeholder="省" required id="account" />*@
@@ -96,7 +96,7 @@
                         { 
                         foreach (var item in Model.CityItems)
                         {
-                            <option value="@item.Value" @(Model.CityCode.Equals(item.Value) ? "selected" : "")>@item.Text</option>
+                            <option value="@item.Value" @(Model.CityCode.IsNotNullOrEmpty()&&Model.CityCode.Equals(item.Value) ? "selected" : "")>@item.Text</option>
                             }
                         }
                     </select>
@@ -124,7 +124,7 @@
                         {
                             foreach (var item in Model.StreetItems)
                             {
-                                <option value="@item.Value" @(Model.StreetCode.Equals(item.Value) ? "selected" : "")>@item.Text</option>
+                                <option value="@item.Value" @(Model.StreetCode.IsNotNullOrEmpty()&&Model.StreetCode.Equals(item.Value) ? "selected" : "")>@item.Text</option>
                             }
                         }
                     </select>

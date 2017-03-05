@@ -149,6 +149,8 @@
                     $("select[name='RoleID']").append("<option " + (this.Selected == true ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
                 });
             });
+            //$("[name=DepartmentFlag]").val( dataitem != null ? dataitem.DepartmentFlag : 0);
+            //$("[name=OperateSelect]").ztreeSelect($("[name=OperateUnids]"), "/Menu/GetOperateZtreeNodes", null, true, true);
             $("#form [name='DepartmentFlagSelect']").ztreeSelect($("[name='DepartmentFlag']"), "/Department/GetZTreeChildren", dataitem != null ? dataitem.DepartmentFlag : 0, true, true);
             if (dataitem == null) {
                 $.Nuoya.action("/area/GetAreaCodeSelectItem", {}, function (json) {

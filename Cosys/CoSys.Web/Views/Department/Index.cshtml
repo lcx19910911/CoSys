@@ -110,6 +110,10 @@
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
+                        if ($("[name='ParentID']").val() == "-1")
+                        {
+                            $("[name='ParentID']").val("");
+                        }
                         $.Nuoya.form("form").ajaxSubmit({
                             ajaxUrl: "/Department/Add",
                             callback: function (data) {
@@ -159,6 +163,9 @@
                             buttons: [{
                                 label: "保存",
                                 callback: function (e) {
+                                    if ($("[name='ParentID']").val() == "-1") {
+                                        $("[name='ParentID']").val("");
+                                    }
                                     $.Nuoya.form("form").ajaxSubmit({
                                         ajaxUrl: "/Department/Update",
                                         params: {

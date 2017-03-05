@@ -128,7 +128,24 @@ namespace CoSys.Service
             {
                 if(db.DataDictionary.Where(x=>x.GroupCode==GroupCode.Area&&x.Key.Equals(model.Key)).Any())
                     return Result(false, ErrorCode.sys_param_format_error);
-
+                if (model.GroupCode == GroupCode.Channel)
+                {
+                    var limitFlags = Cache_Get_DataDictionary()[GroupCode.Channel].Select(x=>x.Value.Key.GetLong()).ToList();
+                    var limitFlagAll = 0L;
+                    // 获取所有角色位值并集
+                    limitFlags.ForEach(x => limitFlagAll |= x);
+                    var limitFlag = 0L;
+                    // 从低位遍历是否为空
+                    for (var i = 0; i < 64; i++)
+                    {
+                        if ((limitFlagAll & (1 << i)) == 0)
+                        {
+                            limitFlag = 1 << i;
+                            break;
+                        }
+                    }
+                    model.Key = limitFlag.ToString();
+                }
                 model.ID = Guid.NewGuid().ToString("N");
                 if(string.IsNullOrEmpty(model.Key))
                     model.Key = model.ID;

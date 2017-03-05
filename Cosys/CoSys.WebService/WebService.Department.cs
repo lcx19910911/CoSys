@@ -56,10 +56,21 @@ namespace CoSys.Service
             using (DbRepository db = new DbRepository())
             {
                 model.ID = Guid.NewGuid().ToString("N");
-                if (model.ParentID.IsNotNullOrEmpty() && model.ParentID == "-1")
+                var limitFlags = db.Department.Where(x => (x.Flag & (long)GlobalFlag.Removed) == 0).Select(x => x.Flag).ToList();
+                var limitFlagAll = 0L;
+                // 获取所有角色位值并集
+                limitFlags.ForEach(x => limitFlagAll |= x);
+                var limitFlag = 0L;
+                // 从低位遍历是否为空
+                for (var i = 0; i < 64; i++)
                 {
-                    model.ParentID = string.Empty;
+                    if ((limitFlagAll & (1 << i)) == 0)
+                    {
+                        limitFlag = 1 << i;
+                        break;
+                    }
                 }
+                model.Flag = limitFlag;
                 db.Department.Add(model);
                 if (db.SaveChanges() > 0)
                 {
@@ -212,7 +223,7 @@ namespace CoSys.Service
                     x => new ZTreeNode()
                     {
                         name = x.Name,
-                        value = x.ID,
+                        value = x.Flag.ToString(),
                         children = Get_DepartmentZTreeChildren(x.ID, groups)
                     }).ToList();
             }
@@ -251,7 +262,7 @@ namespace CoSys.Service
                     x => new ZTreeNode()
                     {
                         name = x.Name,
-                        value = x.ID,
+                        value = x.Flag.ToString(),
                         children = Get_DepartmentZTreeFlagChildren(x.ID, groups)
                     }).ToList();
             }

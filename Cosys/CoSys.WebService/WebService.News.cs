@@ -113,9 +113,10 @@ namespace CoSys.Service
         {
             using (DbRepository db = new DbRepository())
             {
+                var admin = Client.LoginAdmin;
                 //角色的审核权限
-                var role = db.Role.Find(Client.LoginAdmin.RoleID);
-                if (role == null)
+                var role = db.Role.Find(admin.RoleID);
+                if (role == null&& !admin.IsSuperAdmin)
                     return ResultPageList(new List<News>(), pageIndex, pageSize, 0);
                 var query = db.News.AsQueryable().AsNoTracking();
                 if (title.IsNotNullOrEmpty())
@@ -140,23 +141,22 @@ namespace CoSys.Service
                 var adminDic = new Dictionary<string, string>();
                 if (!isAudit)
                 {
-                    query = query.Where(x => !string.IsNullOrEmpty(x.AdminID) && x.AdminID.Equals(Client.LoginAdmin.ID));
+                    query = query.Where(x => !string.IsNullOrEmpty(x.AdminID) && x.AdminID.Equals(admin.ID));
                 }
                 else
                 {
                     //判断权限加载相对应的新闻
-                    if (!Client.LoginAdmin.IsSuperAdmin)
+                    if (!admin.IsSuperAdmin)
                     {
-                        var departmentIds = db.Department.Where(x => (Client.LoginAdmin.DepartmentFlag & x.Flag) != 0 && !string.IsNullOrEmpty(x.ParentID)).Select(x => x.ParentID + ";" + x.ID).ToList();
-                        departmentIds.AddRange(db.Department.Where(x => string.IsNullOrEmpty(x.ParentID)).Select(x => x.ID).ToList());
+                        var departmentIds = db.Department.Where(x => (admin.DepartmentFlag & x.Flag) != 0 && !string.IsNullOrEmpty(x.ParentID)).Select(x =>!string.IsNullOrEmpty(x.ParentID)?(x.ParentID + ";" + x.ID):x.ID).ToList();
                         query = query.Where(x => departmentIds.Contains(x.DepartmentID));
-                        if(role.AuditState==NewsAuditState.EditorialAudit)
+                        if (role.AuditState == NewsAuditState.EditorialAudit)
                         {
                             query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit));
                         }
                         if (role.AuditState == NewsAuditState.MinisterAudit)
                         {
-                            query = query.Where(x => (x.AuditState != NewsAuditState.EditorAudit&&x.AuditState!=NewsAuditState.EditorialAudit));
+                            query = query.Where(x => (x.AuditState != NewsAuditState.EditorAudit && x.AuditState != NewsAuditState.EditorialAudit));
                         }
                         if (role.AuditState == NewsAuditState.LastAudit)
                         {
@@ -170,13 +170,10 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    query = query.Where(x => x.State == NewsState.WaitAudit);
+                    query = query.Where(x => x.State == NewsState.WaitAudit|| x.State == NewsState.Pass || x.State == NewsState.Plush);
                 }
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
-
-
                 var ids = list.Select(x => x.UserID).ToList();
                 userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID, x => x.RealName);
                 var adminIds = list.Select(x => x.AdminID).ToList();
@@ -186,15 +183,21 @@ namespace CoSys.Service
                 var departmentDic = db.Department.ToDictionary(x => x.ID);
                 list.ForEach(x =>
                 {
-                    if (x.AuditState == role.AuditState)
+                    if (!admin.IsSuperAdmin)
+                    {
+                        if (x.AuditState == role.AuditState)
+                        {
+                            x.StateStr = x.State.GetDescription();
+                        }
+                        else if (x.AuditState.GetInt() > role.AuditState.GetInt())
+                        {
+                            x.StateStr = "已审核";
+                        }
+                    }
+                    else
                     {
                         x.StateStr = x.State.GetDescription();
                     }
-                    else if(x.AuditState.GetInt()>role.AuditState.GetInt())
-                    {
-                        x.StateStr = "已审核";
-                    }
-                   
                     if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
                         x.UserName = userDic.GetValue(x.UserID);
                     else if (x.UserID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UserID))
@@ -422,7 +425,10 @@ namespace CoSys.Service
                             news.UpdateAdminID = admin.ID;
                             if (isPass == YesOrNoCode.Yes)
                             {
-                                news.AuditState = NewsAuditState.MinisterAudit;
+                                if(news.DepartmentID.Split(';').Length==1)
+                                    news.AuditState = NewsAuditState.MinisterAudit;
+                                else
+                                    news.AuditState = NewsAuditState.EditorialAudit;
                             }
                             else
                             {

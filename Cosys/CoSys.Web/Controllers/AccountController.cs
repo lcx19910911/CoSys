@@ -21,7 +21,7 @@ namespace CoSys.Web.Controllers
         {
             var model = WebService.Find_User(id);
             if(model==null)
-                new User();
+                model=new User();
             model.ProvinceItems = WebService.Get_AreaList("");
             if (model.ID.IsNotNullOrEmpty())
             {
