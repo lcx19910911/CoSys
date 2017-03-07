@@ -1,7 +1,7 @@
 ﻿(function ($) {
     var dialogTemplates = {
         dialog:
-            '<div class="am-modal am-modal-alert" tabindex="-1" style="z-index:1001">' +
+            '<div class="am-modal am-modal-alert" tabindex="-1">' +
                 '<div class="am-modal-dialog">' +
                     '<div class="am-modal-bd">' +
                     '</div>' +
@@ -143,8 +143,7 @@
             });
         },
         ajaxDialog: function (options) {
-            if (options.pageUrl == "" || options.pageUrl == null || operateUrlArray ==null|| (operateUrlArray != null && operateUrlArray.indexOf(options.pageUrl) > -1)) {
-                //这里可以开始显示进度条
+            if (options.addIframe == undefined) {
                 $.Nuoya.ajaxGetCache(options.ajaxUrl, null, function (html) {
                     options.message = html;
                     options.ajaxUrl = null;
@@ -153,8 +152,8 @@
                 });
             }
             else {
-                $.Nuoya.alert("你没有该权限");
-                return false;
+                var target = $.Nuoya.dialog(options);
+                $.Nuoya.callFunction(options.callback, target);
             }
         },
         dialog: function (options) {
@@ -166,7 +165,7 @@
                 closeButton: true,//右上角关闭按钮
                 container: "body",//父级容器
                 afterClose: null,//关闭事件
-
+                addIframe: false,
                 closeOnConfirm: false
             };
             options = $.extend(true, defaults, options);
@@ -181,7 +180,13 @@
                     this.dialog.modal("close");
                 }
             };
-            body.html(options.message);
+
+            if (!options.addIframe) {
+                body.html(options.message);
+            }
+            else {
+                body.html("<iframe id='alrtIframe' src='" + options.ajaxUrl + "' width='" + options.width + "' height='" + options.height + "' frameborder='no'  border='0'></iframe>");
+            }
 
             if (options.title) {
                 var header = $(dialogTemplates.header).append(options.title);

@@ -549,5 +549,54 @@ namespace CoSys.Service
                 }
             }
         }
+
+
+        #region 统计
+
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="title">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public List<News> Get_NewsStatisticsArea(int? province,int? city,int? county)
+        {
+            using (DbRepository db = new DbRepository())
+            {
+                var query = db.User.AsQueryable().AsNoTracking();
+
+               
+                if (city != null)
+                {
+                    query = query.Where(x => x.CityCode == province.ToString());
+                }
+                if (county != null)
+                {
+                    query = query.Where(x => x.CountyCode == province.ToString());
+                }
+
+                if (province != null)
+                {
+                    query = query.Where(x => x.ProvoniceCode == province.ToString());
+                    var cityUserDic = query.GroupBy(x=>x.CityCode).ToDictionary(x=>x.Key,x=>x.Select(y=>y.ID).ToList());
+                    var cityList = Get_AreaList("");
+                    cityList.ForEach(x =>
+                    {
+                        if (cityUserDic.ContainsKey(x.Value))
+                        {
+                            var news = db.News.Where(y => cityUserDic[x.Value].Contains(y.UserID)).ToList();
+                        }
+                    });
+                }
+                return null;
+            }
+        }
+
+
+
+
+        #endregion
     }
 }

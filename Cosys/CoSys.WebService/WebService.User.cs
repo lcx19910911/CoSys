@@ -121,6 +121,42 @@ namespace CoSys.Service
             return new Tuple<ValidateCodeGenertor, string>(v,code);
         }
 
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="name">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name, DateTime? startTimeStart, DateTime? endTimeEnd)
+        {
+            using (DbRepository db = new DbRepository())
+            {
+                var query = db.User.AsQueryable().AsNoTracking().AsNoTracking().Where(x => !x.IsDelete && !x.ID.Equals(this.Client.LoginAdmin.ID));
+
+                if (name.IsNotNullOrEmpty())
+                {
+                    query = query.Where(x => x.RealName.Contains(name));
+                }
+                if (startTimeStart != null)
+                {
+                    query = query.Where(x => x.CreatedTime >= startTimeStart);
+                }
+                if (endTimeEnd != null)
+                {
+                    endTimeEnd = endTimeEnd.Value.AddDays(1);
+                    query = query.Where(x => x.CreatedTime < endTimeEnd);
+                }
+
+                var count = query.Count();
+                var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                list.ForEach(x =>
+                {
+                });
+                return ResultPageList(list, pageIndex, pageSize, count);
+            }
+        }
 
         /// <summary>
         /// 用户修改密码
@@ -339,6 +375,30 @@ namespace CoSys.Service
                 return entity;
             }
         }
+
+
+        /// <summary>
+        /// 删除分类
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public WebResult<bool> Delete_User(string ids)
+        {
+            if (!ids.IsNotNullOrEmpty())
+            {
+                return Result(false, ErrorCode.sys_param_format_error);
+            }
+            using (DbRepository db = new DbRepository())
+            {
+                //找到实体
+                db.User.Where(x => ids.Contains(x.ID)).ToList().ForEach(x =>
+                {
+                    x.IsDelete = true;
+                });
+                return db.SaveChanges() > 0 ? Result(true) : Result(false, ErrorCode.sys_fail);
+            }
+        }
+
 
 
         /// <summary>
