@@ -8,6 +8,10 @@
     var rejectCount = Model.Where(x => x.State == NewsState.Reject).Count();
     var nonoCount = Model.Where(x => x.State == NewsState.None).Count();
 }
+<script>
+    $.Nuoya.action("/Home/LoadCache", {}, function (data) {
+    });
+</script>
 @if (WebHelper.CheckAgent())
 {
 <div class="am-cf am-padding am-padding-top-sm am-padding-bottom-sm">

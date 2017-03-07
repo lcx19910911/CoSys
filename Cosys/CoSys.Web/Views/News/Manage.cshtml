@@ -261,6 +261,10 @@ else
                     $("select[name='ChildrenDepartmentID']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
                 });
             }
+            else {
+                $("select[name='ChildrenDepartmentID']").html("");
+                $("#childrenDiv").hide();
+            }
         });
     }
 

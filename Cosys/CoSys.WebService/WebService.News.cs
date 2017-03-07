@@ -148,17 +148,13 @@ namespace CoSys.Service
                     //判断权限加载相对应的新闻
                     if (!admin.IsSuperAdmin)
                     {
-                        var departmentIds = db.Department.Where(x => (admin.DepartmentFlag & x.Flag) != 0 && !string.IsNullOrEmpty(x.ParentID)).Select(x =>!string.IsNullOrEmpty(x.ParentID)?(x.ParentID + ";" + x.ID):x.ID).ToList();
+                        var departmentIds = db.Department.Where(x => (admin.DepartmentFlag & x.Flag) != 0).Select(x =>!string.IsNullOrEmpty(x.ParentID)?(x.ParentID + ";" + x.ID):x.ID).ToList();
                         query = query.Where(x => departmentIds.Contains(x.DepartmentID));
                         if (role.AuditState == NewsAuditState.EditorialAudit)
                         {
                             query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit));
                         }
-                        if (role.AuditState == NewsAuditState.MinisterAudit)
-                        {
-                            query = query.Where(x => (x.AuditState != NewsAuditState.EditorAudit && x.AuditState != NewsAuditState.EditorialAudit));
-                        }
-                        if (role.AuditState == NewsAuditState.LastAudit)
+                        if (role.AuditState == NewsAuditState.MinisterAudit||role.AuditState == NewsAuditState.LastAudit)
                         {
                             query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.MinisterAudit || x.AuditState == NewsAuditState.LastAudit));
                         }
@@ -176,11 +172,12 @@ namespace CoSys.Service
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 var ids = list.Select(x => x.UserID).ToList();
                 userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID, x => x.RealName);
-                var adminIds = list.Select(x => x.AdminID).ToList();
-                adminIds.AddRange(list.Select(x => x.UpdateAdminID).ToList());
-                adminIds.AddRange(list.Select(x => x.UserID).ToList());
+                var adminIds = list.Select(x => x.UpdateAdminID).ToList();
+                adminIds.AddRange(list.Select(x => x.AdminID).ToList());
                 adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
                 var departmentDic = db.Department.ToDictionary(x => x.ID);
+                var typeIdList = list.Select(x => x.NewsTypeID).ToList();
+                var typeDic = db.DataDictionary.Where(x => x.GroupCode == GroupCode.Type && typeIdList.Contains(x.ID)).ToDictionary(x=>x.ID,x=>x.Value);
                 list.ForEach(x =>
                 {
                     if (!admin.IsSuperAdmin)
@@ -193,38 +190,45 @@ namespace CoSys.Service
                         {
                             x.StateStr = "已审核";
                         }
-                    }
+                        else
+                        {
+                            x.StateStr = "上节点未审核";
+                        }
+                        }
                     else
                     {
                         x.StateStr = x.State.GetDescription();
                     }
                     if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
                         x.UserName = userDic.GetValue(x.UserID);
-                    else if (x.UserID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UserID))
-                        x.UserName = adminDic.GetValue(x.UserID);
+                    else if (x.AdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.AdminID))
+                        x.UserName = adminDic.GetValue(x.AdminID);
                     if (x.UpdateAdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UpdateAdminID))
                         x.UpdateAdminName = adminDic.GetValue(x.UpdateAdminID);
-                    if (x.NewsTypeID.IsNotNullOrEmpty())
-                        x.NewsTypeName = GetValue(GroupCode.Type, x.NewsTypeID);
-                    if (x.DepartmentID.IsNotNullOrEmpty())
+                    if (x.NewsTypeID.IsNotNullOrEmpty()&& typeDic.ContainsKey(x.NewsTypeID))
+                       x.NewsTypeName = typeDic[x.NewsTypeID];
+                    if (admin != null)
                     {
-                        var departmentAry = x.DepartmentID.Split(':');
-                        if (departmentAry.Length == 1)
+                        if (x.DepartmentID.IsNotNullOrEmpty())
                         {
-                            if (departmentDic.ContainsKey(departmentAry[0]))
+                            var departmentAry = x.DepartmentID.Split(':');
+                            if (departmentAry.Length == 1)
                             {
-                                x.DepartmentName = departmentDic[departmentAry[0]].Name;
+                                if (departmentDic.ContainsKey(departmentAry[0]))
+                                {
+                                    x.DepartmentName = departmentDic[departmentAry[0]].Name;
+                                }
                             }
-                        }
-                        else if (departmentAry.Length == 2)
-                        {
-                            if (departmentDic.ContainsKey(departmentAry[0]))
+                            else if (departmentAry.Length == 2)
                             {
-                                x.DepartmentName = departmentDic[departmentAry[0]].Name;
-                            }
-                            if (departmentDic.ContainsKey(departmentAry[1]))
-                            {
-                                x.DepartmentName += "-" + departmentDic[departmentAry[1]].Name;
+                                if (departmentDic.ContainsKey(departmentAry[0]))
+                                {
+                                    x.DepartmentName = departmentDic[departmentAry[0]].Name;
+                                }
+                                if (departmentDic.ContainsKey(departmentAry[1]))
+                                {
+                                    x.DepartmentName += "-" + departmentDic[departmentAry[1]].Name;
+                                }
                             }
                         }
                     }
@@ -249,8 +253,8 @@ namespace CoSys.Service
                 if (Client.LoginUser != null)
                     model.UserID = Client.LoginUser.ID;
                 else
-                    model.UserID = Client.LoginAdmin.ID;
-                if (isAudit)
+                    model.AdminID = Client.LoginAdmin.ID;
+                if (!isAudit)
                     model.State = NewsState.None;
                 else
                 {
@@ -291,7 +295,8 @@ namespace CoSys.Service
                     oldEntity.NewsTypeID = model.NewsTypeID;
                     oldEntity.DepartmentID = model.DepartmentID;
                     oldEntity.Msg = model.Msg;
-                    oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
+                    if(Client.LoginUser==null)
+                        oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
                     if (oldEntity.State == NewsState.Reject|| oldEntity.State == NewsState.None)
                     {
                         if (isAudit)
@@ -303,14 +308,8 @@ namespace CoSys.Service
                 else
                     return Result(false, ErrorCode.sys_param_format_error);
 
-                if (db.SaveChanges() > 0)
-                {
-                    return Result(true);
-                }
-                else
-                {
-                    return Result(false, ErrorCode.sys_fail);
-                }
+                db.SaveChanges();
+                return Result(true);
             }
 
         }

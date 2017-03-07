@@ -25,7 +25,6 @@
     ViewBag.Title = title;
 }
 
-
 <div class="admin-content-body">
     <div class="am-cf am-padding am-padding-bottom-0">
         <div class="am-fl am-cf"><a href="/news/index"><strong class="am-text-primary am-text-lg">稿件管理</strong> </a>/ <small>@title</small></div>
@@ -40,7 +39,6 @@
                         <input type="text" name="Title" placeholder="标题" maxlength="64" value="@(Model.Title)" @(!canEdit ? "readonly" : "")>
                     </div>
                 </div>
-
                 <div class="am-form-group">
                     <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
@@ -134,23 +132,22 @@
                 {
                     <div class="am-form-group">
                         <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
-
                         <div class="am-u-md-9">
                             <div class="am-panel am-panel-default">
                                 <div class="am-panel-bd am-collapse am-in am-cf" id="collapse-panel-3">
                                     <ul class="am-comments-list admin-content-comment">
                                         @foreach (var item in Model.Logs)
                                         {
-                                        <li class="am-comment">
-                                            <div class="">
-                                                <header class="am-comment-hd">
-                                                    <div class="am-text-lg"><a href="#" class="am-text-success">@item.AdminName</a><a href="#" class="am-text-warning">角色 @item.RoleName</a>操作：<span class="am-text-danger">@(item.Code.GetDescription()) </span> 于 <time>@item.CreatedTime.ToString("yyyy-MM-dd hh:mm")</time></div>
-                                                </header>
-                                                <div class="am-comment-bd">
-                                                    <p>@item.Remark</p>
+                                            <li class="am-comment">
+                                                <div class="">
+                                                    <header class="am-comment-hd">
+                                                        <div class="am-text-lg"><a href="#" class="am-text-success">@item.AdminName</a><a href="#" class="am-text-warning">角色 @item.RoleName</a>操作：<span class="am-text-danger">@(item.Code.GetDescription()) </span> 于 <time>@item.CreatedTime.ToString("yyyy-MM-dd hh:mm")</time></div>
+                                                    </header>
+                                                    <div class="am-comment-bd">
+                                                        <p>@item.Remark</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </li>
+                                            </li>
                                         }
                                     </ul>
                                 </div>
@@ -158,7 +155,6 @@
                         </div>
                     </div>
                 }
-
                 @if (Model.ID.IsNotNullOrEmpty())
                 {
                     if (Model.State == NewsState.None)
@@ -174,15 +170,6 @@
                     }
                     else
                     {
-                        if (Model.Msg.IsNotNullOrEmpty()&&canEdit)
-                        {
-                            <div class="am-form-group">
-                                <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>意见</button>
-                                <div class="am-u-sm-9">
-                                    <textarea name="Msg" rows="4">@(Model.Msg)</textarea>
-                                </div>
-                            </div>
-                        }
                         if (Model.State == NewsState.Reject)
                         {
                             <div class="am-form-group">
@@ -218,30 +205,24 @@
                         {
                             if (canEdit)
                             {
-                            <div class="am-form-group">
-                                <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>发布于</button>
-                                <div class="am-u-sm-9">
-                                    @if (Model.MethodList != null && Model.MethodList.Count != 0)
-                                    {
-                                        foreach (var item in Model.MethodList)
+                                <div class="am-form-group">
+                                    <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>发布于</button>
+                                    <div class="am-u-sm-9">
+                                        @if (Model.MethodList != null && Model.MethodList.Count != 0)
                                         {
-                                            <label class="am-checkbox">
-                                                <input type="checkbox" value="@(item.Value)" data-am-ucheck @((Model.PlushMethodFlag & 1) != 0 ? "checked" : "") />@item.Text
-                                            </label>
+                                            foreach (var item in Model.MethodList)
+                                            {
+                                                <label class="am-checkbox">
+                                                    <input type="checkbox" value="@(item.Value)" data-am-ucheck @((Model.PlushMethodFlag & 1) != 0 ? "checked" : "") />@item.Text
+                                                </label>
+                                            }
                                         }
-                                    }
+                                    </div>
                                 </div>
-                            </div>
                             }
                         }
                         else if (Model.State == NewsState.WaitAudit)
                         {
-                            <div class="am-form-group">
-                                <label for="user-email" class="am-u-sm-3 am-form-label">意见</label>
-                                <div class="am-u-sm-9">
-                                    <textarea name="Msg" rows="4">@(Model.Msg)</textarea>
-                                </div>
-                            </div>
                             if ((admin.OperateFlag & (long)OperateFlag.Audit) != 0)
                             {
                                 if (Model.AuditState == NewsAuditState.EditorialAudit)
@@ -269,19 +250,58 @@
                                         </div>
                                     </div>
                                 }
-                                else
+                                else if (Model.AuditState == NewsAuditState.LastAudit)
                                 {
-
-                                    if (canEdit)
-                                    { 
                                     <div class="am-form-group">
-                                        <div class="am-u-sm-4 am-u-sm-push-2">
-                                            <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核通过</button>
-                                        </div>
-                                        <div class="am-u-sm-4">
-                                            <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核驳回</button>
+                                        <button type="button" class="am-btn am-u-sm-3" id="plushBtn">发布</button>
+                                        <div class="am-u-sm-9">
+                                            @if (Model.MethodList != null && Model.MethodList.Count != 0)
+                                            {
+                                                foreach (var item in Model.MethodList)
+                                                {
+                                                    <label class="am-checkbox">
+                                                        <input type="checkbox" value="@(item.Value)" data-am-ucheck />@item.Text
+                                                    </label>
+                                                }
+                                            }
                                         </div>
                                     </div>
+                                    if (canEdit)
+                                    {
+                                        <div class="am-form-group">
+                                            <label for="user-email" class="am-u-sm-3 am-form-label">意见</label>
+                                            <div class="am-u-sm-9">
+                                                <textarea name="Msg" rows="4"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="am-form-group">
+                                            <div class="am-u-sm-4 am-u-sm-push-2">
+                                                <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核通过</button>
+                                            </div>
+                                            <div class="am-u-sm-4">
+                                                <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核驳回</button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    if (canEdit)
+                                    {
+                                        <div class="am-form-group">
+                                            <label for="user-email" class="am-u-sm-3 am-form-label">意见</label>
+                                            <div class="am-u-sm-9">
+                                                <textarea name="Msg" rows="4"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="am-form-group">
+                                            <div class="am-u-sm-4 am-u-sm-push-2">
+                                                <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核通过</button>
+                                            </div>
+                                            <div class="am-u-sm-4">
+                                                <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-primary">审核驳回</button>
+                                            </div>
+                                        </div>
                                     }
                                 }
                             }
@@ -303,13 +323,12 @@
         </div>
     </div>
 </div>
-
 @if (!isFormPhone)
 {
     <script src="~/Scripts/UEditor/ueditor.config.js"></script>
     <script src="~/Scripts/UEditor/ueditor.all.js"></script>
     <script src="~/Scripts/UEditor/ueditor.parse.js"></script>
-        <script src="~/Scripts/UEditor/lang/zh-cn/zh-cn.js"></script>
+    <script src="~/Scripts/UEditor/lang/zh-cn/zh-cn.js"></script>
         <script>
             $(function () {
                 var txtContentId = $.AMUI.utils.generateGUID("txtContent");
@@ -336,6 +355,10 @@ else
                 $(json).each(function () {
                     $("select[name='ChildrenDepartmentID']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
                 });
+            }
+            else {
+                $("select[name='ChildrenDepartmentID']").html("");
+                $("#childrenDiv").hide();
             }
         });
     }
@@ -373,40 +396,161 @@ else
         });
 
         $("#rejectBtn").on("click", function () {
-            var msg = $("[name='Msg']").val();
 
-            if (msg == "") {
-                $.Nuoya.alert("请输入驳回意见");
+            var id = '@(Model.ID)';
+            var title = $("[name='Title']").val();
+            if (title == "") {
+                $.Nuoya.alert("请填写标题");
                 return;
             }
-            $.Nuoya.action("/news/Audit", {
-                isPass: 0,
-                id: '@(Model.ID)',
-                msg: msg
+            var newsTypeID = $("[name='NewsTypeID']").val();
+            if (title == "") {
+                $.Nuoya.alert("请选择类型");
+                return;
+            }
+            var departmentID = $("[name='DepartmentID']").val();
+            if (title == "") {
+                $.Nuoya.alert("请选择投递部门");
+                return;
+            }
+            var children = $("[name='ChildrenDepartmentID']").val();
+            var penName = $("[name='PenName']").val();
+
+            if (!children == false && children != "") {
+                departmentID += ";" + children;
+            }
+            var content = "";
+            var imgAry = new Array();
+            var isPhone = '@(isFormPhone?1:0)';
+            var paths = "";
+            if (isPhone == "1") {
+                content = $("[name='Content']").text();
+                $("#div_imageShow img").each(function () {
+                    imgAry.push($(this).prop("src"));
+                })
+                paths = imgAry.join(',');
+            }
+            else {
+                content = ue.getContent();
+            }
+
+            if (content == "") {
+                $.Nuoya.alert("请填写内容");
+                return;
+            }
+            var isAduit = $(this).prop("id") == "submitBtn";
+            var url = '@(Model.ID.IsNotNullOrEmpty()? "/News/Update" : "/News/Add")';
+            $.Nuoya.action(url, {
+                ID: id,
+                Title: title,
+                PenName: penName,
+                NewsTypeID: newsTypeID,
+                DepartmentID: departmentID,
+                Paths: paths,
+                Content: content,
+                isAduit: '@(Model.ID.IsNotNullOrEmpty() ? 1 : 0)' == '1',
             }, function (data) {
                 if (!data.ErrorDesc) {
-                    $.Nuoya.alert("驳回成功");
-                    window.location.href = "/news/admin";
+                    var msg = $("[name='Msg']").val();
+
+                    if (msg == "") {
+                        $.Nuoya.alert("请输入驳回意见");
+                        return;
+                    }
+                    $.Nuoya.action("/news/Audit", {
+                        isPass: 0,
+                        id: '@(Model.ID)',
+                        msg: msg
+                    }, function (data) {
+                        if (!data.ErrorDesc) {
+                            $.Nuoya.alert("驳回成功");
+                            window.location.href = "/news/admin";
+                        }
+                        else
+                            $.Nuoya.alert(data.ErrorDesc);
+                    });
                 }
                 else
                     $.Nuoya.alert(data.ErrorDesc);
             });
+
+
         });
 
         $("#passBtn").on("click", function () {
-            var msg = $("[name='Msg']").val();
-            $.Nuoya.action("/news/Audit", {
-                id: '@(Model.ID)',
-                isPass: 1,
-                msg: msg
+
+            var id = '@(Model.ID)';
+            var title = $("[name='Title']").val();
+            if (title == "") {
+                $.Nuoya.alert("请填写标题");
+                return;
+            }
+            var newsTypeID = $("[name='NewsTypeID']").val();
+            if (title == "") {
+                $.Nuoya.alert("请选择类型");
+                return;
+            }
+            var departmentID = $("[name='DepartmentID']").val();
+            if (title == "") {
+                $.Nuoya.alert("请选择投递部门");
+                return;
+            }
+            var children = $("[name='ChildrenDepartmentID']").val();
+            var penName = $("[name='PenName']").val();
+
+            if (!children == false && children != "") {
+                departmentID += ";" + children;
+            }
+            var content = "";
+            var imgAry = new Array();
+            var isPhone = '@(isFormPhone?1:0)';
+            var paths = "";
+            if (isPhone == "1") {
+                content = $("[name='Content']").text();
+                $("#div_imageShow img").each(function () {
+                    imgAry.push($(this).prop("src"));
+                })
+                paths = imgAry.join(',');
+            }
+            else {
+                content = ue.getContent();
+            }
+
+            if (content == "") {
+                $.Nuoya.alert("请填写内容");
+                return;
+            }
+            var isAduit = $(this).prop("id") == "submitBtn";
+            var url = '@(Model.ID.IsNotNullOrEmpty()? "/News/Update" : "/News/Add")';
+            $.Nuoya.action(url, {
+                ID: id,
+                Title: title,
+                PenName: penName,
+                NewsTypeID: newsTypeID,
+                DepartmentID: departmentID,
+                Paths: paths,
+                Content: content,
+                isAduit: '@(Model.ID.IsNotNullOrEmpty() ? 1 : 0)' == '1',
             }, function (data) {
                 if (!data.ErrorDesc) {
-                    $.Nuoya.alert("审核成功");
-                    window.location.href = "/news/admin";
+                    var msg = $("[name='Msg']").val();
+                    $.Nuoya.action("/news/Audit", {
+                        id: '@(Model.ID)',
+                        isPass: 1,
+                        msg: msg
+                    }, function (data) {
+                        if (!data.ErrorDesc) {
+                            $.Nuoya.alert("审核成功");
+                            window.location.href = "/news/admin";
+                        }
+                        else
+                            $.Nuoya.alert(data.ErrorDesc);
+                    });
                 }
                 else
                     $.Nuoya.alert(data.ErrorDesc);
             });
+
         });
 
 
@@ -419,7 +563,7 @@ else
             $.Nuoya.action("/news/Plush", {
                 id: '@(Model.ID)',
                 flag: plushFlag,
-                msg:msg
+                msg: msg
             }, function (data) {
                 if (!data.ErrorDesc) {
                     $.Nuoya.alert("发布成功");

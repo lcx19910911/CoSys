@@ -16,7 +16,7 @@ namespace CoSys.Service
         string dictionaryKey = CacheHelper.RenderKey(Params.Cache_Prefix_Key, "DataDictionary");
 
 
-        private Dictionary<GroupCode, Dictionary<string, DataDictionary>> Cache_Get_DataDictionary()
+        public Dictionary<GroupCode, Dictionary<string, DataDictionary>> Cache_Get_DataDictionary()
         {
 
             return CacheHelper.Get<Dictionary<GroupCode, Dictionary<string, DataDictionary>>>(dictionaryKey, () =>

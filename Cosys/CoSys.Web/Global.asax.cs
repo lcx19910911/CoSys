@@ -1,6 +1,7 @@
 ﻿using CoSys.Core;
 using CoSys.Model;
 using CoSys.Repository;
+using CoSys.Service;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
