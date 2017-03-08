@@ -1,0 +1,212 @@
+﻿@model Tuple<List<SelectItem>, List<SelectItem>>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "地区统计";
+
+}
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><a href="/home/admin"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>地区统计</small></div>
+</div>
+
+<div id="searchDomain">
+    <div class="am-g">
+        @if (WebHelper.CheckAgent())
+        {
+            <div class="am-u-lg-12">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">省份</span>
+                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,1)">
+                        <option value="-1" selected>请选择</option>
+                        @if (Model.Item1 != null && Model.Item1.Count > 0)
+                        {
+                            foreach (var item in Model.Item1)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="am-u-lg-12 am-margin-top-sm">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">市</span>
+                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)"></select>
+                </div>
+            </div>
+
+            <div class="am-u-lg-12 am-margin-top-sm">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">县/区</span>
+                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)"></select>
+                </div>
+            </div>
+
+            <div class="am-u-lg-12 am-margin-top-sm">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">渠道</span>
+                    <select name="methodFlag" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
+                        <option value="-1" selected>请选择</option>
+                        @if (Model.Item2 != null && Model.Item2.Count > 0)
+                        {
+                            foreach (var item in Model.Item2)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="am-u-lg-12 am-margin-top-sm">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-btn am-margin-left-sm">
+                        <button class="am-btn am-btn-default" onclick="Search()" type="button">搜索</button>
+                        <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                    </span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="am-u-lg-12">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label">省份</span>
+                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,1)">
+                        <option value="-1" selected>请选择</option>
+                        @if (Model.Item1 != null && Model.Item1.Count > 0)
+                        {
+                            foreach (var item in Model.Item1)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+                    <span class="am-input-group-label am-margin-left-sm">市</span>
+                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)"></select>
+                    <span class="am-input-group-label am-margin-left-sm">县/区</span>
+                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)"></select>
+                    <span class="am-input-group-label am-margin-left-sm">渠道</span>
+                    <select name="methodFlag" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
+                        <option value="-1" selected>请选择</option>
+                        @if (Model.Item2 != null && Model.Item2.Count > 0)
+                        {
+                            foreach (var item in Model.Item2)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+
+                    <span class="am-input-group-btn am-margin-left-sm">
+                        <button class="am-btn am-btn-default" onclick="Search()" type="button">搜索</button>
+                        <button class="am-btn am-btn-default" onclick="Export()" type="button">导出</button>
+                        <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                    </span>
+                </div>
+                }
+            </div>
+        }
+        </div>
+    </div>
+
+    <div class="grid_container">
+        <div class="am-g am-margin-top-lg">
+            <div class="am-u-lg-10 ">
+                <table class="am-table am-table-compact am-table-hover table-main am-table-bordered">
+                    <thead>
+                        <tr>
+                            <th>编号</th>
+                            <th id="areaName">地区名称</th>
+                            <th>总投稿数</th>
+                            <th>总采纳数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @*<tr>
+                                <td>@inde</td>
+                                <td >@item.Name</td>
+                                <td>@item.AllCount</td>
+                                <td>@item.PassCount</td>
+                            </tr>*@
+                    </tbody>
+
+                </table>
+
+                <a></a>
+            </div>
+        </div>
+
+    </div>
+    @section scripts
+{
+        <script>
+            var type = 1;
+            $('[name=searchTime]').datepicker({ format: 'yyyy-mm', viewMode: 'years', minViewMode: 'months' });
+
+            function ClearFilter() {
+                $("#searchDomain input").val("");
+            }
+            function Search() {
+                $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), city: $("[name='city']").val(), county: $("[name='county']").val(), methodFlag: $("[name='methodFlag']").val() }, function (json) {
+                    $("tbody").html("");
+                    $(json).each(function (index, item) {
+                        $("tbody").append("<tr data-href='/news/Statistics?type=" + item.AreaType + "&areaId=" + item.AreaId + "'><td>" + (index + 1) + "</td><td>" + item.Name + "</td> <td>" + item.AllCount + "</td> <td>" + item.PassCount + "</td> </tr>");
+                    });
+                });
+            }
+            Search();
+            $.Nuoya.action("/DataDictionary/GetSelectItem", { group: 2 }, function (json) {
+                $(json).each(function () {
+                    $("select[name='methodFlag']").append("<option  value='" + this.Value + "' >" + this.Text + "</option>");
+                });
+            });
+
+            $("table").on("click", "tbody tr", function () {
+                window.location.href = $(this).attr("data-href");
+            })
+
+            function loadArea(obj, i) {
+                var thatObj = $(obj);
+                var value = thatObj.val();
+                var nextSelect;
+                if (i == 1) {
+                    if ($("[name='city']").val() == "0") {
+                    }
+                    nextSelect = $("[name='city']");
+                }
+                else if (i == 2) {
+                    if ($("[name='county']").val() != "") {
+                    }
+                    nextSelect = $("[name='county']");
+                }
+                else if (i == 3) {
+                    if ($("[name='county']").val() != "") {
+                    }
+                    return false;
+                }
+                if (value != "0") {
+                    //赋值
+                    $.ajax({
+                        type: "GET",
+                        url: "/area/GetAreaCodeSelectItem",
+                        datatype: "json",
+                        data: { value: value },
+                        success: function (data) {
+                            nextSelect.html("");
+                            $(data.Result).each(function (index, item) {
+                                nextSelect.append("<option value='" + item.Value + "'>" + item.Text + "</option>");
+                            });
+                        }
+                    });
+
+                }
+            }
+
+            function Export() {
+                var url = "/Statistics/ExportRegisterPageList?province=" + $("[name='province']").val() + "&city=" + $("[name='city']").val() + "&county=" + $("[name='county']").val() + "&methodFlag=" + $("[name='methodFlag']").val();
+                window.open(url);
+            }
+
+        </script>
+    }

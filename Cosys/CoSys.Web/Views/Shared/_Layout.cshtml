@@ -370,8 +370,10 @@
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
                 <li><a href="javascript:;"><span class="am-icon-user">@(LoginHelper.GetCurrentUser()?.Account)</span></a></li>
-
-                <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
+                @if (!WebHelper.CheckAgent())
+                {
+                    <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
+                }
                 <li><a href="/account/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>
         </div>

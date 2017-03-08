@@ -6,6 +6,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CoSys.Core;
+using System.Collections;
+using System.IO;
 
 namespace CoSys.Web.Controllers
 {
@@ -198,6 +200,30 @@ namespace CoSys.Web.Controllers
         }
 
 
+        public ActionResult Statistics(int areaId, int type)
+        {
+            return View();
+        }
+
+        public ActionResult ExportStatistics(string title, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, int? type, int? areaId)
+        {
+            var list = WebService.Get_NewsPageList(1, 10, title, "", state, createdTimeStart, createdTimeEnd, type, areaId).Result.List;
+            string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
+            string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
+            NPOIHelper<News>.GetExcel(list, GetChanelHT(), filePath);
+            //Directory.Delete(filePath);
+            return File(filePath, "application/vnd.ms-excel", fileName);
+        }
+        private Hashtable GetChanelHT()
+        {
+            Hashtable hs = new Hashtable();
+            hs["Title"] = "标题";
+            hs["SubmitTime"] = "投递时间"; 
+            hs["StateStr"] = "状态";
+            hs["UserName"] = "作者";
+            return hs;
+        }
+
         /// <summary>
         /// 获取分页列表
         /// </summary>
@@ -206,9 +232,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string title,string newsTypeId,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string title,string newsTypeId,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd,int? type,int? areaId)
         {
-            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, state, createdTimeStart, createdTimeEnd));
+            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, state, createdTimeStart, createdTimeEnd, type,areaId));
         }
 
         /// <summary>

@@ -123,5 +123,7 @@ namespace CoSys.Model
 
         [NotMapped]
         public YesOrNoCode CanAudit { get; set; } = YesOrNoCode.No;
+
+        public DateTime? SubmitTime { get; set; }
     }
 }

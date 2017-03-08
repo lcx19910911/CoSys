@@ -1,20 +1,30 @@
 ﻿@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewBag.Title = "稿件管理";
+    ViewBag.Title = ViewBag.AreaName+"稿件详情";
 }
 
 <div class="am-cf am-padding">
-    <div class="am-fl am-cf"><a href="/home/admin"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>稿件管理</small></div>
+    <div class="am-fl am-cf"><a href="javascript:history.back()"><strong class="am-text-primary am-text-lg">返回</strong></a> /<small>@ViewBag.Title</small></div>
 </div>
 <div id="searchDomain">
 
     <div class="am-g">
-        <div class="am-u-lg-6 am-u-end">
+        <div class="am-u-lg-8 am-u-end">
             <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">名称：</span>
-                <input type="text" class="am-form-field" placeholder="按名称搜索" style="width:100px;" name="title" ;>
+
+                <span class="am-input-group-label">状态</span>
+                <select name="state" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
+                    <option value=""></option>
+                </select>
+                <span class="am-input-group-label am-margin-left-sm"">标题/笔名：</span>
+                <input type="text" class="am-form-field" placeholder="按标题/笔名搜索" style="width:100px;" name="title" ;>
+                <span class="am-input-group-label  am-margin-left-sm">查找时间</span>
+                <input type="text" class="am-form-field" placeholder="请选择日期" name="createdTimeStart" readonly style="width:120px;">
+                <span class="am-input-group-label"> - </span>
+                <input type="text" class="am-form-field" placeholder="请选择日期" name="createdTimeEnd" readonly style="width:120px;">
                 <span class="am-input-group-btn am-margin-left-sm">
                     <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
+                    <button class="am-btn am-btn-default" onclick="Export()"type="button">导出</button>
                     <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
                 </span>
             </div>
@@ -30,16 +40,9 @@
             <tr>
                 <th dataname="ID" type="checkbox"></th>
                 <th dataname="Title">标题</th>
+                <th dataname="SubmitTime" datatype="jsondate">投递日期</th>       
                 <th dataname="StateStr">状态</th>
-                @if (!WebHelper.CheckAgent())
-                {
-                    <th dataname="SubmitTime" datatype="jsondate">投递日期</th>
-                    <th dataname="UserName">投稿人</th>
-                    <th dataname="StateStr">状态</th>
-                    <th dataname="NewsTypeName">投稿类型</th>
-                    <th dataname="DepartmentName">投递部门</th>
-                    <th dataname="UpdateAdminName">上节点审核人</th>
-                }
+                <th dataname="UserName">作者</th>      
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -49,6 +52,16 @@
 @section scripts
 {
     <script type="text/javascript">
+
+
+        function Export() {
+            var url = "/news/ExportStatistics?state=" + $("[name='state']").val() + "&title=" + $("[name='title']").val() + "&createdTimeStart=" + $("[name='createdTimeStart']").val() + "&createdTimeEnd=" + $("[name='createdTimeEnd']").val() + "&type=@(Request["type"])&areaId=@(Request["areaId"])";
+            window.open(url);
+        }
+
+
+        $('[name=createdTimeStart]').datepicker({ format: 'yyyy-mm-dd' });
+        $('[name=createdTimeEnd]').datepicker({ format: 'yyyy-mm-dd' });
 
         function ClearFilter() {
             $("#searchDomain input").val("");
@@ -61,7 +74,11 @@
                 domainId: "searchDomain",
                 subId: "btnSearch"
             },
-            ajaxUrl: "/News/GetAdminPageList",
+            params: {
+                type:@(Request["type"]),
+                areaId:@(Request["areaId"]),
+            },
+            ajaxUrl: "/News/GetPageList",
             //数据请求地址
             events: [
                 {
@@ -80,7 +97,7 @@
 
                         $.Nuoya.ajaxDialog({
                             closeViaDimmer: false,
-                            addIframe: true,
+                            addIframe:true,
                             ajaxUrl: "/News/Aduit?id=" + item.ID,
                             title: "审核",
                             width: "1200px",
@@ -128,7 +145,7 @@
                      icon: "icon-edit",
                      name: "查看",
                      click: function (item) {
-                         window.location.href = "/News/AdminManage/" + item.ID;
+                         window.location.href="/News/AdminManage/" + item.ID;
                      }
                  }
             ]

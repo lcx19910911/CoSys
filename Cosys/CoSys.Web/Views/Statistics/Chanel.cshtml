@@ -1,0 +1,52 @@
+﻿@model List<StatisticsModel>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "渠道统计";
+}
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><a href="/home/admin"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>渠道统计</small></div>
+</div>
+<div class="grid_container">
+    <div class="am-g">
+        <div class="am-u-lg-10">
+            @if (Model != null && Model.Count > 0)
+            {
+                var index = 1;
+                <table class="am-table am-table-compact am-table-hover table-main am-table-bordered">
+                    <thead>
+                        <tr>
+                            <th>编号</th>
+                            <th>投稿渠道</th>
+                            <th>总投稿数</th>
+                            <th>总采纳数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@index</td>
+                                <td>@item.Name</td>
+                                <td>@item.AllCount</td>
+                                <td>@item.PassCount</td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+            }
+        </div>
+    </div>
+
+</div>
+@section scripts
+{
+    <script>
+        function Export()
+        {
+            var url = "/Statistics/ExportChanelPageList";
+            window.open(url);
+        }
+    </script>
+}

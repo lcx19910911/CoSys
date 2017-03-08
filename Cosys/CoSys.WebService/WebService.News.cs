@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 namespace CoSys.Service
 {
     public partial class WebService
-    { 
-     
+    {
+
         /// <summary>
         /// 获取分页列表
         /// </summary>
@@ -22,14 +22,14 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_NewsPageList(int pageIndex, int pageSize, string title,string newsTypeId,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        public WebResult<PageList<News>> Get_NewsPageList(int pageIndex, int pageSize, string title, string newsTypeId, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, int? type, int? areaId)
         {
             using (DbRepository db = new DbRepository())
             {
                 var query = db.News.AsQueryable().AsNoTracking();
                 if (title.IsNotNullOrEmpty())
                 {
-                    query = query.Where(x => x.Title.Contains(title));
+                    query = query.Where(x => x.Title.Contains(title)|| x.PenName.Contains(title));
                 }
                 if (newsTypeId.IsNotNullOrEmpty())
                 {
@@ -37,31 +37,57 @@ namespace CoSys.Service
                 }
                 if (createdTimeStart != null)
                 {
-                    query = query.Where(x => x.CreatedTime >= createdTimeStart);
+                    query = query.Where(x => x.SubmitTime >= createdTimeStart);
                 }
                 if (createdTimeEnd != null)
                 {
                     createdTimeEnd = createdTimeEnd.Value.AddDays(1);
-                    query = query.Where(x => x.CreatedTime < createdTimeEnd);
+                    query = query.Where(x => x.SubmitTime < createdTimeEnd);
                 }
 
                 var userDic = new Dictionary<string, string>();
                 var adminDic = new Dictionary<string, string>();
-                query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginUser.ID));
+                if (type == null)
+                {
+                    query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginUser.ID));
+                }
+                else if(areaId!=null)
+                {
+                    var userIdList = new List<string>();
+                    var adminIdList = new List<string>();
+                    if (type==0)
+                    {
+                        userIdList = db.User.Where(x => x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        adminIdList = db.Admin.Where(x => x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                    }
+                    else if (type == 1)
+                    {
+                        userIdList = db.User.Where(x => x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        adminIdList = db.Admin.Where(x => x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                    }
+                    else if (type == 2)
+                    {
+                        userIdList = db.User.Where(x => x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        adminIdList = db.Admin.Where(x => x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                    }
+                        query = query.Where(x => (!string.IsNullOrEmpty(x.UserID) && userIdList.Contains(x.UserID)) || (!string.IsNullOrEmpty(x.AdminID) && adminIdList.Contains(x.AdminID)));
+                }
                 if (state != null)
                 {
-                    query = query.Where(x => x.State== state);
+                    query = query.Where(x => x.State == state);
                 }
                 var count = query.Count();
-                var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-
+                if(type==null&&areaId==null)
+                {
+                    query = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize);
+                }
+                var list = query.ToList();
                 var ids = list.Select(x => x.UserID).ToList();
-                userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID,x=>x.RealName);                 
-                var adminIds = list.Select(x => x.AdminID).ToList();
+                userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID, x => x.RealName);
+                var adminIds = list.Select(x => x.AdminID).ToList(); 
                 adminIds.AddRange(list.Select(x => x.UpdateAdminID).ToList());
                 adminIds.AddRange(list.Select(x => x.UserID).ToList());
                 adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
-                var departmentDic = db.Department.ToDictionary(x => x.ID);
                 list.ForEach(x =>
                 {
                     x.StateStr = x.State.GetDescription();
@@ -69,32 +95,6 @@ namespace CoSys.Service
                         x.UserName = userDic.GetValue(x.UserID);
                     else if (x.UserID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UserID))
                         x.UserName = adminDic.GetValue(x.UserID);
-                    if (x.UpdateAdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UpdateAdminID))
-                        x.UpdateAdminName = adminDic.GetValue(x.UpdateAdminID);
-                    if (x.NewsTypeID.IsNotNullOrEmpty())
-                        x.NewsTypeName = GetValue(GroupCode.Type, x.NewsTypeID);
-                    if (x.DepartmentID.IsNotNullOrEmpty())
-                    {
-                        var departmentAry = x.DepartmentID.Split(':');
-                        if (departmentAry.Length == 1)
-                        {
-                            if (departmentDic.ContainsKey(departmentAry[0]))
-                            {
-                                x.DepartmentName = departmentDic[departmentAry[0]].Name;
-                            }
-                        }
-                        else if (departmentAry.Length == 2)
-                        {
-                            if (departmentDic.ContainsKey(departmentAry[0]))
-                            {
-                                x.DepartmentName = departmentDic[departmentAry[0]].Name;
-                            }
-                            if (departmentDic.ContainsKey(departmentAry[1]))
-                            {
-                                x.DepartmentName +="-"+ departmentDic[departmentAry[1]].Name;
-                            }
-                        }
-                    }
 
                 });
                 return ResultPageList(list, pageIndex, pageSize, count);
@@ -109,19 +109,19 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string newsTypeId, bool isAudit,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
+        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string newsTypeId, bool isAudit, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd)
         {
             using (DbRepository db = new DbRepository())
             {
                 var admin = Client.LoginAdmin;
                 //角色的审核权限
                 var role = db.Role.Find(admin.RoleID);
-                if (role == null&& !admin.IsSuperAdmin)
+                if (role == null && !admin.IsSuperAdmin)
                     return ResultPageList(new List<News>(), pageIndex, pageSize, 0);
                 var query = db.News.AsQueryable().AsNoTracking();
                 if (title.IsNotNullOrEmpty())
                 {
-                    query = query.Where(x => x.Title.Contains(title));
+                    query = query.Where(x => x.Title.Contains(title) || x.PenName.Contains(title));
                 }
                 if (newsTypeId.IsNotNullOrEmpty())
                 {
@@ -148,13 +148,13 @@ namespace CoSys.Service
                     //判断权限加载相对应的新闻
                     if (!admin.IsSuperAdmin)
                     {
-                        var departmentIds = db.Department.Where(x => (admin.DepartmentFlag & x.Flag) != 0).Select(x =>!string.IsNullOrEmpty(x.ParentID)?(x.ParentID + ";" + x.ID):x.ID).ToList();
+                        var departmentIds = db.Department.Where(x => (admin.DepartmentFlag & x.Flag) != 0).Select(x => !string.IsNullOrEmpty(x.ParentID) ? (x.ParentID + ";" + x.ID) : x.ID).ToList();
                         query = query.Where(x => departmentIds.Contains(x.DepartmentID));
                         if (role.AuditState == NewsAuditState.EditorialAudit)
                         {
                             query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit));
                         }
-                        if (role.AuditState == NewsAuditState.MinisterAudit||role.AuditState == NewsAuditState.LastAudit)
+                        if (role.AuditState == NewsAuditState.MinisterAudit || role.AuditState == NewsAuditState.LastAudit)
                         {
                             query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.MinisterAudit || x.AuditState == NewsAuditState.LastAudit));
                         }
@@ -166,7 +166,7 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    query = query.Where(x => x.State == NewsState.WaitAudit|| x.State == NewsState.Pass || x.State == NewsState.Plush);
+                    query = query.Where(x => x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush);
                 }
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -177,7 +177,7 @@ namespace CoSys.Service
                 adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
                 var departmentDic = db.Department.ToDictionary(x => x.ID);
                 var typeIdList = list.Select(x => x.NewsTypeID).ToList();
-                var typeDic = db.DataDictionary.Where(x => x.GroupCode == GroupCode.Type && typeIdList.Contains(x.ID)).ToDictionary(x=>x.ID,x=>x.Value);
+                var typeDic = db.DataDictionary.Where(x => x.GroupCode == GroupCode.Type && typeIdList.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Value);
                 list.ForEach(x =>
                 {
                     if (!admin.IsSuperAdmin)
@@ -194,7 +194,7 @@ namespace CoSys.Service
                         {
                             x.StateStr = "上节点未审核";
                         }
-                        }
+                    }
                     else
                     {
                         x.StateStr = x.State.GetDescription();
@@ -205,8 +205,8 @@ namespace CoSys.Service
                         x.UserName = adminDic.GetValue(x.AdminID);
                     if (x.UpdateAdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UpdateAdminID))
                         x.UpdateAdminName = adminDic.GetValue(x.UpdateAdminID);
-                    if (x.NewsTypeID.IsNotNullOrEmpty()&& typeDic.ContainsKey(x.NewsTypeID))
-                       x.NewsTypeName = typeDic[x.NewsTypeID];
+                    if (x.NewsTypeID.IsNotNullOrEmpty() && typeDic.ContainsKey(x.NewsTypeID))
+                        x.NewsTypeName = typeDic[x.NewsTypeID];
                     if (admin != null)
                     {
                         if (x.DepartmentID.IsNotNullOrEmpty())
@@ -245,7 +245,7 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Add_News(News model,bool isAudit)
+        public WebResult<bool> Add_News(News model, bool isAudit)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -258,13 +258,14 @@ namespace CoSys.Service
                     model.State = NewsState.None;
                 else
                 {
+                    model.SubmitTime = DateTime.Now;
                     model.State = NewsState.WaitAudit;
                     model.AuditState = NewsAuditState.EditorAudit;
                 }
                 db.News.Add(model);
                 if (db.SaveChanges() > 0)
                 {
-                    return Result(true); 
+                    return Result(true);
                 }
                 else
                 {
@@ -280,7 +281,7 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Update_News(News model,bool isAudit)
+        public WebResult<bool> Update_News(News model, bool isAudit)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -295,12 +296,15 @@ namespace CoSys.Service
                     oldEntity.NewsTypeID = model.NewsTypeID;
                     oldEntity.DepartmentID = model.DepartmentID;
                     oldEntity.Msg = model.Msg;
-                    if(Client.LoginUser==null)
+                    if (Client.LoginUser == null)
                         oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
-                    if (oldEntity.State == NewsState.Reject|| oldEntity.State == NewsState.None)
+                    if (oldEntity.State == NewsState.Reject || oldEntity.State == NewsState.None)
                     {
                         if (isAudit)
+                        {
                             oldEntity.State = NewsState.WaitAudit;
+                            oldEntity.SubmitTime = DateTime.Now;
+                        }
                         else
                             oldEntity.State = NewsState.None;
                     }
@@ -334,7 +338,7 @@ namespace CoSys.Service
                     model.UserName = db.User.Find(model.UserID)?.RealName;
                     model.Logs = db.Log.Where(x => x.NewsID.Equals(id)).ToList();
                     var adminIdList = model.Logs.Select(x => x.AdminID).ToList();
-                    var adminDic = db.Admin.Where(x => adminIdList.Contains(x.ID)).ToDictionary(x => x.ID,x=>x.Name);
+                    var adminDic = db.Admin.Where(x => adminIdList.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
                     model.Logs.ForEach(x =>
                     {
                         if (adminDic.ContainsKey(x.AdminID))
@@ -354,7 +358,7 @@ namespace CoSys.Service
         {
             using (DbRepository db = new DbRepository())
             {
-                if(Client.LoginUser!=null)
+                if (Client.LoginUser != null)
                     return db.News.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginUser.ID)).ToList();
                 if (Client.LoginAdmin != null)
                     return db.News.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginAdmin.ID)).ToList();
@@ -405,7 +409,7 @@ namespace CoSys.Service
                     return Result(false, ErrorCode.sys_param_format_error);
 
                 var admin = Client.LoginAdmin;
-                if (news.State != NewsState.WaitAudit|| admin==null)
+                if (news.State != NewsState.WaitAudit || admin == null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
@@ -414,17 +418,17 @@ namespace CoSys.Service
                     var role = db.Role.Find(admin.RoleID);
                     if (role == null)
                         return Result(false, ErrorCode.sys_param_format_error);
-                    
+
 
                     //主编审核
-                   if(news.AuditState==NewsAuditState.EditorAudit)
-                   { 
-                        if(role.AuditState==NewsAuditState.EditorAudit)
+                    if (news.AuditState == NewsAuditState.EditorAudit)
+                    {
+                        if (role.AuditState == NewsAuditState.EditorAudit)
                         {
                             news.UpdateAdminID = admin.ID;
                             if (isPass == YesOrNoCode.Yes)
                             {
-                                if(news.DepartmentID.Split(';').Length==1)
+                                if (news.DepartmentID.Split(';').Length == 1)
                                     news.AuditState = NewsAuditState.MinisterAudit;
                                 else
                                     news.AuditState = NewsAuditState.EditorialAudit;
@@ -438,7 +442,7 @@ namespace CoSys.Service
                         else
                             return Result(false, ErrorCode.sys_user_role_error);
                     }
-                   //部长/编委会审核
+                    //部长/编委会审核
                     else if (news.AuditState == NewsAuditState.MinisterAudit)
                     {
                         if (role.AuditState == NewsAuditState.MinisterAudit)
@@ -451,7 +455,7 @@ namespace CoSys.Service
                             else
                             {
                                 news.Msg = msg;
-                                news.AuditState = NewsAuditState.EditorAudit;                             
+                                news.AuditState = NewsAuditState.EditorAudit;
                             }
                         }
                         else
@@ -465,7 +469,7 @@ namespace CoSys.Service
                             news.UpdateAdminID = admin.ID;
                             if (isPass == YesOrNoCode.Yes)
                             {
-                                    news.AuditState = NewsAuditState.LastAudit;
+                                news.AuditState = NewsAuditState.LastAudit;
                             }
                             else
                             {
@@ -495,8 +499,8 @@ namespace CoSys.Service
                             return Result(false, ErrorCode.sys_user_role_error);
                     }
                 }
-                if(isPass == YesOrNoCode.Yes)
-                    Add_Log(LogCode.AuditPass, id,Client.LoginAdmin.ID,msg);
+                if (isPass == YesOrNoCode.Yes)
+                    Add_Log(LogCode.AuditPass, id, Client.LoginAdmin.ID, msg);
                 else
                     Add_Log(LogCode.AuditFail, id, Client.LoginAdmin.ID, msg);
                 if (db.SaveChanges() > 0)
@@ -525,7 +529,7 @@ namespace CoSys.Service
                     return Result(false, ErrorCode.sys_param_format_error);
 
                 var admin = Client.LoginAdmin;
-                if (news.State != NewsState.Pass|| admin == null)
+                if (news.State != NewsState.Pass || admin == null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
@@ -534,11 +538,11 @@ namespace CoSys.Service
                 news.State = NewsState.Plush;
                 news.PlushMethodFlag = channelFlag;
                 //邮箱头盖
-                Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0&&x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
-                {
-                    var result = WebHelper.SendMail(x.Remark,$"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}" , news.Content, "");
-                });     
-                Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID,msg);
+                Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0 && x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
+                  {
+                      var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, "");
+                  });
+                Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, msg);
                 if (db.SaveChanges() > 0)
                 {
                     return Result(true);
@@ -561,42 +565,265 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public List<News> Get_NewsStatisticsArea(int? province,int? city,int? county)
+        public List<StatisticsModel> Get_NewsStatisticsArea(int? province, int? city, int? county, long methodFlag)
         {
+            List<StatisticsModel> model = new List<StatisticsModel>();
             using (DbRepository db = new DbRepository())
             {
                 var query = db.User.AsQueryable().AsNoTracking();
-
-               
-                if (city != null)
+                var adminQuery = db.Admin.AsQueryable().AsNoTracking();
+                if (province != null && province != -1)
                 {
-                    query = query.Where(x => x.CityCode == province.ToString());
-                }
-                if (county != null)
-                {
-                    query = query.Where(x => x.CountyCode == province.ToString());
-                }
-
-                if (province != null)
-                {
-                    query = query.Where(x => x.ProvoniceCode == province.ToString());
-                    var cityUserDic = query.GroupBy(x=>x.CityCode).ToDictionary(x=>x.Key,x=>x.Select(y=>y.ID).ToList());
-                    var cityList = Get_AreaList("");
-                    cityList.ForEach(x =>
+                    if (city != null && city != 0)
                     {
-                        if (cityUserDic.ContainsKey(x.Value))
+                        if (county != null && county != 0)
                         {
-                            var news = db.News.Where(y => cityUserDic[x.Value].Contains(y.UserID)).ToList();
+                            var userList = query.Where(x => x.CountyCode == county.ToString()).Select(x => new SelectItem() { Value = x.StreetCode, Text = x.ID }).ToList();
+                            var adminList = adminQuery.Where(x => x.CountyCode == county.ToString()).Select(x => new SelectItem() { Value = x.StreetCode, Text = x.ID }).ToList().ToList();
+                            userList.AddRange(adminList);
+
+                            var townUserDic = userList.GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(y => y.Text).ToList());
+                            var townList = Get_AreaList(county.ToString());
+                            townList.ForEach(x =>
+                            {
+                                if (townUserDic.ContainsKey(x.Value))
+                                {
+                                    var idList = townUserDic[x.Value];
+                                    var newsList = db.News.Where(y => (!string.IsNullOrEmpty(y.UserID) && idList.Contains(y.UserID)) || (!string.IsNullOrEmpty(y.AdminID) && idList.Contains(y.AdminID)) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                                    model.Add(new StatisticsModel()
+                                    {
+                                        Key = x.Text,
+                                        AllCount = newsList.Count,
+                                        Name = x.Text,
+                                        PassCount = newsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
+                                        AreaType = 3,
+                                        AreaId = x.Value
+                                    });
+                                }
+                            });
+                            return model;
+                        }
+                        else
+                        {
+                            var userList = query.Where(x => x.CityCode == city.ToString()).Select(x => new SelectItem() { Value = x.CountyCode, Text = x.ID }).ToList();
+                            var adminList = adminQuery.Where(x => x.CityCode == city.ToString()).Select(x => new SelectItem() { Value = x.CountyCode, Text = x.ID }).ToList().ToList();
+                            userList.AddRange(adminList);
+
+                            var countyUserDic = userList.GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(y => y.Text).ToList());
+                            var countyList = Get_AreaList(city.ToString());
+                            countyList.ForEach(x =>
+                            {
+                                if (countyUserDic.ContainsKey(x.Value))
+                                {
+                                    var idList = countyUserDic[x.Value];
+                                    var newsList = db.News.Where(y => (!string.IsNullOrEmpty(y.UserID) && idList.Contains(y.UserID)) || (!string.IsNullOrEmpty(y.AdminID) && idList.Contains(y.AdminID)) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                                    model.Add(new StatisticsModel()
+                                    {
+                                        Key = x.Text,
+                                        AllCount = newsList.Count,
+                                        Name = x.Text,
+                                        PassCount = newsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
+                                        AreaType = 2,
+                                        AreaId = x.Value
+                                    });
+                                }
+                            });
+
+                        }
+                    }
+                    else
+                    {
+                        var userList = query.Where(x => x.ProvoniceCode == province.ToString()).Select(x => new SelectItem() { Value = x.CityCode, Text = x.ID }).ToList();
+                        var adminList = adminQuery.Where(x => x.ProvoniceCode == province.ToString()).Select(x => new SelectItem() { Value = x.CityCode, Text = x.ID }).ToList().ToList();
+                        userList.AddRange(adminList);
+
+                        var cityUserDic = userList.GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(y => y.Text).ToList());
+                        var cityList = Get_AreaList(province.ToString());
+                        cityList.ForEach(x =>
+                        {
+                            if (cityUserDic.ContainsKey(x.Value))
+                            {
+                                var list = cityUserDic[x.Value];
+                                var newsList = db.News.Where(y => (!string.IsNullOrEmpty(y.UserID) && list.Contains(y.UserID)) || (!string.IsNullOrEmpty(y.AdminID) && list.Contains(y.AdminID)) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                                model.Add(new StatisticsModel()
+                                {
+                                    Key = x.Text,
+                                    AllCount = newsList.Count,
+                                    Name = x.Text,
+                                    PassCount = newsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
+                                    AreaType = 1,
+                                    AreaId = x.Value
+                                });
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    var userList = query.Select(x => new SelectItem() { Value = x.ProvoniceCode, Text = x.ID }).ToList();
+                    var adminList = adminQuery.Where(x=>!x.IsSuperAdmin).Select(x => new SelectItem() { Value = x.ProvoniceCode, Text = x.ID }).ToList().ToList();
+                    userList.AddRange(adminList);
+
+                    var provinceUserDic = userList.GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(y => y.Text).ToList());
+                    var provinceList = Get_AreaList("");
+                    provinceList.ForEach(x =>
+                    {
+                        if (provinceUserDic.ContainsKey(x.Value))
+                        {
+                            var list = provinceUserDic[x.Value];
+                            var newsList = db.News.Where(y => (!string.IsNullOrEmpty(y.UserID) && list.Contains(y.UserID)) || (!string.IsNullOrEmpty(y.AdminID) && list.Contains(y.AdminID)) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                            model.Add(new StatisticsModel()
+                            {
+                                Key = x.Text,
+                                AllCount = newsList.Count,
+                                Name = x.Text,
+                                PassCount = newsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
+                                AreaType = 0,
+                                AreaId = x.Value
+                            });
                         }
                     });
                 }
-                return null;
+                return model;
             }
         }
 
 
 
 
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="title">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public List<StatisticsModel> Get_NewsStatisticsChanel()
+        {
+            List<StatisticsModel> model = new List<StatisticsModel>();
+            using (DbRepository db = new DbRepository())
+            {
+                var dic = Cache_Get_DataDictionary()[GroupCode.Type];
+                db.News.AsQueryable().AsNoTracking().GroupBy(x => x.NewsTypeID).ToList().ForEach(x =>
+                  {
+                      model.Add(new StatisticsModel()
+                      {
+                          Key = x.Key,
+                          AllCount = x.Count(),
+                          Name= dic[x.Key].Value,
+                          PassCount = x.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count()
+                      });
+                  });
+                return model;
+            }
+        }
+
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="title">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public List<StatisticsModel> Get_NewsStatisticsRegister(int? province, int? city, int? county)
+        {
+            List<StatisticsModel> model = new List<StatisticsModel>();
+            using (DbRepository db = new DbRepository())
+            {
+                var query = db.User.AsQueryable().AsNoTracking();
+
+                if (province != null&&province!=-1)
+                {
+                    if (city != null && city != 0)
+                    {
+                        if (county != null && county != 0)
+                        {
+                            query = query.Where(x => x.CountyCode == county.ToString());
+                            var townUserDic = query.GroupBy(x => x.StreetCode).ToDictionary(x => x.Key, x => x.Select(y => y.ID).ToList());
+                            var townList = Get_AreaList(county.ToString());
+                            townList.ForEach(x =>
+                            {
+                                if (townUserDic.ContainsKey(x.Value))
+                                {
+                                    model.Add(new StatisticsModel()
+                                    {
+                                        Key = x.Text,
+                                        AllCount = townUserDic[x.Value].Count(),
+                                        AreaType=3,
+                                        Name = x.Text,
+                                        AreaId =x.Value
+                                    });
+                                }
+                            });
+
+                            return model;
+                        }
+                        else
+                        {
+                            query = query.Where(x => x.CityCode == city.ToString());
+                            var countyUserDic = query.GroupBy(x => x.CountyCode).ToDictionary(x => x.Key, x => x.Select(y => y.ID).ToList());
+                            var countyList = Get_AreaList(city.ToString());
+                            countyList.ForEach(x =>
+                            {
+                                if (countyUserDic.ContainsKey(x.Value))
+                                {
+                                    model.Add(new StatisticsModel()
+                                    {
+                                        Key = x.Text,
+                                        AllCount = countyUserDic[x.Value].Count(),
+                                        AreaType = 2,
+                                        Name = x.Text,
+                                        AreaId = x.Value
+                                    });
+                                }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        query = query.Where(x => x.ProvoniceCode == province.ToString());
+                        var cityUserDic = query.GroupBy(x => x.CityCode).ToDictionary(x => x.Key, x => x.Select(y => y.ID).ToList());
+                        var cityList = Get_AreaList(province.ToString());
+                        cityList.ForEach(x =>
+                        {
+                            if (cityUserDic.ContainsKey(x.Value))
+                            {
+                                model.Add(new StatisticsModel()
+                                {
+                                    Key = x.Text,
+                                    AllCount = cityUserDic[x.Value].Count(),
+                                    AreaType = 1,
+                                    Name = x.Text,
+                                    AreaId = x.Value
+                                });
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    var provniceserDic = query.GroupBy(x => x.ProvoniceCode).ToDictionary(x => x.Key, x => x.Select(y => y.ID).ToList());
+                    var provniceList = Get_AreaList("");
+                    provniceList.ForEach(x =>
+                    {
+                        if (provniceserDic.ContainsKey(x.Value))
+                        {
+                            model.Add(new StatisticsModel()
+                            {
+                                Key = x.Text,
+                                AllCount = provniceserDic[x.Value].Count(),
+                                AreaType = 0,
+                                Name = x.Text,
+                                AreaId = x.Value
+                            });
+                        }
+                    });
+                }
+                return model;
+            }
+        }
         #endregion
     }
 }

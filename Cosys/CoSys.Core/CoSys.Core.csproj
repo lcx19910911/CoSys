@@ -84,6 +84,7 @@
     <Compile Include="Model\LoginUser.cs" />
     <Compile Include="Model\PageList.cs" />
     <Compile Include="Model\Params.cs" />
+    <Compile Include="Model\StatisticsModel.cs" />
     <Compile Include="Model\UploadStateCode.cs" />
     <Compile Include="Model\ValidateCodeGenertor.cs" />
     <Compile Include="Model\WebClient.cs" />
