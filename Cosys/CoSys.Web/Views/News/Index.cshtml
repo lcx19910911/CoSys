@@ -28,18 +28,25 @@
         <thead>
             <tr>
                 <th dataname="ID" type="checkbox"></th>
-                <th dataname="Title">稿件名称</th>
+                <th dataname="Title">标题</th>
+                <th dataname="StateStr">状态</th>
+                @if (!WebHelper.CheckAgent())
+                {
                 <th dataname="NewsTypeName">类型</th>      
                 <th dataname="DepartmentName">投递部门</th>    
-                <th dataname="UpdateAdminName">上节点审核人</th>        
-                <th dataname="StateStr">状态</th>
-                <th dataname="SubmitTime" datatype="jsondate">投递日期</th>    
+                <th dataname="UpdateAdminName">上节点审核人</th>  
+                <th dataname="SubmitTime" datatype="jsondate">投递日期</th>  
+                } 
                 <th type="eventlist"></th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
 </div>
+@if (WebHelper.CheckAgent())
+{
+<div class="am-modal-footer"><span class="am-modal-btn am-btn-primary" data-am-modal-confirm="">保存</span><span class="am-modal-btn am-btn-danger" data-am-modal-close="">取消</span></div>
+}
 @section scripts
 {
     <script type="text/javascript">
@@ -56,6 +63,7 @@
                 subId: "btnSearch"
             },
             ajaxUrl: "/News/GetPageList",
+            isForPhone: '@(WebHelper.CheckAgent()?1:0)' == "1",
             //数据请求地址
             events: [
                 {

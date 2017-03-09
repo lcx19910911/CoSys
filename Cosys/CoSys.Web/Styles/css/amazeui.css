@@ -8892,7 +8892,7 @@ ul.am-dropdown-content > .am-disabled > a:focus {
   width: 270px;
   position: fixed;
   display: none;
-  z-index: 1000;
+  z-index: 1001;
   left: 50%;
   margin-left: -135px;
   margin-top: 0;

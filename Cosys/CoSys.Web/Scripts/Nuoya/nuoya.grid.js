@@ -12,6 +12,7 @@
             callback: null,//数据加载完成后回调函数
             rowCallback: null,//表格行绘制的回调函数                
             drawCallback: null,//绘制完成回调
+            isForPhone:false, //是否手机
         }
 
         var colspanTab = 0;//隐藏的字段td长度
@@ -282,6 +283,11 @@
             //lzq->以下是页面标准格式,需要的自行修改 2015-11-25 19:05
             paginate.append(home_Page).append(previous_Page).append(pageNumber).append(next_Page).append(end_Page).append($("<li>共" + data.PageCount + "页,本页" + data.List.length+ "条记录，每页显示</li>")).append(pageSizeMenuLi);
             $(pageSizeMenu).selected();
+            if (options.isForPhone)
+            {
+                $(".am-selected.am-dropdown ").hide();
+                
+            }
         }
 
         //获取权限

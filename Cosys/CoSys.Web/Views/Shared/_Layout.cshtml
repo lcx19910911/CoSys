@@ -1,4 +1,6 @@
-﻿
+﻿@{ 
+    var isForPhone = WebHelper.CheckAgent();
+}
 <!doctype html>
 <html class="no-js fixed-layout">
 <head>
@@ -15,14 +17,22 @@
     @RenderSection("linkcss", required: false)
     @Scripts.Render("~/Scripts/Admin")
     <script>
-        function changePassword() {
 
+        function changePassword(item) {
+            var isForPhone = '@(isForPhone?1:0)' == "1";
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
-                width: "800px",
-                height: "280px",
+                width: (isForPhone ? (($(window).width() - 40) + "px") : "800px"),
+                height: (isForPhone ? (($(window).height() - 300) + "px") : "280px"),
                 ajaxUrl: "/HtmlTemplates/Admin/ChangePassword.html",
                 title: "修改密码",
+                callback: function (e) {
+                    if (isForPhone) {
+                        $(".am-modal-alert").css({ "top": "20%" }, { "left": "10%" });
+                        $(".am-text-right").hide();
+                    }
+                },
+                isForPhone: isForPhone,
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
@@ -36,7 +46,7 @@
                                 $.Nuoya.alert("密码不能为空");
                                 return false;
                             }
-                            $.Nuoya.action("/account/ChangeUserPassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword }, function (data) {
+                            $.Nuoya.action("/account/ChangeUserPassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword, id: item != null ? item.ID : "" }, function (data) {
                                 if (!data.ErrorDesc) {
                                     $.Nuoya.alert("修改密码成功");
                                     e.hide();
@@ -52,6 +62,7 @@
                 }]
             });
         }
+
 
         function userSet()
         {
@@ -394,7 +405,7 @@
 
 
         <!-- sidebar start -->
-        <div class="admin-sidebar">
+        <div class="admin-sidebar  am-offcanvas" id="admin-offcanvas">
             <ul class="am-list admin-sidebar-list">
                 <li><a href="/home/index"><span class="am-icon-home"></span> 个人中心</a></li>
                 <li class="admin-parent">
@@ -447,14 +458,6 @@
     </div>
 
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-
-    @if (WebHelper.CheckAgent())
-    {
-        <script>
-            $(".am-icon-btn,.admin-sidebar").remove();
-            $("#selectCount").remove();
-        </script>
-    }
     @RenderSection("scripts", false)
 </body>
 </html>

@@ -1,5 +1,6 @@
 ﻿@{
     var currentAdmin = LoginHelper.GetCurrentAdmin();
+    var isForPhone = WebHelper.CheckAgent();
 }
 <!doctype html>
 <html class="no-js fixed-layout">
@@ -16,16 +17,29 @@
     @Styles.Render("~/Content/Admin")
     @RenderSection("linkcss", required: false)
     @Scripts.Render("~/Scripts/Admin")
-
+    <style>
+        [class*=am-icon-] {
+        display:inline-block;
+        font-style:normal;
+        }
+    </style>
     <script>
         function changePassword(item) {
-
+            var isForPhone = '@(isForPhone?1:0)' == "1";
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
-                width: "800px",
-                height: "280px",
+                width: (isForPhone?(($(window).width() - 40)+"px"):"800px"),
+                height: (isForPhone ? (($(window).height() - 300) + "px") : "280px"),
                 ajaxUrl: "/HtmlTemplates/Admin/ChangePassword.html",
                 title: "修改密码",
+                callback: function (e) {
+                    if (isForPhone)
+                    {
+                        $(".am-modal-alert").css({ "top": "20%" }, { "left": "10%" });
+                        $(".am-text-right").hide();
+                    }
+                },
+                isForPhone:isForPhone,
                 buttons: [{
                     label: "保存",
                     callback: function (e) {
@@ -368,10 +382,7 @@
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
                 <li><a href="javascript:;"><span class="am-icon-user">@(currentAdmin?.Name)</span></a></li>
-                @if (!WebHelper.CheckAgent())
-                {
                 <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
-                }
                 <li><a href="/account/AdminQuit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>
         </div>
@@ -392,9 +403,11 @@
 
 
         <!-- sidebar start -->
-        <div class="admin-sidebar">
-            <ul class="am-list admin-sidebar-list">
-
+        <div class="admin-sidebar  am-offcanvas" id="admin-offcanvas">
+            <div class="am-offcanvas-bar admin-offcanvas-bar">
+           
+            <ul class="am-list admin-sidebar-list am-text-sm">
+                <li><a href="/home/admin"><span class="am-icon-home"></span> 首页</a></li>
                 <li class="admin-parent">
                     <a data-am-collapse="{target: '#投稿管理'}" class="am-cf">
                         <span class="am-icon-calculator"></span> 投稿管理
@@ -420,7 +433,7 @@
                 </li>
                 @if (currentAdmin != null)
                 {
-                    if (currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Admin) != 0)
+                    if (!isForPhone&&(currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Admin) != 0))
                     {
                         <li class="admin-parent">
                             <a data-am-collapse="{target: '#用户管理'}" class="am-cf ">
@@ -477,7 +490,7 @@
                             </ul>
                         </li>
                     }
-                    if (currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Config) != 0)
+                    if (!isForPhone &&(currentAdmin.IsSuperAdmin || (currentAdmin.OperateFlag & (long)OperateFlag.Config) != 0))
                     {
                         <li class="admin-parent">
                             <a data-am-collapse="{target: '#参数设置'}" class="am-cf ">
@@ -507,6 +520,7 @@
                 }
             </ul>
         </div>
+    </div>
         <!-- sidebar end -->
         <!-- content start -->
         <div class="admin-content">
@@ -521,13 +535,6 @@
 
 
 
-    @if (WebHelper.CheckAgent())
-    {
-        <script>
-            $(".am-icon-btn,.admin-sidebar").remove();
-            $("#selectCount").remove();
-        </script>
-    }
 
     @RenderSection("scripts", false)
 </body>

@@ -203,6 +203,7 @@
     <Content Include="Images\pass.png" />
     <Content Include="Images\spirit.png" />
     <Content Include="Scripts\amazeui.js" />
+    <Content Include="Scripts\amazeu1i.min.js" />
     <Content Include="Scripts\amazeui.min.js" />
     <Content Include="Scripts\exporting.js" />
     <Content Include="Scripts\file_upload_plug-in.js" />

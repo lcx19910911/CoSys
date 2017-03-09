@@ -61,6 +61,7 @@
                 domainId: "searchDomain",
                 subId: "btnSearch"
             },
+            isForPhone: '@(WebHelper.CheckAgent()?1:0)'=="1",
             ajaxUrl: "/News/GetAdminPageList",
             //数据请求地址
             events: [

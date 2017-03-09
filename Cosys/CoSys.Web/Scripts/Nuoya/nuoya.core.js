@@ -166,11 +166,13 @@
                 container: "body",//父级容器
                 afterClose: null,//关闭事件
                 addIframe: false,
-                closeOnConfirm: false
+                closeOnConfirm: false,
+                isForPhone:false
             };
             options = $.extend(true, defaults, options);
 
             var dialog = $(dialogTemplates.dialog);
+         
             var innerDialog = dialog.find("am-modal-dialog");
             var body = dialog.find(".am-modal-bd");
             var buttons = options.buttons;
@@ -303,9 +305,9 @@
                 return 0;
             }
         },
-        resetModalPosition: function (modal) {
-            $(modal).css("marginLeft", "-" + ($(modal).width() / 2) + "px");
-            $(modal).css("marginTop", "-" + ($(modal).height() / 2) + "px");
+        resetModalPosition: function (modal, isForPhone) {
+            $(modal).css("marginLeft", "-" + (isForPhone?"100px":($(modal).width() / 2) + "px"));
+            $(modal).css("marginTop", "-" + (isForPhone?"100px":($(modal).height() / 2) + "px"));
         },
         setOperateHideByClass: function () {
             this.action("/Operate/GetNeedHideClass", { pageUrl: window.location.pathname }, function (list) {

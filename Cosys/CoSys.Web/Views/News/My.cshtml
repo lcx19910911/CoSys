@@ -29,11 +29,14 @@
         <thead>
             <tr>
                 <th dataname="ID" type="checkbox"></th>
-                <th dataname="Title">稿件名称</th>
-                <th dataname="NewsTypeName">投稿类型</th>
-                <th dataname="UpdateAdminName">上节点审核人</th>           
+                <th dataname="Title">标题</th>
                 <th dataname="StateStr">状态</th>
-                <th dataname="CreatedTime" datatype="jsondate">申请日期</th>
+                @if (!WebHelper.CheckAgent())
+                {
+                <th dataname="NewsTypeName">投稿类型</th>
+                <th dataname="UpdateAdminName">上节点审核人</th>
+                <th dataname="SubmitTime" datatype="jsondate">投递日期</th>
+                }
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -55,6 +58,7 @@
                 domainId: "searchDomain",
                 subId: "btnSearch"
             },
+            isForPhone: '@(WebHelper.CheckAgent()?1:0)' == "1",
             ajaxUrl: "/News/GetAdminPageList",
             params: {
                 isAudit:false
