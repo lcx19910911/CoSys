@@ -16,6 +16,12 @@
     @Styles.Render("~/Content/Admin")
     @RenderSection("linkcss", required: false)
     @Scripts.Render("~/Scripts/Admin")
+    <style>
+        [class*=am-icon-] {
+            display: inline-block;
+            font-style: normal;
+        }
+    </style>
     <script>
 
         function changePassword(item) {
@@ -381,10 +387,8 @@
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
                 <li><a href="javascript:;"><span class="am-icon-user">@(LoginHelper.GetCurrentUser()?.Account)</span></a></li>
-                @if (!WebHelper.CheckAgent())
-                {
+
                     <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
-                }
                 <li><a href="/account/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>
         </div>
@@ -406,45 +410,47 @@
 
         <!-- sidebar start -->
         <div class="admin-sidebar  am-offcanvas" id="admin-offcanvas">
-            <ul class="am-list admin-sidebar-list">
-                <li><a href="/home/index"><span class="am-icon-home"></span> 个人中心</a></li>
-                <li class="admin-parent">
-                    <a data-am-collapse="{target: '#稿件管理'}" class="am-cf">
-                        <span class="am-icon-pencil-square-o"></span> 稿件管理
-                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
-                    </a>
-                    <ul class="am-list admin-sidebar-sub " id="稿件管理">
-                        <li>
-                            <a data-am-collapse="{target: '#在线投稿'}" class="am-cf am-collapsed" href="/news/manage">
-                                <span class="am-icon-pencil-square-o"></span> 在线投稿
-                            </a>
-                        </li>
-                        <li>
-                            <a data-am-collapse="{target: '#稿件管理'}" class="am-cf am-collapsed" href="/news/index">
-                                <span class="am-icon-pencil-square-o"></span> 稿件管理
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="admin-parent">
-                    <a data-am-collapse="{target: '#个人信息管理'}" class="am-cf">
-                        <span class="am-icon-user"></span> 个人信息管理
-                        <span class="am-icon-angle-right am-fr am-margin-right"></span>
-                    </a>
-                    <ul class="am-list admin-sidebar-sub" id="个人信息管理">
-                        <li>
-                            <a data-am-collapse="{target: '#个人信息修改'}" class="am-cf am-collapsed" href="javascript:userSet()">
-                                <span class="am-icon-user"></span> 个人信息修改
-                            </a>
-                        </li>
-                        <li>
-                            <a data-am-collapse="{target: '#修改密码'}" class="am-cf am-collapsed" href="javascript:changePassword()">
-                                <span class="am-icon-user"></span> 修改密码
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+            <div class="am-offcanvas-bar admin-offcanvas-bar">
+                <ul class="am-list admin-sidebar-list  am-text-sm">
+                    <li><a href="/home/index"><span class="am-icon-home"></span> 个人中心</a></li>
+                    <li class="admin-parent">
+                        <a data-am-collapse="{target: '#稿件管理'}" class="am-cf">
+                            <span class="am-icon-pencil-square-o"></span> 稿件管理
+                            <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                        </a>
+                        <ul class="am-list admin-sidebar-sub " id="稿件管理">
+                            <li>
+                                <a data-am-collapse="{target: '#在线投稿'}" class="am-cf am-collapsed" href="/news/manage">
+                                    <span class="am-icon-pencil-square-o"></span> 在线投稿
+                                </a>
+                            </li>
+                            <li>
+                                <a data-am-collapse="{target: '#稿件管理'}" class="am-cf am-collapsed" href="/news/index">
+                                    <span class="am-icon-pencil-square-o"></span> 稿件管理
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="admin-parent">
+                        <a data-am-collapse="{target: '#个人信息管理'}" class="am-cf">
+                            <span class="am-icon-user"></span> 个人信息管理
+                            <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                        </a>
+                        <ul class="am-list admin-sidebar-sub" id="个人信息管理">
+                            <li>
+                                <a data-am-collapse="{target: '#个人信息修改'}" class="am-cf am-collapsed" href="javascript:userSet()">
+                                    <span class="am-icon-user"></span> 个人信息修改
+                                </a>
+                            </li>
+                            <li>
+                                <a data-am-collapse="{target: '#修改密码'}" class="am-cf am-collapsed" href="javascript:changePassword()">
+                                    <span class="am-icon-user"></span> 修改密码
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
         <!-- sidebar end -->
         <!-- content start -->

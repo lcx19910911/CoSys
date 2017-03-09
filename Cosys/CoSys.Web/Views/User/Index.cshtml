@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "会员管理";
 }
 <div class="am-cf am-padding">
@@ -40,9 +40,9 @@
             <tr>
                 <th dataname="ID" type="checkbox"></th>
                 <th dataname="Account">账号</th>
-                <th dataname="Name">名称</th>
+                <th dataname="RealName">真实名称</th>
                 <th dataname="Phone">手机号</th>
-                <th dataname="CreatedTime" datatype="jsondate">创建日期</th>
+                <th dataname="CreatedTime" datatype="jsondate">注册日期</th>
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -66,159 +66,7 @@
                 });
             });
         }
-        function formInit(dataitem) {
-
-                $("[name='Code']").val('@(Model.Code.GetInt())');
-                //添加表单验证
-                $.Nuoya.form("regForm").validate({
-                    rules: {
-                        Account: {
-                            required: true,
-                            maxlength: 32
-                        },
-                        NewPassword: {
-                            required: true,
-                            maxlength: 12
-                        },
-                        ConfirmPassword: {
-                            required: true,
-                            maxlength: 12
-                        },
-                        Email: {
-                            maxlength: 32,
-                            email: true,
-                        },
-                        RealName: {
-                            required: true,
-                            maxlength: 32
-                        },
-                        PenName: {
-                            required: true,
-                            maxlength: 32
-                        },
-                        IDCardAddres: {
-                            required: true,
-                            maxlength: 256
-                        },
-                        IDCard: {
-                            required: true
-                        },
-                        CompanyName: {
-                            maxlength: 64
-                        },
-                        Position: {
-                            maxlength: 32
-                        },
-                        Zipcode: {
-                            maxlength: 32
-                        },
-                        ProvoniceCode: {
-                            required: true,
-                        },
-                        CityCode: {
-                            required: true,
-                        },
-                        CountyCode: {
-                            required: true,
-                        },
-                        Addres: {
-                            required: true,
-                            maxlength: 256
-                        },
-                        TelePhone: {
-                            phone: true,
-                            maxlength: 15
-                        },
-                        Phone: {
-                            mobile: true,
-                            required: true
-                        }
-                    },
-                    messages: {
-                        Account: {
-                            required: "用户名不允许为空",
-                            maxlength: "最多{0}个字符"
-                        },
-                        NewPassword: {
-                            required: "密码不允许为空",
-                            maxlength: "最多{0}个字符"
-                        },
-                        ConfirmPassword: {
-                            required: "确认密码不允许为空",
-                            maxlength: "最多{0}个字符"
-                        },
-                        Email: {
-                            maxlength: "最多{0}个字符",
-                        },
-                        RealName: {
-                            required: "真实姓名不允许为空",
-                            maxlength: "最多{0}个字符"
-                        },
-                        PenName: {
-                            required: "见刊笔名不允许为空",
-                            maxlength: "最多{0}个字符"
-                        },
-                        IDCardAddres: {
-                            required: "户籍所在地不允许为空"
-                        },
-                        IDCard: {
-                            idCard: "请输入正确的身份证号码",
-                            required: "身份证号码不允许为空",
-                        },
-                        CompanyName: {
-                            maxlength: "最多{0}个字符"
-                        },
-                        Position: {
-                            maxlength: "最多{0}个字符"
-                        },
-                        Zipcode: {
-                            maxlength: "最多{0}个字符"
-                        },
-                        ProvoniceCode: {
-                            required: "请选择省份",
-                        },
-                        CityCode: {
-                            required: "请选择市",
-                        },
-                        CountyCode: {
-                            required: "请选择县区",
-                        },
-                        Addres: {
-                            required: "通信地址不允许为空",
-                            maxlength: "最多{0}个字符"
-                        },
-                        TelePhone: {
-                            maxlength: "最多{0}个字符"
-                        },
-                        Phone: {
-                            required: "手机号不允许为空"
-                        }
-                    }
-                });
-        }
-
-        function loadArea(obj) {
-            var thatObj = $(obj);
-            var value = thatObj.val();
-
-            var nextSelect = thatObj.parent().next().find("select");
-            if (value != "0") {
-                //赋值
-                $.ajax({
-                    type: "GET",
-                    url: "/area/GetAreaCodeSelectItem",
-                    datatype: "json",
-                    data: { value: value },
-                    success: function (data) {
-                        nextSelect.html("");
-                        $(data.Result).each(function (index, item) {
-                            nextSelect.append("<option value='" + item.Value + "' selected>" + item.Text + "</option>");
-                        });
-                    }
-                });
-
-            }
-        }
+        
 
         var grid = $.Nuoya.grid({
             tableId: "dataTable",
