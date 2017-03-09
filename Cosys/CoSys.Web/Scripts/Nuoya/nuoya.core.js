@@ -305,9 +305,9 @@
                 return 0;
             }
         },
-        resetModalPosition: function (modal, isForPhone) {
-            $(modal).css("marginLeft", "-" + (isForPhone?"100px":($(modal).width() / 2) + "px"));
-            $(modal).css("marginTop", "-" + (isForPhone?"100px":($(modal).height() / 2) + "px"));
+        resetModalPosition: function (modal) {
+            $(modal).css("marginLeft", "-" + ($(modal).width() / 2) + "px");
+            $(modal).css("marginTop", "-" + ($(modal).height() / 2) + "px");
         },
         setOperateHideByClass: function () {
             this.action("/Operate/GetNeedHideClass", { pageUrl: window.location.pathname }, function (list) {
