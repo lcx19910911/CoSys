@@ -303,6 +303,7 @@ namespace CoSys.Service
                         if (isAudit)
                         {
                             oldEntity.State = NewsState.WaitAudit;
+                            oldEntity.AuditState = NewsAuditState.EditorAudit;
                             oldEntity.SubmitTime = DateTime.Now;
                         }
                         else

@@ -327,7 +327,7 @@ else
             var isPhone = '@(isFormPhone?1:0)';
             var paths = "";
             if (isPhone == "1") {
-                content = $("[name='Content']").text();
+                content = $("[name='Content']").val();
                 $("#div_imageShow img").each(function () {
                     imgAry.push($(this).prop("src"));
                 })

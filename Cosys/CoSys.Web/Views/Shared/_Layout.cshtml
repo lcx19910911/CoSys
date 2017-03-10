@@ -34,7 +34,7 @@
                 title: "修改密码",
                 callback: function (e) {
                     if (isForPhone) {
-                        $(".am-modal-alert").css({ "top": "20%" }, { "left": "10%" });
+                        $(".am-modal-alert").css({ "top": "35%" }, { "left": "10%" });
                         $(".am-text-right").hide();
                     }
                 },
@@ -387,8 +387,7 @@
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
                 <li><a href="javascript:;"><span class="am-icon-user">@(LoginHelper.GetCurrentUser()?.Account)</span></a></li>
-
-                    <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
+                 <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
                 <li><a href="/account/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>
         </div>

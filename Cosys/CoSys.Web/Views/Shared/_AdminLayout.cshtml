@@ -35,7 +35,7 @@
                 callback: function (e) {
                     if (isForPhone)
                     {
-                        $(".am-modal-alert").css({ "top": "40%" }, { "left": "10%" });
+                        $(".am-modal-alert").css({ "top": "30%" }, { "left": "10%" });
                         $(".am-text-right").hide();
                     }
                 },
@@ -387,7 +387,7 @@
             </ul>
         </div>
     </header>
-    <div class="am-cf admin-main am-text-left">
+    <div class="am-cf admin-main am-text-left" style="@(WebHelper.CheckAgent()?"padding-top:0px;":"")">
 
         <div id="imgDiv" style="opacity:1;background-color:black;width:100%;height:100%;z-index:9000; display:none; position:absolute;">
             <div style="width:500px; margin:0 auto; z-index:9001;margin-top:10%">
@@ -521,10 +521,10 @@
             </ul>
         </div>
     </div>
-        <!-- sidebar end -->
+        <!-- sidebar end margin-top:-->
         <!-- content start -->
-        <div class="admin-content">
-            <div>
+        <div class="admin-content ">
+            <div style="@(isForPhone?"":"")">
                 @RenderBody()
             </div>
 
@@ -532,9 +532,6 @@
         <!-- content end -->
     </div>
     <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
-
-
-
 
     @RenderSection("scripts", false)
 </body>
