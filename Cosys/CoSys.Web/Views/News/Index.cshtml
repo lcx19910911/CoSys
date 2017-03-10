@@ -8,18 +8,58 @@
 <div id="searchDomain">
 
     <div class="am-g">
-        <div class="am-u-lg-6 am-u-end">
-            <div class="am-input-group am-input-group-sm">
-                <span class="am-input-group-label">标题：</span>
-                <input type="text" class="am-form-field" placeholder="按标题搜索" style="width:100px;" name="title" ;>
-                <span class="am-input-group-btn am-margin-left-sm">
-                    <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
-                    <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
-                </span>
+        @if (WebHelper.CheckAgent())
+        {
+            <div class="am-u-lg-12">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">状态</span>
+                    <select name="state" style="width:120px;height:26px;">
+                        <option value="-1">不限</option>
+                        <option value="1">待审核</option>
+                        <option value="3">已录用</option>
+                        <option value="4">被退</option>
+                        <option value="5">发布</option>
+                    </select>
+                </div>
             </div>
-        </div>
 
+            <div class="am-u-lg-12 am-margin-top-sm">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">标题：</span>
+                    <input type="text" class="am-form-field" placeholder="按标题搜索" style="width:100px;" name="title" ;>
+                </div>
+            </div>
 
+            <div class="am-u-lg-12 am-margin-top-sm">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-btn am-margin-left-sm">
+                        <button class="am-btn am-btn-default" onclick="Search()" type="button">搜索</button>
+                        <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                    </span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="am-u-lg-8 am-u-end">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label">标题：</span>
+                    <input type="text" class="am-form-field" placeholder="按标题搜索" style="width:100px;" name="title" ;>
+                    <span class="am-input-group-label  am-margin-left-sm">状态</span>
+                    <select name="state" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
+                        <option value="-1">不限</option>
+                        <option value="1">待审核</option>
+                        <option value="3">已录用</option>
+                        <option value="4">被退</option>
+                        <option value="5">发布</option>
+                    </select>
+                    <span class="am-input-group-btn am-margin-left-sm">
+                        <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
+                        <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                    </span>
+                </div>
+            </div>
+        }
     </div>
 
 </div>

@@ -223,9 +223,9 @@
                         }
                         else if (Model.State == NewsState.WaitAudit)
                         {
-                            if ((admin.OperateFlag & (long)OperateFlag.Audit) != 0)
+                            if ((admin.OperateFlag & (long)OperateFlag.Audit) != 0 && canEdit)
                             {
-                                if (Model.AuditState == NewsAuditState.EditorialAudit&& canEdit)
+                                if (Model.AuditState == NewsAuditState.EditorialAudit)
                                 {
                                     <div class="am-form-group">
                                         <button type="button" class="am-btn am-u-sm-3" id="plushBtn">发布</button>
