@@ -288,6 +288,16 @@ namespace CoSys.Web.Controllers
         {
             return JResult(WebService.Plush_News(id, flag, msg));
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public ActionResult EditorialPass(string id, string msg)
+        {
+            return JResult(WebService.News_EditorialPass(id, msg));           
+        }
     }
 }

@@ -1191,8 +1191,8 @@ namespace CoSys.Core
         {
             if (string.IsNullOrEmpty(topic) || string.IsNullOrEmpty(body) || !IsValidEmail(receiveAddress))
                 return false;
-            string sendAddress = CustomHelper.GetValue("Company_Email"); ;//发件者邮箱地址
-            string sendPassword = CustomHelper.GetValue("Company_Email_Password"); ;//发件者邮箱密码
+            string sendAddress = CustomHelper.GetValue("Company_Email"); //发件者邮箱地址
+            string sendPassword = CustomHelper.GetValue("Company_Email_Password");//发件者邮箱密码
             string[] sendUsername = sendAddress.Split('@');
 
             SmtpClient client = new SmtpClient("smtp." + sendUsername[1].ToString()); //设置邮件协议

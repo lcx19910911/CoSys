@@ -72,7 +72,7 @@ namespace CoSys.Service
                     }
                         query = query.Where(x => (!string.IsNullOrEmpty(x.UserID) && userIdList.Contains(x.UserID)) || (!string.IsNullOrEmpty(x.AdminID) && adminIdList.Contains(x.AdminID)));
                 }
-                if (state != null)
+                if (state != null&&(int)state!=-1)
                 {
                     query = query.Where(x => x.State == state);
                 }
@@ -88,14 +88,39 @@ namespace CoSys.Service
                 adminIds.AddRange(list.Select(x => x.UpdateAdminID).ToList());
                 adminIds.AddRange(list.Select(x => x.UserID).ToList());
                 adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Name);
+                
+                var departmentDic = db.Department.ToDictionary(x => x.ID);
+                var typeIdList = list.Select(x => x.NewsTypeID).ToList();
+                var typeDic = db.DataDictionary.Where(x => x.GroupCode == GroupCode.Type && typeIdList.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Value);
                 list.ForEach(x =>
                 {
                     x.StateStr = x.State.GetDescription();
-                    if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
-                        x.UserName = userDic.GetValue(x.UserID);
-                    else if (x.UserID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UserID))
-                        x.UserName = adminDic.GetValue(x.UserID);
-
+                    if (x.UpdateAdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.UpdateAdminID))
+                        x.UpdateAdminName = adminDic.GetValue(x.UpdateAdminID);
+                    if (x.NewsTypeID.IsNotNullOrEmpty() && typeDic.ContainsKey(x.NewsTypeID))
+                        x.NewsTypeName = typeDic[x.NewsTypeID];
+                        if (x.DepartmentID.IsNotNullOrEmpty())
+                        {
+                            var departmentAry = x.DepartmentID.Split(':');
+                            if (departmentAry.Length == 1)
+                            {
+                                if (departmentDic.ContainsKey(departmentAry[0]))
+                                {
+                                    x.DepartmentName = departmentDic[departmentAry[0]].Name;
+                                }
+                            }
+                            else if (departmentAry.Length == 2)
+                            {
+                                if (departmentDic.ContainsKey(departmentAry[0]))
+                                {
+                                    x.DepartmentName = departmentDic[departmentAry[0]].Name;
+                                }
+                                if (departmentDic.ContainsKey(departmentAry[1]))
+                                {
+                                    x.DepartmentName += "-" + departmentDic[departmentAry[1]].Name;
+                                }
+                            }
+                    }
                 });
                 return ResultPageList(list, pageIndex, pageSize, count);
             }
@@ -160,7 +185,7 @@ namespace CoSys.Service
                         }
                     }
                 }
-                if (state != null)
+                if (state != null && (int)state != -1)
                 {
                     query = query.Where(x => x.State == state);
                 }
@@ -312,8 +337,12 @@ namespace CoSys.Service
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);
-
-                db.SaveChanges();
+                var admin = db.Admin.Find(LoginHelper.GetCurrentAdminID());
+                if (db.SaveChanges() > 0)
+                {
+                    admin.EditCount++;
+                    db.SaveChanges();
+                }
                 return Result(true);
             }
 
@@ -397,6 +426,48 @@ namespace CoSys.Service
         }
 
         /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public WebResult<bool> News_EditorialPass(string id,string msg)
+        {
+            if (!id.IsNotNullOrEmpty())
+            {
+                return Result(false, ErrorCode.sys_param_format_error);
+            }
+            using (DbRepository db = new DbRepository())
+            {
+                var news = db.News.Find(id);
+                if (news == null)
+                    return Result(false, ErrorCode.sys_param_format_error);
+
+                var admin = db.Admin.Find(LoginHelper.GetCurrentAdminID());
+                if (news.State != NewsState.WaitAudit || admin == null||news.AuditState!=NewsAuditState.EditorialAudit)
+                {
+                    return Result(false, ErrorCode.sys_param_format_error);
+                }
+                else
+                {
+                    admin.AuditPassCount++;
+                    admin.AuditCount++;
+                    news.UpdateAdminID = admin.ID;
+                    news.Msg = msg;
+                    news.State = NewsState.Pass;
+                    Add_Log(LogCode.AuditPass, id, Client.LoginAdmin.ID, msg);
+                    if (db.SaveChanges() > 0)
+                    {
+                        return Result(true);
+                    }
+                    else
+                    {
+                        return Result(false, ErrorCode.sys_fail);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="Model"></param>
@@ -409,7 +480,7 @@ namespace CoSys.Service
                 if (news == null)
                     return Result(false, ErrorCode.sys_param_format_error);
 
-                var admin = Client.LoginAdmin;
+                var admin = db.Admin.Find(LoginHelper.GetCurrentAdminID());
                 if (news.State != NewsState.WaitAudit || admin == null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
@@ -426,9 +497,11 @@ namespace CoSys.Service
                     {
                         if (role.AuditState == NewsAuditState.EditorAudit)
                         {
+                            admin.AuditCount++;
                             news.UpdateAdminID = admin.ID;
                             if (isPass == YesOrNoCode.Yes)
                             {
+                                admin.AuditPassCount++;
                                 if (news.DepartmentID.Split(';').Length == 1)
                                     news.AuditState = NewsAuditState.MinisterAudit;
                                 else
@@ -448,9 +521,11 @@ namespace CoSys.Service
                     {
                         if (role.AuditState == NewsAuditState.MinisterAudit)
                         {
+                            admin.AuditCount++;
                             news.UpdateAdminID = admin.ID;
                             if (isPass == YesOrNoCode.Yes)
                             {
+                                admin.AuditPassCount++;
                                 news.AuditState = NewsAuditState.LastAudit;
                             }
                             else
@@ -467,9 +542,11 @@ namespace CoSys.Service
                     {
                         if (role.AuditState == NewsAuditState.EditorialAudit)
                         {
+                            admin.AuditCount++;
                             news.UpdateAdminID = admin.ID;
                             if (isPass == YesOrNoCode.Yes)
                             {
+                                admin.AuditPassCount++;
                                 news.AuditState = NewsAuditState.LastAudit;
                             }
                             else
@@ -485,10 +562,13 @@ namespace CoSys.Service
                     {
                         if (role.AuditState == NewsAuditState.LastAudit)
                         {
+                            admin.AuditCount++;
                             news.UpdateAdminID = admin.ID;
                             if (isPass == YesOrNoCode.Yes)
                             {
+                                admin.AuditPassCount++;
                                 news.State = NewsState.Pass;
+                                admin.AuditPassCount++;
                             }
                             else
                             {
@@ -529,11 +609,12 @@ namespace CoSys.Service
                 if (news == null)
                     return Result(false, ErrorCode.sys_param_format_error);
 
-                var admin = Client.LoginAdmin;
+                var admin =db.Admin.Find(LoginHelper.GetCurrentAdminID());
                 if (news.State != NewsState.Pass || admin == null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
+                admin.PlushCount++;
 
                 news.UpdateAdminID = admin.ID;
                 news.State = NewsState.Plush;
@@ -546,6 +627,7 @@ namespace CoSys.Service
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, msg);
                 if (db.SaveChanges() > 0)
                 {
+                    
                     return Result(true);
                 }
                 else

@@ -33,9 +33,9 @@ namespace CoSys.Model
         Reject = 4,
 
         /// <summary>
-        /// 发布
+        /// 已发布
         /// </summary>
-        [Description("发布")]
+        [Description("已发布")]
         Plush = 5,
     }
 }
