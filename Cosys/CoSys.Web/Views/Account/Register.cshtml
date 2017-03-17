@@ -166,14 +166,14 @@
                 <li>
                     <lable class="info">验证码:</lable>
                     <div style="width:70%;float:left;">
-                        <input type="text" style="width:40%;" placeholder="请输入验证码" required name="ValiteCode"/>
+                        <input type="text" style="width:56%;" placeholder="请输入验证码" required name="ValiteCode"/>
                         <img id="img_code" style="width:30%;height:2rem;float:left;" alt="" title="点击重新获取" src="/account/validatecode" onclick="javascript:$(this).attr('src','/account/validatecode?r='+Math.random());" />    
                     </div>
                     <div class="clear"> </div>
                 </li>
                 
                 <label><input type="checkbox" id="checkbox" checked=""><i> </i>同意平台条款</label>
-                <button class="submit-btn" onclick="Submit()" style="height:50px;margin-left:10%;">注册</button>
+                <button class="submit-btn" onclick="Submit()" >注册</button>
                 }
                 <div class="clear"> </div>
             </ul>

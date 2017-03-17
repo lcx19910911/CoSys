@@ -67,6 +67,10 @@ body{
 	border:1px solid #EBEBEB;
     height:2rem;
 }
+.dataform select  {
+    	width:67%;
+}
+
 form{
 	padding-bottom: 2em;
 }
@@ -95,10 +99,6 @@ form{
 	background:url(../images/spirit.png)  no-repeat -31px 0px;
 }
 
-.dataform submit,.submit-btn{
-    padding-top:10px;
-	float:left;
-}
 .main h4{
 	float: left;
 	font-size:13px;
@@ -106,8 +106,8 @@ form{
 	color:#363535;
 }
 .dataform input[type=submit],.submit-btn,.submit-btn{
-    width:80%;   
-	margin:10% 10% 2% 10%;
+    width:84%;   
+	margin:10% 15% 2% 10%;
   padding:14px 20px;
   border-radius:0.3em;
  -webkit-border-radius:0.3em;
@@ -133,7 +133,11 @@ form{
  color:#fff;
 
 }
-
+ 
+.dataform submit,.submit-btn{
+    height:50px;
+    margin-left:13%;
+}
 /*---start-check-box----*/
 .uncheked{
 	height:40px;
@@ -252,7 +256,7 @@ form{
 	width:97%;
 	margin:5em auto 0;
 	}
-	.dataform input:not([type=submit]),.dataform select,.submit-btn {
+	.dataform input:not([type=submit]){
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	width: 60%;
 	}
@@ -265,7 +269,7 @@ form{
 	width:95%;
 	margin:5em auto 0;
 	}
-	.dataform input:not([type=submit]),.dataform select,.submit-btn  {
+	.dataform input:not([type=submit]),.dataform select  {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	padding: 0.1em 0.1em 0.1em 0.1em;
 	width: 60%;
@@ -285,7 +289,8 @@ form{
 	.dataform input[type=submit],.submit-btn {
 	padding: 12px 12px;
 	float: right;	
-    width:80%;
+	margin-right:9%;
+    width:75%;
 	}
 	.main h4 {
 	float:left;
@@ -320,9 +325,11 @@ form{
 	margin-left:13px;
 	}
 	.dataform input[type=submit],.submit-btn {
-	padding: 12px 12px;
 	text-align:center;
-	margin:10%;
+	margin-left:12%;
+    margin-top:4%;
+	margin-right:7%;
+    height:46px;
     width:80%;
     border:1px solid red;
 	}
@@ -342,7 +349,7 @@ form{
 	.main p{
 	padding:16px 20px;
 	}
-	.dataform input:not([type=submit]),.dataform select,.submit-btn {
+	.dataform input:not([type=submit]),.submit-btn {
 	font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	padding: 0.1em 1em 0.1em 0.1em;
 	width: 60%;
@@ -355,10 +362,10 @@ form{
 	margin-left:13px;
 	}
 	.dataform input[type=submit],.submit-btn {
-	padding: 12px 12px;
 	text-align:center;
-	margin:10%;
+	margin-left:13%;
     width:80%;
+    height:44px;
     border:1px solid red;
 	}
 	.main h4 {
@@ -393,9 +400,9 @@ form{
 	margin-left:-6px;
 	}
 	.dataform input[type=submit],.submit-btn {
-	padding: 12px 12px;
 	text-align:center;
-	
+    margin-left:10%;
+    height:38px;
 	margin:10%;
     width:80%;
     border:1px solid red;
