@@ -31,7 +31,7 @@
 }
 
 
-<div class="admin-content-body">
+<div class="admin-content-body" style="@(isFormPhone?"margin-top:50px":"")">
     <div class="am-cf am-padding am-padding-bottom-0">
         <div class="am-fl am-cf"><a href="/news/index"><strong class="am-text-primary am-text-lg">稿件管理</strong> </a>/ <small>@title</small></div>
     </div>
@@ -110,7 +110,7 @@
                         </div>
                     </div>
 
-                    <div class="am-form-group">
+                    <div class="am-form-group" style="@(!canEdit? "display:none" : "")">
                         <label for="user-email" class="am-u-sm-3 am-form-label"></label>
                         <div class="am-u-sm-9" id="div_imageShow">
                             @if (Model.Paths.IsNotNullOrEmpty())
@@ -136,34 +136,45 @@
                 }
                 <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
 
-                @if (Model.ID.IsNotNullOrEmpty())
-                { <div class="am-form-group">
-                    <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
-
-                    <div class="am-u-md-9">
-                        <div class="am-panel am-panel-default">
-                            <div class="am-panel-bd am-collapse am-in am-cf" id="collapse-panel-3">
-                                <ul class="am-comments-list admin-content-comment">
-                                    @foreach (var item in Model.Logs)
-                                    {
-                                        <li class="am-comment">
-                                            <div class="">
-                                                <header class="am-comment-hd">
-                                                    <div class="am-text-lg"><a href="#" class="am-text-success">@item.AdminName</a><a href="#" class="am-text-warning">角色 @item.RoleName</a>操作：<span class="am-text-danger">@(item.Code.GetDescription()) </span> 于 <time>@item.CreatedTime.ToString("yyyy-MM-dd hh:mm")</time></div>
-                                                </header>
-                                                <div class="am-comment-bd">
-                                                    <p>@item.Remark</p>
+                @if (Model.ID.IsNotNullOrEmpty() && Model.Logs != null && Model.Logs.Count > 0)
+                {
+                    if (isFormPhone)
+                    {
+                        <div class="am-form-group">
+                            <label for="user-email" class="am-u-sm-12 am-form-label">审核记录</label>
+                        </div>
+                    }
+                    <div class="am-form-group">
+                        @if (!isFormPhone)
+                        {
+                            <label for="user-email" class="am-u-sm-3 am-u-end am-form-label">审核记录</label>
+                        }
+                        <div class="am-u-md-9">
+                            <div class="am-panel am-panel-default">
+                                <div class="am-panel-bd am-collapse am-in am-cf" id="collapse-panel-3">
+                                    <ul class="am-comments-list admin-content-comment">
+                                        @foreach (var item in Model.Logs)
+                                        {
+                                            <li class="am-comment">
+                                                <div class="">
+                                                    <header class="am-comment-hd">
+                                                        <div class="@(isFormPhone?" am-text-sm":"am-text-lg")"><a href="#" class="am-text-success">@item.AdminName</a><a href="#" class="am-text-warning"> @item.RoleName</a>于<time>@item.CreatedTime.ToString("yyyy-MM-dd hh:mm")</time> 操作：<span class="am-text-danger">@(item.Code.GetDescription()) </span></div>
+                                                    </header>
+                                                    @if (item.Remark.IsNotNullOrEmpty())
+                                                    {
+                                                        <div class="am-comment-bd" style="@(isFormPhone?"padding:2px;":"")">
+                                                            <p class="am-text-success">意见:@(item.Remark)</p>
+                                                        </div>
+                                                    }
                                                 </div>
-                                            </div>
-                                        </li>
-                                    }
-                                </ul>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 }
-
                 @if (Model.ID.IsNotNullOrEmpty())
                 {
                     if (Model.State == NewsState.Reject)
@@ -174,14 +185,14 @@
                                 <textarea rows="4" readonly>@(Model.Msg)</textarea>
                             </div>
                         </div>
-                            <div class="am-form-group">
-                                <div class="am-u-sm-4 am-u-sm-push-2">
-                                    <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
-                                </div>
-                                <div class="am-u-sm-4">
-                                    <button id="submitBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
-                                </div>
+                        <div class="am-form-group">
+                            <div class="am-u-sm-4 am-u-sm-push-2">
+                                <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-primary">保存</button>
                             </div>
+                            <div class="am-u-sm-4">
+                                <button id="submitBtn" type="button" class="am-btn am-btn-lg am-btn-primary">发稿</button>
+                            </div>
+                        </div>
                     }
                     else if (Model.State == NewsState.None)
                     {
@@ -196,8 +207,8 @@
                     }
                     else if (Model.State == NewsState.Plush)
                     {
-                            <<div class="am-form-group">
-                            <button type="button" class="am-btn am-u-sm-3 am-disabled" disabled>发布于</button>
+                        <div class="am-form-group">
+                            <label class="am-u-sm-3 am-u-end am-form-label">发布于</label>
                             <div class="am-u-sm-9">
                                 @if (Model.MethodList != null && Model.MethodList.Count != 0)
                                 {
@@ -244,12 +255,6 @@
                 ue.setContent('@(Html.Raw(Model?.Content))');
             });
         })
-    </script>
-}
-else
-{
-    <script>
-        $(".admin-header,.am-icon-btn,.admin-sidebar").remove();
     </script>
 }
 <script>

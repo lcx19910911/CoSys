@@ -67,7 +67,7 @@ namespace CoSys.Service
             using (DbRepository db = new DbRepository())
             {
 
-                var list = db.Log.AsQueryable().AsNoTracking().Where(x => x.NewsID.Equals(newId)).OrderByDescending(x => x.CreatedTime).ToList();
+                var list = db.Log.AsQueryable().AsNoTracking().Where(x => x.NewsID.Equals(newId)).OrderBy(x => x.CreatedTime).ToList();
                 var adminIds = list.Select(x => x.AdminID).ToList();
                 var adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID);
                 var roleDic = db.Role.ToDictionary(x => x.ID);
