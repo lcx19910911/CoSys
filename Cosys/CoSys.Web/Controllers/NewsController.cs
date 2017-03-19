@@ -245,12 +245,23 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title, string newsTypeId, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, bool isAudit=true)
+        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title, string newsTypeId,string userId, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, bool isAudit=true)
         {
-            return JResult(WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, newsTypeId, isAudit, state, createdTimeStart, createdTimeEnd));
+            return JResult(WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, newsTypeId, userId, isAudit, state, createdTimeStart, createdTimeEnd));
         }
-
-
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="name">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public ActionResult GetUserPageList(int pageIndex, int pageSize,string userId)
+        {
+            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize,userId));
+        }
+        
         /// <summary>
         /// 查找实体
         /// </summary>
@@ -270,6 +281,16 @@ namespace CoSys.Web.Controllers
         {
             return JResult(WebService.Delete_News(ids));
         }
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public ActionResult Reset(string id)
+        {
+            return JResult(WebService.ReSet_News(id));
+        }
+        
         /// <summary>
         /// 审核
         /// </summary>

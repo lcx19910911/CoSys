@@ -87,11 +87,51 @@
                         //window.open("/Account/Register?id=" + item.ID);
                         $.Nuoya.ajaxDialog({
                             addIframe: true,
-                            ajaxUrl: "/Account/Register?id=" + item.ID,
+                            ajaxUrl: "/Account/Register?info=false&id=" + item.ID,
                             width: "1000px",
                             height: "680px",
                             title: "用户详情",
                             callback: function (e) {                              
+                            }
+                        })
+                    }
+                },
+                {
+                    className: "am-text-success",
+                    icon: "icon-pencil-square-o",
+                    name: "用户稿件",
+                    click: function (item) {
+                        //window.open("/Account/Register?id=" + item.ID);
+                        $.Nuoya.ajaxDialog({
+                            ajaxUrl: "/HtmlTemplates/News/Index.html",
+                            width: "1000px",
+                            height: "680px",
+                            title: "用户稿件",
+                            callback: function (ce) {
+                                var childrenGrid = $.Nuoya.grid({
+                                    tableId: "newsDataTable",
+                                    //表格id
+                                    search: {
+                                        domainId: "newsSearchDomain",
+                                        subId: "newsBtnSearch"
+                                    },
+                                    ajaxUrl: "/News/GetUserPageList",
+                                    params: {
+                                        userId:item.ID
+                                    },
+                                    isForPhone: '@(WebHelper.CheckAgent()?1:0)' == "1",
+                                    //数据请求地址
+                                    events: [
+                                        {
+                                            className: "am-text-danger",
+                                            icon: "icon-edit",
+                                            name: "查看",
+                                            click: function (childrenItem) {
+                                                window.open("/News/AdminManage/" + childrenItem.ID);
+                                            }
+                                        }
+                                    ]
+                                });
                             }
                         })
                     }

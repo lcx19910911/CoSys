@@ -52,8 +52,11 @@ namespace CoSys.Core
                         }
                         else
                         {
-                            dataRow.CreateCell(i).SetCellValue(column.GetValue(item, null) == null ? "" : column.GetValue(item, null).ToString());
-                            i++;
+                            if (head.ContainsKey(column.Name))
+                            {
+                                dataRow.CreateCell(i).SetCellValue(column.GetValue(item, null) == null ? "" : column.GetValue(item, null).ToString());
+                                i++;
+                            }
                         }
                     }
                     h = true;

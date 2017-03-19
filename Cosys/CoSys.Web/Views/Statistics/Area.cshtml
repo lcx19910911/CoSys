@@ -41,6 +41,12 @@
                     <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)"></select>
                 </div>
             </div>
+            <div class="am-u-lg-12 am-margin-top-sm">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">街道</span>
+                    <select name="street" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,4)"></select>
+                </div>
+            </div>
 
             <div class="am-u-lg-12 am-margin-top-sm">
                 <div class="am-input-group am-input-group-sm">
@@ -86,6 +92,8 @@
                     <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)"></select>
                     <span class="am-input-group-label am-margin-left-sm">县/区</span>
                     <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)"></select>
+                    <span class="am-input-group-label am-margin-left-sm">街道</span>
+                    <select name="street" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;"></select>
                     <span class="am-input-group-label am-margin-left-sm">渠道</span>
                     <select name="methodFlag" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         <option value="-1" selected>请选择</option>
@@ -104,7 +112,6 @@
                         <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
                     </span>
                 </div>
-                }
             </div>
         }
         </div>
@@ -148,12 +155,18 @@
                 $("#searchDomain input").val("");
             }
             function Search() {
-                $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), city: $("[name='city']").val(), county: $("[name='county']").val(), methodFlag: $("[name='methodFlag']").val() }, function (json) {
-                    $("tbody").html("");
-                    $(json).each(function (index, item) {
-                        $("tbody").append("<tr data-href='/news/Statistics?type=" + item.AreaType + "&areaId=" + item.AreaId + "'><td>" + (index + 1) + "</td><td>" + item.Name + "</td> <td>" + item.AllCount + "</td> <td>" + item.PassCount + "</td> </tr>");
+                var street = $("[name='street']").val();
+                if (street && street != "" && street != "-1" && street != "0") {
+                    window.location.href = "/news/Statistics?type=3&areaId=" + street;
+                }
+                else {
+                    $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), city: $("[name='city']").val(), county: $("[name='county']").val(), methodFlag: $("[name='methodFlag']").val() }, function (json) {
+                        $("tbody").html("");
+                        $(json).each(function (index, item) {
+                            $("tbody").append("<tr data-href='/news/Statistics?type=" + item.AreaType + "&areaId=" + item.AreaId + "'><td>" + (index + 1) + "</td><td>" + item.Name + "</td> <td>" + item.AllCount + "</td> <td>" + item.PassCount + "</td> </tr>");
+                        });
                     });
-                });
+                }
             }
             Search();
             $.Nuoya.action("/DataDictionary/GetSelectItem", { group: 2 }, function (json) {
@@ -183,7 +196,7 @@
                 else if (i == 3) {
                     if ($("[name='county']").val() != "") {
                     }
-                    return false;
+                    nextSelect = $("[name='street']");
                 }
                 if (value != "0") {
                     //赋值
@@ -204,7 +217,7 @@
             }
 
             function Export() {
-                var url = "/Statistics/ExportRegisterPageList?province=" + $("[name='province']").val() + "&city=" + $("[name='city']").val() + "&county=" + $("[name='county']").val() + "&methodFlag=" + $("[name='methodFlag']").val();
+                var url = "/Statistics/ExportAreaPageList?province=" + $("[name='province']").val() + "&city=" + $("[name='city']").val() + "&county=" + $("[name='county']").val() + "&methodFlag=" + $("[name='methodFlag']").val();
                 window.open(url);
             }
 

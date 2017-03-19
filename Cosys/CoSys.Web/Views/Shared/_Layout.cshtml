@@ -23,7 +23,26 @@
         }
     </style>
     <script>
+        function userInfo() {
+            var isForPhone = '@(isForPhone ? 1:0)' == "1";
 
+            $.Nuoya.ajaxDialog({
+                closeViaDimmer: false,
+                addIframe: true,
+                width: (isForPhone ? (($(window).width() - 40) + "px") : "1200px"),
+                height: (isForPhone ? (($(window).height() - 300) + "px") : "780px"),
+                ajaxUrl: "/Account/Register?info=true&id=@(LoginHelper.GetCurrentUserID())",
+                title: "作者信息",
+                callback: function (e) {
+                    $(window.frames["alrtIframe"]).css("width", "90%");
+                    //iframeObj.find("#regForm .main").css("margin-top", "-300px");
+                    if (isForPhone) {
+                        $(".am-modal-alert").css({ "top": "30%" }, { "left": "10%" });
+                        $(".am-text-right").hide();
+                    }
+                }
+            });
+        }
         function changePassword(item) {
             var isForPhone = '@(isForPhone?1:0)' == "1";
             $.Nuoya.ajaxDialog({
@@ -386,7 +405,7 @@
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
-                <li><a href="javascript:;"><span class="am-icon-user">@(LoginHelper.GetCurrentUser()?.Account)</span></a></li>
+                <li><a href="javascript:userInfo()"><span class="am-icon-user">@(LoginHelper.GetCurrentUser()?.Account)</span></a></li>
                  <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
                 <li><a href="/account/Quit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>

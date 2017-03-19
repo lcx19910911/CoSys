@@ -37,7 +37,7 @@ namespace CoSys.Model
         AuditFail = 3,
 
 
-        [Description("录用")]
+        [Description("审核通过")]
         AuditPass = 5,
 
         [Description("发布")]
