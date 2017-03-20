@@ -2,7 +2,7 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "会员管理";
 }
-<div class="am-cf am-padding">
+<div class="am-cf am-padding" style="margin-top:50px;">
     <div class="am-fl am-cf"><a href="/home/User"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>会员管理</small></div>
 </div>
 <div id="searchDomain">
@@ -39,10 +39,19 @@
         <thead>
             <tr>
                 <th dataname="ID" type="checkbox"></th>
-                <th dataname="Account">账号</th>
                 <th dataname="RealName">真实名称</th>
-                <th dataname="Phone">手机号</th>
-                <th dataname="CreatedTime" datatype="jsondate">注册日期</th>
+                @if (Request["type"].IsNotNullOrEmpty())
+                {
+                    <th dataname="AllCount">投稿数</th>
+                    <th dataname="PassCount">总采纳数</th>
+                    
+                }
+                else if (!WebHelper.CheckAgent())
+                {
+                    <th dataname="Phone">手机号</th>
+                    <th dataname="Account">账号</th>
+                    <th dataname="CreatedTime" datatype="jsondate">注册日期</th>
+                }
                 <th type="eventlist"></th>
             </tr>
         </thead>
@@ -66,8 +75,8 @@
                 });
             });
         }
-        
 
+        var isForPhone='@(WebHelper.CheckAgent()?1:0)' == "1";
         var grid = $.Nuoya.grid({
             tableId: "dataTable",
             //表格id
@@ -76,22 +85,27 @@
                 subId: "btnSearch"
             },
             ajaxUrl: "/User/GetPageList",
+            isForPhone: isForPhone,
             //数据请求地址
-
+            params: {
+                areaId:'@(Request["areaId"])',
+                type:'@(Request["type"])',
+            },
             events: [
                 {
                     className: "am-text-secondary",
                     icon: "icon-pencil-square-o",
-                    name: "用户详情",
+                    name: "详情",
                     click: function (item) {
                         //window.open("/Account/Register?id=" + item.ID);
                         $.Nuoya.ajaxDialog({
                             addIframe: true,
                             ajaxUrl: "/Account/Register?info=false&id=" + item.ID,
-                            width: "1000px",
-                            height: "680px",
+                            width: (isForPhone ? (($(window).width() - 40) + "px") : "1000px"),
+                            height: (isForPhone ? (($(window).height() - 200) + "px") : "680px"),
                             title: "用户详情",
-                            callback: function (e) {                              
+                            isForPhone: isForPhone,
+                            callback: function (e) {
                             }
                         })
                     }
@@ -99,41 +113,48 @@
                 {
                     className: "am-text-success",
                     icon: "icon-pencil-square-o",
-                    name: "用户稿件",
+                    name: "稿件",
                     click: function (item) {
                         //window.open("/Account/Register?id=" + item.ID);
-                        $.Nuoya.ajaxDialog({
-                            ajaxUrl: "/HtmlTemplates/News/Index.html",
-                            width: "1000px",
-                            height: "680px",
-                            title: "用户稿件",
-                            callback: function (ce) {
-                                var childrenGrid = $.Nuoya.grid({
-                                    tableId: "newsDataTable",
-                                    //表格id
-                                    search: {
-                                        domainId: "newsSearchDomain",
-                                        subId: "newsBtnSearch"
-                                    },
-                                    ajaxUrl: "/News/GetUserPageList",
-                                    params: {
-                                        userId:item.ID
-                                    },
-                                    isForPhone: '@(WebHelper.CheckAgent()?1:0)' == "1",
-                                    //数据请求地址
-                                    events: [
-                                        {
-                                            className: "am-text-danger",
-                                            icon: "icon-edit",
-                                            name: "查看",
-                                            click: function (childrenItem) {
-                                                window.open("/News/AdminManage/" + childrenItem.ID);
+                        if(!isForPhone)
+                        {
+                            $.Nuoya.ajaxDialog({
+                                ajaxUrl: "/HtmlTemplates/News/Index.html",
+                                width: "1000px",
+                                height: "680px",
+                                title: "用户稿件",
+                                callback: function (ce) {
+                                    var childrenGrid = $.Nuoya.grid({
+                                        tableId: "newsDataTable",
+                                        //表格id
+                                        search: {
+                                            domainId: "newsSearchDomain",
+                                            subId: "newsBtnSearch"
+                                        },
+                                        ajaxUrl: "/News/GetUserPageList",
+                                        params: {
+                                            userId:item.ID
+                                        },
+                                        isForPhone: isForPhone,
+                                        //数据请求地址
+                                        events: [
+                                            {
+                                                className: "am-text-danger",
+                                                icon: "icon-edit",
+                                                name: "查看",
+                                                click: function (childrenItem) {
+                                                    window.open("/News/AdminManage/" + childrenItem.ID);
+                                                }
                                             }
-                                        }
-                                    ]
-                                });
-                            }
-                        })
+                                        ]
+                                    });
+                                }
+                            })
+                        }
+                        else
+                        {
+                            window.location.href="/news/statistics?userId=" + item.ID;
+                        }
                     }
                 },
                 {

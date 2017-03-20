@@ -69,14 +69,14 @@ namespace CoSys.Service
 
                 var list = db.Log.AsQueryable().AsNoTracking().Where(x => x.NewsID.Equals(newId)).OrderBy(x => x.CreatedTime).ToList();
                 var adminIds = list.Select(x => x.AdminID).ToList();
-                var adminDic = db.Admin.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID);
+                var adminDic = db.User.Where(x => adminIds.Contains(x.ID)).ToDictionary(x => x.ID);
                 var roleDic = db.Role.ToDictionary(x => x.ID);
                 list.ForEach(x =>
                 {
                     if (x.AdminID.IsNotNullOrEmpty() && adminDic.ContainsKey(x.AdminID))
                     {
                         var admin = adminDic[x.AdminID];
-                        x.AdminName = admin.Name;
+                        x.AdminName = admin.RealName;
                         if (admin.RoleID.IsNotNullOrEmpty() && roleDic.ContainsKey(admin.RoleID))
                             x.RoleName = roleDic[admin.RoleID].Name;
 

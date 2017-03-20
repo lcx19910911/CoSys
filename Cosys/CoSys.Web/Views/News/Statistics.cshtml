@@ -1,18 +1,17 @@
 ﻿@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewBag.Title = ViewBag.AreaName+"稿件详情";
+    ViewBag.Title = ViewBag.AreaName + "稿件详情";
 }
 
-<div class="am-cf am-padding">
+<div class="am-cf am-padding" style="margin-top:50px;">
     <div class="am-fl am-cf"><a href="javascript:history.back()"><strong class="am-text-primary am-text-lg">返回</strong></a> /<small>@ViewBag.Title</small></div>
 </div>
 <div id="searchDomain">
     <div class="am-g">
-        @if (WebHelper.CheckAgent())
-        {
+
             <div class="am-u-lg-12">
                 <div class="am-input-group am-input-group-sm">
-                    <span class="am-input-group-label am-margin-left-sm">状态</span>
+                    <span class="am-input-group-label am-margin-left-sm">状态：</span>
                     <select name="state" style="width:120px;height:26px;">
                         <option value="-1">不限</option>
                         <option value="1">待审核</option>
@@ -25,16 +24,8 @@
 
             <div class="am-u-lg-12 am-margin-top-sm">
                 <div class="am-input-group am-input-group-sm">
-                    <span class="am-input-group-label am-margin-left-sm">标题/笔名：</span>
-                    <input type="text" class="am-form-field" placeholder="按标题/笔名搜索" style="width:100px;" name="title" ;>
-                </div>
-            </div>
-
-            <div class="am-u-lg-12 am-margin-top-sm">
-                <div class="am-input-group am-input-group-sm">
-                    <input type="text" class="am-form-field am-margin-left-sm" placeholder="请选择日期" name="createdTimeStart" readonly style="width:120px;">
-                    <span class="am-input-group-label"> - </span>
-                    <input type="text" class="am-form-field" placeholder="请选择日期" name="createdTimeEnd" readonly style="width:120px;">
+                    <span class="am-input-group-label am-margin-left-sm">标题：</span>
+                    <input type="text" class="am-form-field" placeholder="按标题搜索" style="width:100px;" name="title" ;>
                 </div>
             </div>
 
@@ -46,153 +37,125 @@
                     </span>
                 </div>
             </div>
-        }
-        else
-        {
-            <div class="am-u-lg-8 am-u-end">
-                <div class="am-input-group am-input-group-sm">
-
-                    <span class="am-input-group-label">状态</span>
-                    <select name="state" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
-                        <option value=""></option>
-                    </select>
-                    <span class="am-input-group-label am-margin-left-sm">标题/笔名：</span>
-                    <input type="text" class="am-form-field" placeholder="按标题/笔名搜索" style="width:100px;" name="title" ;>
-                    <span class="am-input-group-label  am-margin-left-sm">查找时间</span>
-                    <input type="text" class="am-form-field" placeholder="请选择日期" name="createdTimeStart" readonly style="width:120px;">
-                    <span class="am-input-group-label"> - </span>
-                    <input type="text" class="am-form-field" placeholder="请选择日期" name="createdTimeEnd" readonly style="width:120px;">
-                    <span class="am-input-group-btn am-margin-left-sm">
-                        <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
-                        <button class="am-btn am-btn-default" onclick="Export()" type="button">导出</button>
-                        <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
-                    </span>
-                </div>
-            </div>
-        }
     </div>
-
 </div>
-<div class="grid_container">
-    <table id="dataTable" class="am-table am-table-compact am-table-hover table-main">
-        <thead>
-            <tr>
-                <th dataname="ID" type="checkbox"></th>
-                <th dataname="Title">标题</th>
-                @if (!WebHelper.CheckAgent())
-                {
-                <th dataname="SubmitTime" datatype="jsondate">投递日期</th>
-                <th dataname="UserName">作者</th>
-                }
-                <th dataname="StateStr">状态</th>   
-                <th type="eventlist"></th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
-@section scripts
+    <div class="grid_container">
+        <table id="dataTable" class="am-table am-table-compact am-table-hover table-main">
+            <thead>
+                <tr>
+                    <th dataname="ID" type="checkbox"></th>
+                    <th dataname="Title">标题</th>
+                    <th dataname="StateStr">状态</th>
+                    @if (!WebHelper.CheckAgent())
+                    {
+                        <th dataname="NewsTypeName">类型</th>
+                        <th dataname="DepartmentName">投递部门</th>
+                        <th dataname="UpdateAdminName">上节点审核人</th>
+                        <th dataname="SubmitTime" datatype="jsondate">投递日期</th>
+                    } 
+                    <th type="eventlist"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    @section scripts
 {
-    <script type="text/javascript">
+        <script type="text/javascript">
 
 
-        function Export() {
-            var url = "/news/ExportStatistics?state=" + $("[name='state']").val() + "&title=" + $("[name='title']").val() + "&createdTimeStart=" + $("[name='createdTimeStart']").val() + "&createdTimeEnd=" + $("[name='createdTimeEnd']").val() + "&type=@(Request["type"])&areaId=@(Request["areaId"])";
-            window.open(url);
-        }
+            function Export() {
+                var url = "/news/ExportStatistics?&state=" + $("[name='state']").val()+"&title="+$("[name='title']").val()+"&userId=@(Request["userId"])";
+                window.open(url);
+            }
 
+            function ClearFilter() {
+                $("#searchDomain input").val("");
+            }
 
-        $('[name=createdTimeStart]').datepicker({ format: 'yyyy-mm-dd' });
-        $('[name=createdTimeEnd]').datepicker({ format: 'yyyy-mm-dd' });
+            var grid = $.Nuoya.grid({
+                tableId: "dataTable",
+                //表格id
+                search: {
+                    domainId: "searchDomain",
+                    subId: "btnSearch"
+                },
+                params: {
+                    userId:'@(Request["userId"])',
+                },
+                isForPhone: '@(WebHelper.CheckAgent()?1:0)'=="1",
+                ajaxUrl: "/News/GetUserPageList",
+                //数据请求地址
+                events: [
+                    {
+                        className: "am-text-secondary",
+                        icon: "icon-pencil-square-o",
+                        name: "审核",
+                        formula: function (item) {
+                            if (item.CanAudit == 1) {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        },
+                        click: function (item) {
 
-        function ClearFilter() {
-            $("#searchDomain input").val("");
-        }
+                            $.Nuoya.ajaxDialog({
+                                closeViaDimmer: false,
+                                addIframe:true,
+                                ajaxUrl: "/News/Aduit?id=" + item.ID,
+                                title: "审核",
+                                width: "1200px",
+                                height: "880px",
+                                callback: function (e) {
+                                    setTimeout(function () {
+                                        $("#alrtIframe").contents().find(".view-select").remove();
+                                        $("#alrtIframe").contents().find(".trc-button").parent().remove();
+                                    }, 2000);
 
-        var grid = $.Nuoya.grid({
-            tableId: "dataTable",
-            //表格id
-            search: {
-                domainId: "searchDomain",
-                subId: "btnSearch"
-            },
-            params: {
-                type:@(Request["type"]),
-                areaId:@(Request["areaId"]),
-            },
-            isForPhone: '@(WebHelper.CheckAgent()?1:0)'=="1",
-            ajaxUrl: "/News/GetPageList",
-            //数据请求地址
-            events: [
-                {
-                    className: "am-text-secondary",
-                    icon: "icon-pencil-square-o",
-                    name: "审核",
-                    formula: function (item) {
-                        if (item.CanAudit == 1) {
-                            return true;
-                        }
-                        else {
-                            return false;
+                                },
+                                buttons: [{
+                                    label: "通过",
+                                    className: "am-btn-success",
+                                    callback: function (e) {
+                                        $.Nuoya.action("/News/Audit", { isPass: 1, id: item.ID }, function (data) {
+                                            if (!data.ErrorDesc) {
+                                                e.hide();
+                                                grid.reload();
+                                            }
+                                            else
+                                                alert(data.ErrorDesc);
+                                        });
+                                    }
+                                },
+                                {
+                                    label: "驳回",
+                                    callback: function (e) {
+                                        $.Nuoya.action("/News/Audit", { isPass: 0, id: item.ID }, function (data) {
+                                            if (!data.ErrorDesc) {
+                                                e.hide();
+                                                grid.reload();
+                                            }
+                                            else
+                                                alert(data.ErrorDesc);
+                                        });
+
+                                    }
+                                }]
+                            })
                         }
                     },
-                    click: function (item) {
-
-                        $.Nuoya.ajaxDialog({
-                            closeViaDimmer: false,
-                            addIframe:true,
-                            ajaxUrl: "/News/Aduit?id=" + item.ID,
-                            title: "审核",
-                            width: "1200px",
-                            height: "880px",
-                            callback: function (e) {
-                                setTimeout(function () {
-                                    $("#alrtIframe").contents().find(".view-select").remove();
-                                    $("#alrtIframe").contents().find(".trc-button").parent().remove();
-                                }, 2000);
-
-                            },
-                            buttons: [{
-                                label: "通过",
-                                className: "am-btn-success",
-                                callback: function (e) {
-                                    $.Nuoya.action("/News/Audit", { isPass: 1, id: item.ID }, function (data) {
-                                        if (!data.ErrorDesc) {
-                                            e.hide();
-                                            grid.reload();
-                                        }
-                                        else
-                                            alert(data.ErrorDesc);
-                                    });
-                                }
-                            },
-                            {
-                                label: "驳回",
-                                callback: function (e) {
-                                    $.Nuoya.action("/News/Audit", { isPass: 0, id: item.ID }, function (data) {
-                                        if (!data.ErrorDesc) {
-                                            e.hide();
-                                            grid.reload();
-                                        }
-                                        else
-                                            alert(data.ErrorDesc);
-                                    });
-
-                                }
-                            }]
-                        })
-                    }
-                },
-                 {
-                     className: "am-text-danger",
-                     icon: "icon-edit",
-                     name: "查看",
-                     click: function (item) {
-                         window.location.href="/News/AdminManage/" + item.ID;
+                     {
+                         className: "am-text-danger",
+                         icon: "icon-edit",
+                         name: "查看",
+                         click: function (item) {
+                             window.location.href="/News/AdminManage/" + item.ID;
+                         }
                      }
-                 }
-            ]
-        });
+                ]
+            });
 
-    </script>
-}
+        </script>
+    }

@@ -59,7 +59,6 @@
                 }
             }
             function onCheck(e, treeId, treeNode) {
-                debugger
                 if (isFlag) {
                     var flag;
                     var nodes = ztreeObj.getCheckedNodes(true);

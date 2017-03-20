@@ -41,15 +41,6 @@ namespace CoSys.Model
         public string UserName { get; set; }
 
         /// <summary>
-        /// 管理员
-        /// </summary>
-        [MaxLength(32)]
-        [Column("AdminID", TypeName = "char")]
-        public string AdminID { get; set; }
-
-        [NotMapped]
-        public string AdminName { get; set; }
-        /// <summary>
         /// 标题
         /// </summary>
         public string Content { get; set; }

@@ -555,7 +555,6 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\StatisticsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AreaController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DepartmentController.cs" />
@@ -590,7 +589,7 @@
     <Content Include="Styles\fonts\FontAwesome.otf" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\User\Admin.cshtml" />
     <Content Include="Views\Area\Index.cshtml" />
     <Content Include="Views\Base\_404.cshtml" />
     <Content Include="Views\Base\_500.cshtml" />

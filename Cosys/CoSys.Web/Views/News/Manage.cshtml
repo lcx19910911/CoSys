@@ -110,9 +110,23 @@
                             <input type="hidden" name="Path" />
                         </div>
                     </div>
-
+                    
+                }
+                else
+                {
+                    <div class="am-form-group">
+                        <label for="user-email" class="am-u-sm-3 am-form-label">内容</label>
+                        <div class="am-u-sm-9">
+                            <input type="hidden" name="Content" />
+                            <script class="txtContent" type="text/plain" style="height:300px;">
+                            </script>
+                        </div>
+                    </div>
+                } 
+                @if (Model.Paths.IsNotNullOrEmpty())
+                {
                     <div class="am-form-group" style="@(!canEdit ? "display:none" : "")">
-                        <label for="user-email" class="am-u-sm-3 am-form-label"></label>
+                        <label for="user-email" class="am-u-sm-3 am-form-label">稿件图片</label>
                         <div class="am-u-sm-9" id="div_imageShow">
                             @if (Model.Paths.IsNotNullOrEmpty())
                             {
@@ -124,17 +138,6 @@
                                     </div>
                                 }
                             }
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="am-form-group">
-                        <label for="user-email" class="am-u-sm-3 am-form-label">内容</label>
-                        <div class="am-u-sm-9">
-                            <input type="hidden" name="Content" />
-                            <script class="txtContent" type="text/plain" style="height:300px;">
-                            </script>
                         </div>
                     </div>
                 }
@@ -330,17 +333,76 @@
         });
 
         $("#resetBtn").on("click", function () {
-            $.Nuoya.action('/news/Reset', {
-                ID: '@(Model.ID)',
-            }, function (data) {
-                if (!data.ErrorDesc) {
-                    $.Nuoya.alert("重新投稿成功");
-                    window.location.href = "/news/index";
-                }
-                else
-                    $.Nuoya.alert(data.ErrorDesc);
+            SavaNews(function(){
+                $.Nuoya.action('/news/Reset', {
+                    ID: '@(Model.ID)',
+                }, function (data) {
+                    if (!data.ErrorDesc) {
+                        $.Nuoya.alert("重新投稿成功");
+                        window.location.href = "/news/index";
+                    }
+                    else
+                        $.Nuoya.alert(data.ErrorDesc);
+                });
             });
         });
+
+        function SavaNews(callback) {
+            var id = '@(Model.ID)';
+            var title = $("[name='Title']").val();
+            if (title == "") {
+                $.Nuoya.alert("请填写标题");
+                return;
+            }
+            var newsTypeID = $("[name='NewsTypeID']").val();
+            if (title == "") {
+                $.Nuoya.alert("请选择类型");
+                return;
+            }
+            var departmentID = $("[name='DepartmentID']").val();
+            if (title == "") {
+                $.Nuoya.alert("请选择投递部门");
+                return;
+            }
+            var children = $("[name='ChildrenDepartmentID']").val();
+            var penName = $("[name='PenName']").val();
+
+            if (!children == false && children != "") {
+                departmentID += ";" + children;
+            }
+            var content = "";
+            var imgAry = new Array();
+            var isPhone = '@(isFormPhone?1:0)';
+            var paths = "";
+            if (isPhone == "1") {
+                content = $("[name='Content']").text();
+                $("#div_imageShow img").each(function () {
+                    imgAry.push($(this).prop("src"));
+                })
+                paths = imgAry.join(',');
+            }
+            else {
+                content = ue.getContent();
+            }
+
+            if (content == "") {
+                $.Nuoya.alert("请填写内容");
+                return;
+            }
+            $.Nuoya.action("/News/Update", {
+                ID: id,
+                Title: title,
+                PenName: penName,
+                NewsTypeID: newsTypeID,
+                DepartmentID: departmentID,
+                Paths: paths,
+                Content: content,
+                isAduit: true,
+            }, function (data) {
+                callback(data);
+            });
+
+        }
 
         $("#saveBtn,#submitBtn").on("click", function () {
             var id = '@(Model.ID)';

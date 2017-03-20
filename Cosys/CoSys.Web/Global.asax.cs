@@ -37,17 +37,19 @@ namespace CoSys.Web
                 var objectContext = ((IObjectContextAdapter)dbcontext).ObjectContext;
                 var mappingCollection = (StorageMappingItemCollection)objectContext.MetadataWorkspace.GetItemCollection(DataSpace.CSSpace);
                 mappingCollection.GenerateViews(new List<EdmSchemaError>());
-                if (!dbcontext.Admin.Any())
+                if (!dbcontext.User.Where(x=>x.IsSuperAdmin).Any())
                 {
-                    dbcontext.Admin.Add(new Model.Admin()
+                    dbcontext.User.Add(new Model.User()
                     {
                         ID = Guid.NewGuid().ToString("N"),
                         CreatedTime = DateTime.Now,
-                        Name = "Admin",
+                        RealName = "Admin",
                         Account = "admin",
+                        IsAdmin=true,
                         Password = CryptoHelper.MD5_Encrypt("123456"),
                         IsSuperAdmin = true,
                         RoleID = "1",
+                        Phone="13559191390"
                     });
                     dbcontext.SaveChanges();
                 }

@@ -25,9 +25,18 @@ namespace CoSys.Web.Controllers
             model.ProvinceItems = WebService.Get_AreaList("");
             if (model.ID.IsNotNullOrEmpty())
             {
-                model.CityItems = WebService.Get_AreaList(model.ProvoniceCode);
-                model.CountyItems = WebService.Get_AreaList(model.CityCode);
-                model.StreetItems = WebService.Get_AreaList(model.CountyCode);
+                if (model.CityCode.IsNotNullOrEmpty())
+                {
+                    model.CityItems = WebService.Get_AreaList(model.ProvoniceCode);
+                    if (model.CountyCode.IsNotNullOrEmpty())
+                    {
+                        model.CountyItems = WebService.Get_AreaList(model.CityCode);
+                        if (model.StreetCode.IsNotNullOrEmpty())
+                        {
+                            model.StreetItems = WebService.Get_AreaList(model.CountyCode);
+                        }
+                    }
+                }
             }
             return View(model);
         }
@@ -40,6 +49,10 @@ namespace CoSys.Web.Controllers
             ModelState.Remove("CreatedTime");
             ModelState.Remove("IsDelete");
             ModelState.Remove("Password");
+            ModelState.Remove("DepartmentFlag");
+            ModelState.Remove("OperateFlag");
+            ModelState.Remove("IsSuperAdmin");
+            ModelState.Remove("IsAdmin");
             if (ModelState.IsValid)
             {
                 var result = WebService.Add_User(model);
@@ -60,6 +73,10 @@ namespace CoSys.Web.Controllers
             ModelState.Remove("Password");
             ModelState.Remove("NewPassword");
             ModelState.Remove("ConfirmPassword");
+            ModelState.Remove("DepartmentFlag");
+            ModelState.Remove("OperateFlag");
+            ModelState.Remove("IsSuperAdmin");
+            ModelState.Remove("IsAdmin");
             if (ModelState.IsValid)
             {
                 var result = WebService.Update_User(model);
@@ -103,11 +120,7 @@ namespace CoSys.Web.Controllers
             return View("Login");
         }
 
-        public ActionResult ChangeAdminPassword(string oldPassword, string newPassword, string cfmPassword,string id)
-        {
-            return JResult(WebService.Admin_ChangePassword(oldPassword, newPassword, cfmPassword,id));
-        }
-        public ActionResult ChangeUserPassword(string oldPassword, string newPassword, string cfmPassword)
+        public ActionResult ChangePassword(string oldPassword, string newPassword, string cfmPassword)
         {
             return JResult(WebService.User_ChangePassword(oldPassword, newPassword, cfmPassword));
         }

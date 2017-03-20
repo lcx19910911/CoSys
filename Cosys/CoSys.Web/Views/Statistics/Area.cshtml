@@ -157,13 +157,13 @@
             function Search() {
                 var street = $("[name='street']").val();
                 if (street && street != "" && street != "-1" && street != "0") {
-                    window.location.href = "/news/Statistics?type=3&areaId=" + street;
+                    window.location.href = "/user/index?type=3&areaId=" + street;
                 }
                 else {
                     $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), city: $("[name='city']").val(), county: $("[name='county']").val(), methodFlag: $("[name='methodFlag']").val() }, function (json) {
                         $("tbody").html("");
                         $(json).each(function (index, item) {
-                            $("tbody").append("<tr data-href='/news/Statistics?type=" + item.AreaType + "&areaId=" + item.AreaId + "'><td>" + (index + 1) + "</td><td>" + item.Name + "</td> <td>" + item.AllCount + "</td> <td>" + item.PassCount + "</td> </tr>");
+                            $("tbody").append("<tr data-href='/user/index?type=" + item.AreaType + "&areaId=" + item.AreaId + "'><td>" + (index + 1) + "</td><td>" + item.Name + "</td> <td>" + item.AllCount + "</td> <td>" + item.PassCount + "</td> </tr>");
                         });
                     });
                 }

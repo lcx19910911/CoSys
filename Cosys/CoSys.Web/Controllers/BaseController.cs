@@ -221,9 +221,9 @@ namespace CoSys.Web.Controllers
         }
 
 
-        private Admin _loginAdmin = null;
+        private User _loginAdmin = null;
 
-        public Admin LoginAdmin
+        public User LoginAdmin
         {
             get
             {

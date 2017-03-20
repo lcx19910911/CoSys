@@ -53,7 +53,7 @@
                                 $.Nuoya.alert("密码不能为空");
                                 return false;
                             }
-                            $.Nuoya.action("/account/ChangeAdminPassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword, id: item != null ? item.ID : "" }, function (data) {
+                            $.Nuoya.action("/account/ChangePassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword, id: item != null ? item.ID : "" }, function (data) {
                                 if (!data.ErrorDesc) {
                                     $.Nuoya.alert("修改密码成功");
                                     e.hide();
@@ -381,7 +381,7 @@
         <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
         <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
             <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
-                <li><a href="javascript:;"><span class="am-icon-user">@(currentAdmin?.Name)</span></a></li>
+                <li><a href="javascript:;"><span class="am-icon-user">@(currentAdmin.RealName)</span></a></li>
                 <li><a href="javascript:changePassword()"><span class="am-icon-download">修改密码</span></a></li>
                 <li><a href="/account/AdminQuit" class="admin-quit"><span class="am-icon-sign-out"></span> <span>注销</span></a></li>
             </ul>
@@ -452,7 +452,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a data-am-collapse="{target: '#管理员管理'}" class="am-cf am-collapsed" href="/Admin/Index">
+                                    <a data-am-collapse="{target: '#管理员管理'}" class="am-cf am-collapsed" href="/User/Admin">
                                         <span class="am-icon-user"></span> 管理员管理
                                     </a>
                                 </li>

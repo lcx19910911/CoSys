@@ -79,8 +79,7 @@ namespace CoSys.Repository
 
         }
 
-
-        public DbSet<Admin> Admin { get; set; }
+        
 
         public DbSet<User> User { get; set; }
 

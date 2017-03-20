@@ -54,21 +54,18 @@ namespace CoSys.Model
         /// 见刊笔名
         /// </summary>
         [MaxLength(32)]
-        [Required]
         public string PenName { get; set; }
 
         /// <summary>
         /// 户籍所在地
         /// </summary>
         [MaxLength(256)]
-        [Required]
         public string IDCardAddres { get; set; }
 
         /// <summary>
         /// 身份证号码
         /// </summary>
         [MaxLength(32)]
-        [Required]
         public string IDCard { get; set; }
 
         /// <summary>
@@ -143,7 +140,6 @@ namespace CoSys.Model
         /// 通信地址
         /// </summary>
         [MaxLength(256)]
-        [Required]
         public string Addres { get; set; }
 
 
@@ -182,5 +178,64 @@ namespace CoSys.Model
 
         [NotMapped]
         public string ValiteCode { get; set; }
+
+
+
+        /// <summary>
+        /// 部门权限
+        /// </summary>
+        public long DepartmentFlag { get; set; }
+
+        /// <summary>
+        /// 权限
+        /// </summary>
+        public long OperateFlag { get; set; }
+        /// <summary>
+        /// 角色
+        /// </summary>
+        [Column("RoleID", TypeName = "char"), MaxLength(32)]
+        public string RoleID { get; set; }
+        /// <summary>
+        /// 状态
+        /// </summary>
+        [NotMapped]
+        public string RoleName { get; set; }
+        /// <summary>
+        /// 是否超级管理员
+        /// </summary>
+        public bool IsSuperAdmin { get; set; }
+        /// <summary>
+        /// 是否管理员
+        /// </summary>
+        public bool IsAdmin { get; set; }
+
+        /// <summary>
+        /// 审核数
+        /// </summary>
+        public int AuditCount { get; set; }
+        /// <summary>
+        /// 修稿数
+        /// </summary>
+        public int EditCount { get; set; }
+        /// <summary>
+        /// 审核通过数
+        /// </summary>
+        public int AuditPassCount { get; set; }
+        /// <summary>
+        /// 发布数
+        /// </summary>
+        public int PlushCount { get; set; }
+
+        /// <summary>
+        /// 发布数
+        /// </summary>
+        [NotMapped]
+        public int AllCount { get; set; }
+
+        /// <summary>
+        /// 发布数
+        /// </summary>
+        [NotMapped]
+        public int PassCount { get; set; }
     }
 }

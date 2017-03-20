@@ -19,6 +19,11 @@
     <link href="~/Styles/reg.css" rel="stylesheet" />
     <link href="~/Scripts/tipso/css/tipso.min.css" rel="stylesheet" />
 
+    <style>
+        .am-text-danger{
+            color:red;
+        }
+    </style>
 </head>
 <body>
     <div class="main" style="@(isInfo ? "margin:0px; width:100%;height:100%" : "")">
@@ -33,17 +38,17 @@
             <input name="ID" type="hidden" value="@(Model.ID)" />
             <ul class="dataform">
                 <li>
-                    <lable class="info">用户名:</lable><input type="text" placeholder="请输入用户名" required id="account" name="Account" value="@(Model.Account)" @(Model.ID.IsNotNullOrEmpty() ? "readonly" : "") />
+                    <lable class="info">用户名:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入用户名" required id="account" name="Account" value="@(Model.Account)" @(Model.ID.IsNotNullOrEmpty() ? "readonly" : "") />
                     <div class="clear"> </div>
                 </li>
                 @if (Model.ID.IsNullOrEmpty())
                 {
                     <li>
-                        <lable class="info">密码:</lable><input type="password" placeholder="请输入密码" required id="password" name="NewPassword" maxlength="12" />
+                        <lable class="info">密码:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="password" placeholder="请输入密码" required id="password" name="NewPassword" maxlength="12" />
                         <div class="clear"> </div>
                     </li>
                     <li>
-                        <lable class="info">确认密码:</lable><input type="password" placeholder="确认密码" required id="password" name="ConfirmPassword" maxlength="12" />
+                        <lable class="info">确认密码:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="password" placeholder="确认密码" required id="password" name="ConfirmPassword" maxlength="12" />
                         <div class="clear"> </div>
                     </li>
                 }
@@ -52,19 +57,19 @@
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">真实姓名:</lable><input type="text" placeholder="请输入姓名" required name="RealName" maxlength="32" value="@(Model.RealName)" />
+                    <lable class="info">真实姓名:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入姓名" required name="RealName" maxlength="32" value="@(Model.RealName)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">见刊笔名:</lable><input type="text" placeholder="请输入见刊笔名" required name="PenName" maxlength="32" value="@(Model.PenName)" />
+                    <lable class="info">见刊笔名:</lable><input type="text" placeholder="请输入见刊笔名"  name="PenName" maxlength="32" value="@(Model.PenName)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">户籍所在地:</lable><input type="text" placeholder="户籍所在地" required name="IDCardAddres" maxlength="256" value="@(Model.IDCardAddres)" />
+                    <lable class="info">户籍所在地:</lable><input type="text" placeholder="户籍所在地"  name="IDCardAddres" maxlength="256" value="@(Model.IDCardAddres)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">身份证号:</lable><input type="text" placeholder="请输入身份证号" required name="IDCard" maxlength="32" value="@(Model.IDCard)" />
+                    <lable class="info">身份证号:</lable><input type="text" placeholder="请输入身份证号"  name="IDCard" maxlength="32" value="@(Model.IDCard)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
@@ -133,17 +138,17 @@
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">会员类型:</lable>
+                    <lable class="info">会员类型:<strong class="am-text-danger am-text-sm">*</strong></lable>
                     <select class="area" name="Code">
                         <option value="1">协会工作人员</option>
                         <option value="2">协会小组长</option>
                         <option value="3">志愿者</option>
-                        <option value="4">普通会员</option>
+                        <option value="4" selected>普通会员</option>
                     </select>
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">通讯地址:</lable><input type="text" placeholder="请输入通讯地址" required name="Addres" maxlength="256" value="@(Model.Addres)" />
+                    <lable class="info">通讯地址:</lable><input type="text" placeholder="请输入通讯地址"  name="Addres" maxlength="256" value="@(Model.Addres)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
@@ -151,7 +156,7 @@
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">手机:</lable><input type="text" placeholder="请输入手机" required name="Phone" maxlength="11" value="@(Model.Phone)" />
+                    <lable class="info">手机:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入手机" required name="Phone" maxlength="11" value="@(Model.Phone)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
@@ -167,7 +172,7 @@
                     else
                     {
                         <li>
-                            <lable class="info">验证码:</lable>
+                            <lable class="info">验证码:<strong class="am-text-danger am-text-sm">*</strong></lable>
                             <div style="width:70%;float:left;">
                                 <input type="text" style="width:56%;" placeholder="请输入验证码" required name="ValiteCode" />
                                 <img id="img_code" style="width:30%;height:2rem;float:left;" alt="" title="点击重新获取" src="/account/validatecode" onclick="javascript:$(this).attr('src','/account/validatecode?r='+Math.random());" />
@@ -196,7 +201,7 @@
 
         function formInit(dataitem) {
             var id = '@(Model.ID)';
-            if (id == "") {
+            if (id) {
                 $.Nuoya.form("regForm").validate({
                     rules: {
                         Account: {
@@ -204,7 +209,6 @@
                             maxlength: 32
                         },
                         Email: {
-                            maxlength: 32,
                             email: true,
                         },
                         RealName: {
@@ -212,15 +216,13 @@
                             maxlength: 32
                         },
                         PenName: {
-                            required: true,
                             maxlength: 32
                         },
                         IDCardAddres: {
-                            required: true,
                             maxlength: 256
                         },
                         IDCard: {
-                            required: true
+                            maxlength: 18
                         },
                         CompanyName: {
                             maxlength: 64
@@ -232,16 +234,13 @@
                             maxlength: 32
                         },
                         ProvoniceCode: {
-                            required: true,
+                     
                         },
                         CityCode: {
-                            required: true,
                         },
                         CountyCode: {
-                            required: true,
                         },
                         Addres: {
-                            required: true,
                             maxlength: 256
                         },
                         TelePhone: {
@@ -250,6 +249,9 @@
                         },
                         Phone: {
                             mobile: true,
+                            required: true
+                        },
+                        Code: {
                             required: true
                         }
                     },
@@ -265,16 +267,14 @@
                             required: "真实姓名不允许为空",
                             maxlength: "最多{0}个字符"
                         },
-                        PenName: {
-                            required: "见刊笔名不允许为空",
-                            maxlength: "最多{0}个字符"
+                        Code: {
+                            required: "会员类型不允许为空",
                         },
-                        IDCardAddres: {
-                            required: "户籍所在地不允许为空"
+                        PenName: {
+                            maxlength: "最多{0}个字符"
                         },
                         IDCard: {
                             idCard: "请输入正确的身份证号码",
-                            required: "身份证号码不允许为空",
                         },
                         CompanyName: {
                             maxlength: "最多{0}个字符"
@@ -286,17 +286,13 @@
                             maxlength: "最多{0}个字符"
                         },
                         ProvoniceCode: {
-                            required: "请选择省份",
                         },
                         CityCode: {
-                            required: "请选择市",
                         },
                         CountyCode: {
-                            required: "请选择县区",
                         },
                         Addres: {
                             required: "通信地址不允许为空",
-                            maxlength: "最多{0}个字符"
                         },
                         TelePhone: {
                             maxlength: "最多{0}个字符"
@@ -333,15 +329,12 @@
                             maxlength: 32
                         },
                         PenName: {
-                            required: true,
                             maxlength: 32
                         },
                         IDCardAddres: {
-                            required: true,
                             maxlength: 256
                         },
                         IDCard: {
-                            required: true
                         },
                         CompanyName: {
                             maxlength: 64
@@ -353,16 +346,12 @@
                             maxlength: 32
                         },
                         ProvoniceCode: {
-                            required: true,
                         },
                         CityCode: {
-                            required: true,
                         },
                         CountyCode: {
-                            required: true,
                         },
                         Addres: {
-                            required: true,
                             maxlength: 256
                         },
                         TelePhone: {
@@ -371,6 +360,9 @@
                         },
                         Phone: {
                             mobile: true,
+                            required: true
+                        },
+                        Code: {
                             required: true
                         }
                     },
@@ -395,15 +387,13 @@
                             maxlength: "最多{0}个字符"
                         },
                         PenName: {
-                            required: "见刊笔名不允许为空",
                             maxlength: "最多{0}个字符"
                         },
                         IDCardAddres: {
-                            required: "户籍所在地不允许为空"
+                            maxlength: "最多{0}个字符"
                         },
                         IDCard: {
                             idCard: "请输入正确的身份证号码",
-                            required: "身份证号码不允许为空",
                         },
                         CompanyName: {
                             maxlength: "最多{0}个字符"
@@ -415,16 +405,12 @@
                             maxlength: "最多{0}个字符"
                         },
                         ProvoniceCode: {
-                            required: "请选择省份",
                         },
                         CityCode: {
-                            required: "请选择市",
                         },
                         CountyCode: {
-                            required: "请选择县区",
                         },
                         Addres: {
-                            required: "通信地址不允许为空",
                             maxlength: "最多{0}个字符"
                         },
                         TelePhone: {
@@ -432,7 +418,10 @@
                         },
                         Phone: {
                             required: "手机号不允许为空"
-                        }
+                        },
+                        Code: {
+                            required: "会员类型不允许为空",
+                        },
                     }
                 });
             }
@@ -482,27 +471,32 @@
 
         formInit();
         function Submit() {
-            if (!/^\d{17}(\d|x)$/i.test($("#regForm [name='IDCard']").val())) {
-                alert("你输入的身份证长度或格式错误")
-                return false;
-            }
-            $.Nuoya.form("regForm").ajaxSubmit({
-                ajaxUrl: "/Account/Register",
-                callback: function (data) {
-                    if (!data.ErrorDesc) {
-                        window.location.href = "/home/index";
-                    }
-                    else {
-                        alert(data.ErrorDesc);
-                    }
-                    return;
+            if ($("#regForm [name='IDCard']").val() != "") {
+                if (!/^\d{17}(\d|x)$/i.test($("#regForm [name='IDCard']").val())) {
+                    alert("你输入的身份证长度或格式错误")
+                    return false;
                 }
-            });
+            }
+                $.Nuoya.form("regForm").ajaxSubmit({
+                    ajaxUrl: "/Account/Register",
+                    callback: function (data) {
+                        if (!data.ErrorDesc) {
+                            window.location.href = "/home/index";
+                        }
+                        else {
+                            alert(data.ErrorDesc);
+                        }
+                        return;
+                    }
+                });
+
         }
         function Save() {
-            if (!/^\d{17}(\d|x)$/i.test($("#regForm [name='IDCard']").val())) {
-                alert("你输入的身份证长度或格式错误")
-                return false;
+            if ($("#regForm [name='IDCard']").val() != "") {
+                if (!/^\d{17}(\d|x)$/i.test($("#regForm [name='IDCard']").val())) {
+                    alert("你输入的身份证长度或格式错误")
+                    return false;
+                }
             }
             $.Nuoya.form("regForm").ajaxSubmit({
                 ajaxUrl: "/Account/Save",

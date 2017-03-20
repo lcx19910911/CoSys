@@ -71,7 +71,7 @@
                                 $.Nuoya.alert("密码不能为空");
                                 return false;
                             }
-                            $.Nuoya.action("/account/ChangeUserPassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword, id: item != null ? item.ID : "" }, function (data) {
+                            $.Nuoya.action("/account/ChangePassword", { oldPassword: oldPassword, newPassword: newPassword, cfmPassword: cfmPassword, id: item != null ? item.ID : "" }, function (data) {
                                 if (!data.ErrorDesc) {
                                     $.Nuoya.alert("修改密码成功");
                                     e.hide();

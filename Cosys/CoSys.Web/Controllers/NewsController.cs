@@ -200,14 +200,14 @@ namespace CoSys.Web.Controllers
         }
 
 
-        public ActionResult Statistics(int areaId, int type)
+        public ActionResult Statistics()
         {
             return View();
         }
 
-        public ActionResult ExportStatistics(string title, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, int? type, int? areaId)
+        public ActionResult ExportStatistics(string title,string userId, NewsState? state, int? type, int? areaId)
         {
-            var list = WebService.Get_NewsPageList(1, 10, title, "", state, createdTimeStart, createdTimeEnd, type, areaId).Result.List;
+            var list = WebService.Get_UserNewsPageList(1, 100000, title, userId, state, type,areaId).Result.List;
             string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
             string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
             NPOIHelper<News>.GetExcel(list, GetChanelHT(), filePath);
@@ -232,10 +232,12 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string title,string newsTypeId,NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd,int? type,int? areaId)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string title,NewsState? state,int? type,int? areaId)
         {
-            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, newsTypeId, state, createdTimeStart, createdTimeEnd, type,areaId));
+            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, state, type,areaId));
         }
+
+
 
         /// <summary>
         /// 获取分页列表
@@ -245,9 +247,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title, string newsTypeId,string userId, NewsState? state, DateTime? createdTimeStart, DateTime? createdTimeEnd, bool isAudit=true)
+        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title,string userId, NewsState? state, bool isAudit=true)
         {
-            return JResult(WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, newsTypeId, userId, isAudit, state, createdTimeStart, createdTimeEnd));
+            return JResult(WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, userId, isAudit, state));
         }
         /// <summary>
         /// 获取分页列表
@@ -257,9 +259,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetUserPageList(int pageIndex, int pageSize,string userId)
+        public ActionResult GetUserPageList(int pageIndex, int pageSize, string title, string userId, NewsState? state, int? type, int? areaId)
         {
-            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize,userId));
+            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, userId, state,type,areaId));
         }
         
         /// <summary>

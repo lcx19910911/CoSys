@@ -97,14 +97,14 @@ namespace CoSys.Core
         /// 获取当前管理员
         /// </summary>
         /// <returns></returns>
-        public static Admin GetCurrentAdmin()
+        public static User GetCurrentAdmin()
         {
             var id = GetCurrentAdminID();
             if (id.IsNullOrEmpty())
                 return null;
             using (var db = new DbRepository())
             {
-                Admin user = db.Admin.Find(id);
+                User user = db.User.Find(id);
                 return user;
             }
         }

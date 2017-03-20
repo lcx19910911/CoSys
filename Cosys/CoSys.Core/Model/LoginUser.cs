@@ -13,11 +13,11 @@ namespace CoSys.Core
     /// </summary>
     public class LoginUser
     {
-        public LoginUser(Admin user)
+        public LoginUser(User user)
         {
             this.ID = user.ID;
             this.Account = user.Account;
-            this.Name = user.Name;
+            this.Name = user.RealName;
         }
 
 
