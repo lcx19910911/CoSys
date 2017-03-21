@@ -716,9 +716,9 @@ namespace CoSys.Service
                 var query = db.User.AsQueryable().AsNoTracking();
                 if (province != null && province != -1)
                 {
-                    if (city != null && city != 0)
+                    if (city != null && city != 0 && city != -1)
                     {
-                        if (county != null && county != 0)
+                        if (county != null && county != 0 && county != -1)
                         {
                             var userList = query.Where(x => !string.IsNullOrEmpty(x.CountyCode) && x.CountyCode == county.ToString()).Select(x => new SelectItem() { Value = x.StreetCode, Text = x.ID }).ToList();
 

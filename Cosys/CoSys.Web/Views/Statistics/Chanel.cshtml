@@ -9,9 +9,7 @@
 <div class="grid_container">
     <div class="am-g">
         <div class="am-u-lg-10">
-            @if (Model != null && Model.Count > 0)
-            {
-                var index = 1;
+        
                 <table class="am-table am-table-compact am-table-hover table-main am-table-bordered">
                     <thead>
                         <tr>
@@ -22,7 +20,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @if (Model != null && Model.Count > 0)
+                        {
+                        var index = 1;
+                        foreach (var item in Model)
                         {
                             <tr>
                                 <td>@index</td>
@@ -31,11 +32,11 @@
                                 <td>@item.PassCount</td>
                             </tr>
                         }
+                        }
                     </tbody>
 
                 </table>
 
-            }
         </div>
     </div>
 

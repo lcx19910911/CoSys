@@ -52,11 +52,15 @@ namespace CoSys.Web.Controllers
         private Hashtable GetChanelHT()
         {
             Hashtable hs = new Hashtable();
-            hs["Account"] = "账号";
             hs["RealName"] = "真实名称";
+            hs["IDCard"] = "身份证";
+            hs["Phone"] = "手机号";
+            hs["ProvoniceName"] = "省份";
+            hs["CityName"] = "市";
+            hs["CountyName"] = "县/区";
+            hs["StreetName"] = "街道";
             hs["AllCount"] = "投稿数";
             hs["PassCount"] = "总采纳数";
-            hs["Phone"] = "手机号";
             hs["CreatedTime"] = "注册日期";
             return hs;
         }

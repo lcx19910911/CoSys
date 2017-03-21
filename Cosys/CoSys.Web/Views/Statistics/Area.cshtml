@@ -1,4 +1,4 @@
-﻿@model Tuple<List<SelectItem>, List<SelectItem>>
+﻿@model Tuple<List<SelectItem>, List<SelectItem>, List<SelectItem>, List<SelectItem>>
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "地区统计";
@@ -16,12 +16,12 @@
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">省份</span>
                     <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,1)">
-                        <option value="-1" selected>请选择</option>
+                        <option value="-1">请选择</option>
                         @if (Model.Item1 != null && Model.Item1.Count > 0)
                         {
                             foreach (var item in Model.Item1)
                             {
-                                <option value="@item.Value">@item.Text</option>
+                                <option value="@item.Value" @(item.Value=="16"? "selected" : "")>@item.Text</option>
                             }
                         }
                     </select>
@@ -31,14 +31,31 @@
             <div class="am-u-lg-12 am-margin-top-sm">
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">市</span>
-                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)"></select>
+                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)">
+                        <option value="-1">请选择</option>
+                        @if (Model.Item2 != null && Model.Item2.Count > 0)
+                        {
+                            foreach (var item in Model.Item2)
+                            {
+                                <option value="@item.Value" @(item.Value == "1303" ? "selected" : "")>@item.Text</option>
+                            }
+                        }
+                    </select>
                 </div>
             </div>
 
             <div class="am-u-lg-12 am-margin-top-sm">
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">县/区</span>
-                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)"></select>
+                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)">
+                        @if (Model.Item3 != null && Model.Item3.Count > 0)
+                        {
+                            foreach (var item in Model.Item3)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
                 </div>
             </div>
             <div class="am-u-lg-12 am-margin-top-sm">
@@ -53,11 +70,11 @@
                     <span class="am-input-group-label am-margin-left-sm">渠道</span>
                     <select name="methodFlag" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         <option value="-1" selected>请选择</option>
-                        @if (Model.Item2 != null && Model.Item2.Count > 0)
+                        @if (Model.Item4 != null && Model.Item4.Count > 0)
                         {
-                            foreach (var item in Model.Item2)
+                            foreach (var item in Model.Item2) 
                             {
-                                <option value="@item.Value">@item.Text</option>
+                                <option value="@item.Value" > @item.Text</option>
                             }
                         }
                     </select>
@@ -79,27 +96,45 @@
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label">省份</span>
                     <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,1)">
-                        <option value="-1" selected>请选择</option>
+                        <option value="-1">请选择</option>
                         @if (Model.Item1 != null && Model.Item1.Count > 0)
                         {
                             foreach (var item in Model.Item1)
+                            {
+                                <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
+                            }
+                        }
+                    </select>
+                    <span class="am-input-group-label am-margin-left-sm">市</span>
+                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)">
+                        <option value="-1">请选择</option>
+                        @if (Model.Item2 != null && Model.Item2.Count > 0)
+                        {
+                            foreach (var item in Model.Item2)
+                            {
+                                <option value="@item.Value" @(item.Value == "1303" ? "selected" : "")>@item.Text</option>
+                            }
+                        }
+                    </select>
+                    <span class="am-input-group-label am-margin-left-sm">县/区</span>
+                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)">
+                        <option value="-1" selected>请选择</option>
+                        @if (Model.Item3 != null && Model.Item3.Count > 0)
+                        {
+                            foreach (var item in Model.Item3)
                             {
                                 <option value="@item.Value">@item.Text</option>
                             }
                         }
                     </select>
-                    <span class="am-input-group-label am-margin-left-sm">市</span>
-                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)"></select>
-                    <span class="am-input-group-label am-margin-left-sm">县/区</span>
-                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)"></select>
                     <span class="am-input-group-label am-margin-left-sm">街道</span>
                     <select name="street" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;"></select>
                     <span class="am-input-group-label am-margin-left-sm">渠道</span>
                     <select name="methodFlag" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         <option value="-1" selected>请选择</option>
-                        @if (Model.Item2 != null && Model.Item2.Count > 0)
+                        @if (Model.Item4 != null && Model.Item4.Count > 0)
                         {
-                            foreach (var item in Model.Item2)
+                            foreach (var item in Model.Item4)
                             {
                                 <option value="@item.Value">@item.Text</option>
                             }

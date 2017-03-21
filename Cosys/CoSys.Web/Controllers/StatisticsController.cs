@@ -16,7 +16,7 @@ namespace CoSys.Web.Controllers
 
         public ViewResult Area()
         {
-            return View(new Tuple<List<SelectItem>, List<SelectItem>>(WebService.Get_AreaList(""), WebService.Get_DataDictorySelectItem(GroupCode.Channel)));
+            return View(new Tuple<List<SelectItem>, List<SelectItem>, List<SelectItem>, List<SelectItem>>(WebService.Get_AreaList(""), WebService.Get_AreaList("16"), WebService.Get_AreaList("1303"), WebService.Get_DataDictorySelectItem(GroupCode.Channel)));
         }
 
         public ActionResult GetAreaList(int? province, int? city, int? county, long methodFlag)

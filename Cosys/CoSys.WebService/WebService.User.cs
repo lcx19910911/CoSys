@@ -120,14 +120,26 @@ namespace CoSys.Service
                 var userIdList = list.Select(x => x.ID).ToList();
                 var newsGroupDic = db.News.Where(x=> userIdList.Contains(x.UserID)).GroupBy(x=>x.UserID).ToDictionary(x=>x.Key,x=>x.ToList());
                 var roleDic = new Dictionary<string, Role>();
-                if(isAdmin)
+                var areaDic = new Dictionary<string, DataDictionary>();
+                if (isAdmin)
+                {
                     roleDic = db.Role.ToDictionary(x => x.ID);
+                    areaDic = Cache_Get_DataDictionary()[GroupCode.Area];
+                }
                 list.ForEach(x =>
                 {
                     if (isAdmin)
                     {
                         if (x.RoleID.IsNotNullOrEmpty() && roleDic.ContainsKey(x.RoleID))
                             x.RoleName = roleDic[x.RoleID].Name;
+                        if (x.ProvoniceCode.IsNotNullOrEmpty() && areaDic.ContainsKey(x.ProvoniceCode))
+                            x.ProvoniceName = areaDic[x.ProvoniceCode].Value;
+                        if (x.CityCode.IsNotNullOrEmpty() && areaDic.ContainsKey(x.CityCode))
+                            x.CityName = areaDic[x.CityCode].Value;
+                        if (x.CountyCode.IsNotNullOrEmpty() && areaDic.ContainsKey(x.CountyCode))
+                            x.CountyName = areaDic[x.CountyCode].Value;
+                        if (x.StreetCode.IsNotNullOrEmpty() && areaDic.ContainsKey(x.StreetCode))
+                            x.StreetName = areaDic[x.StreetCode].Value;
                     }
 
                     if (newsGroupDic.ContainsKey(x.ID))
@@ -146,52 +158,48 @@ namespace CoSys.Service
         /// <param name="loginName"></param>
         /// <param name="password"></param>
         /// <returns></returns> 
-        public WebResult<bool> User_ChangePassword(string oldPassword, string newPassword, string cfmPassword)
+        public WebResult<bool> User_ChangePassword(string oldPassword, string newPassword, string cfmPassword, string id)
         {
-            try
+            if (newPassword.IsNullOrEmpty() || cfmPassword.IsNullOrEmpty() || id.IsNullOrEmpty())
             {
-                if (oldPassword.IsNullOrEmpty() || newPassword.IsNullOrEmpty() || cfmPassword.IsNullOrEmpty())
-                {
-                    return Result(false, ErrorCode.sys_param_format_error);
-                }
-                if (!cfmPassword.Equals(newPassword))
-                {
-                    return Result(false, ErrorCode.user_password_notequal);
+                return Result(false, ErrorCode.sys_param_format_error);
+            }
+            if (!cfmPassword.Equals(newPassword))
+            {
+                return Result(false, ErrorCode.user_password_notequal);
 
-                }
-                using (var db = new DbRepository())
+            }
+            using (var db = new DbRepository())
+            {
+                
+                var user = db.User.Find(id);
+                if (user == null)
+                    return Result(false, ErrorCode.user_not_exit);
+                if (oldPassword == "")
                 {
                     oldPassword = CryptoHelper.MD5_Encrypt(oldPassword);
-                    var user = db.User.Where(x => x.ID.Equals(this.Client.LoginUser.ID)).FirstOrDefault();
-                    if (user == null)
-                        return Result(false, ErrorCode.user_not_exit);
                     if (!user.Password.Equals(oldPassword))
                         return Result(false, ErrorCode.user_password_nottrue);
-                    newPassword = CryptoHelper.MD5_Encrypt(newPassword);
-                    user.Password = newPassword;
-                    if (db.SaveChanges() > 0)
-                    {
-                        return Result(true);
-                    }
-                    else
-                    {
-                        return Result(false, ErrorCode.sys_fail);
-                    }
+                }
+                newPassword = CryptoHelper.MD5_Encrypt(newPassword);
+                user.Password = newPassword;
+                if (db.SaveChanges() > 0)
+                {
+                    return Result(true);
+                }
+                else
+                {
+                    return Result(false, ErrorCode.sys_fail);
                 }
             }
-            catch (Exception ex)
-            {
-                LogHelper.WriteException(ex);
-                return Result(false, ErrorCode.sys_fail);
-            }
-        }
+    }
 
-        /// <summary>
-        /// 增加
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public WebResult<bool> Add_User(User model)
+    /// <summary>
+    /// 增加
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public WebResult<bool> Add_User(User model)
         {
             using (DbRepository db = new DbRepository())
             {

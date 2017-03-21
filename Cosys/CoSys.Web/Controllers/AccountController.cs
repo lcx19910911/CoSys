@@ -120,9 +120,9 @@ namespace CoSys.Web.Controllers
             return View("Login");
         }
 
-        public ActionResult ChangePassword(string oldPassword, string newPassword, string cfmPassword)
+        public ActionResult ChangePassword(string oldPassword, string newPassword, string cfmPassword,string id)
         {
-            return JResult(WebService.User_ChangePassword(oldPassword, newPassword, cfmPassword));
+            return JResult(WebService.User_ChangePassword(oldPassword, newPassword, cfmPassword, id));
         }
         #region 验证码
         /// <summary>
