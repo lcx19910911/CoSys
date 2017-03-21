@@ -85,7 +85,7 @@ namespace CoSys.Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name, DateTime? startTimeStart, DateTime? endTimeEnd,int? type, int? areaId,bool isAdmin=false)
+        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name,int? type, int? areaId,bool isAdmin=false)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -95,16 +95,6 @@ namespace CoSys.Service
                 {
                     query = query.Where(x => x.RealName.Contains(name));
                 }
-                if (startTimeStart != null)
-                {
-                    query = query.Where(x => x.CreatedTime >= startTimeStart);
-                }
-                if (endTimeEnd != null)
-                {
-                    endTimeEnd = endTimeEnd.Value.AddDays(1);
-                    query = query.Where(x => x.CreatedTime < endTimeEnd);
-                }
-
                 if (areaId != null&& type != null)
                 {
                     if (type == 0)

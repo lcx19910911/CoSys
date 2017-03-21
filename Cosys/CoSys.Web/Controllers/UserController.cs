@@ -1,6 +1,9 @@
-﻿using CoSys.Model;
+﻿using CoSys.Core;
+using CoSys.Model;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -31,10 +34,33 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string name, DateTime? startTimeStart, DateTime? endTimeEnd,int? type,int ? areaId, bool isAdmin = false)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string name,int? type,int ? areaId, bool isAdmin = false)
         {
-            return JResult(WebService.Get_UserPageList(pageIndex, pageSize, name, startTimeStart, endTimeEnd, type,areaId, isAdmin));
+            return JResult(WebService.Get_UserPageList(pageIndex, pageSize, name, type,areaId, isAdmin));
         }
+
+
+        public ActionResult ExportList(string name, string userId, int? type, int? areaId)
+        {
+            var list = WebService.Get_UserPageList(1, 100000, name, type, areaId).Result.List;
+            string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
+            string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
+            NPOIHelper<User>.GetExcel(list, GetChanelHT(), filePath);
+            //Directory.Delete(filePath);
+            return File(filePath, "application/vnd.ms-excel", fileName);
+        }
+        private Hashtable GetChanelHT()
+        {
+            Hashtable hs = new Hashtable();
+            hs["Account"] = "账号";
+            hs["RealName"] = "真实名称";
+            hs["AllCount"] = "投稿数";
+            hs["PassCount"] = "总采纳数";
+            hs["Phone"] = "手机号";
+            hs["CreatedTime"] = "注册日期";
+            return hs;
+        }
+        
 
 
         /// <summary>

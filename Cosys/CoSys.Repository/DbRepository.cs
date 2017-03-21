@@ -63,8 +63,10 @@ namespace CoSys.Repository
 
                     InitObject(entry);
                 }
-
-                return base.SaveChanges();
+                if (entries.Count() == 0)
+                    return 1;
+                else
+                    return base.SaveChanges();
 
             }
             catch (Exception ex)

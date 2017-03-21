@@ -15,6 +15,7 @@
 
                 <span class="am-input-group-btn am-margin-left-sm">
                     <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
+                    <button class="am-btn am-btn-default" onclick="Export()" type="button">导出</button>
                     <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
                 </span>
             </div>
@@ -74,6 +75,10 @@
                     }
                 });
             });
+        }
+        function Export() {
+            var url = "/User/ExportList?name=" + $("[name='name']").val() + "&areaId=@(Request["areaId"])&type=@(Request["type"])";
+            window.open(url);
         }
 
         var isForPhone='@(WebHelper.CheckAgent()?1:0)' == "1";
