@@ -64,7 +64,7 @@
                 <div class="am-form-group">
                     <label for="user-name" class="am-u-sm-3 am-form-label">见刊笔名<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <input type="text" name="PenName" placeholder="见刊笔名" maxlength="64" value="@(Model.PenName)" @(!canEdit ? "readonly" : "")>
+                        <input type="text" name="PenName" placeholder="见刊笔名" maxlength="64" value="@(Model.ID.IsNullOrEmpty()?(user.PenName.IsNullOrEmpty()?user.RealName:user.PenName): Model.PenName)" @(!canEdit ? "readonly" : "")>
                     </div>
                 </div>
                 <div class="am-form-group">
@@ -99,7 +99,7 @@
                 {
                     <div class="am-form-group">
                         <div class="am-u-sm-12">
-                            <textarea name="Content" rows="8" @(!canEdit ? "readonly" : "")>@(Model?.Content)</textarea>
+                            <textarea name="Content" rows="8" @(!canEdit ? "readonly" : "")>@(Html.Raw(Model?.Content))</textarea>
                         </div>
                     </div>
                     <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
@@ -123,24 +123,21 @@
                         </div>
                     </div>
                 } 
-                @if (Model.Paths.IsNotNullOrEmpty())
-                {
-                    <div class="am-form-group" style="@(!canEdit ? "display:none" : "")">
-                        <label for="user-email" class="am-u-sm-3 am-form-label">稿件图片</label>
-                        <div class="am-u-sm-9" id="div_imageShow">
-                            @if (Model.Paths.IsNotNullOrEmpty())
-                            {
+                <div class="am-form-group" style="@(!canEdit||Model.Paths.IsNotNullOrEmpty() ? "display:none" : "")">
+                    <label for="user-email" class="am-u-sm-3 am-form-label">稿件图片</label>
+                    <div class="am-u-sm-9" id="div_imageShow">
+                        @if (Model.Paths.IsNotNullOrEmpty())
+                        {
 
-                                foreach (var item in Model.Paths.Split(','))
-                                {
-                                    <div class="am-u-lg-4">
-                                        <a class="am-close am-icon-times am-u-sm-1"></a><img class="am-u-lg-3" src="@(item)" style="width:140px;" /><hr />
-                                    </div>
-                                }
+                            foreach (var item in Model.Paths.Split(','))
+                            {
+                                <div class="am-u-lg-4">
+                                    <a class="am-close am-icon-times am-u-sm-1"></a><img class="am-u-lg-3" src="@(item)" style="width:140px;" /><hr />
+                                </div>
                             }
-                        </div>
+                        }
                     </div>
-                }
+                </div>
                 <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
 
                 @if (Model.ID.IsNotNullOrEmpty() && Model.Logs != null && Model.Logs.Count > 0)
@@ -304,6 +301,8 @@
             maximumFilesUpload: 1,//最大文件上传数
             onComplete: function (data) {
                 if (data) {
+
+                    $("#div_imageShow").parents(".am-form-group").show();
                     $("#div_imageShow").append('<img style="width:100px;height:60px;" src="' + data + '"/>');
                 }
                 else {
