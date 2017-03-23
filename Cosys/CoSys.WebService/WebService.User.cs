@@ -113,10 +113,14 @@ namespace CoSys.Service
                     {
                         query = query.Where(x => !string.IsNullOrEmpty(x.StreetCode) && x.StreetCode.Equals(areaId.ToString()));
                     }
+                    else if (type == 4)
+                    {
+                        query = query.Where(x => string.IsNullOrEmpty(x.ProvoniceCode) );
+                    }
                 }
 
                 var count = query.Count();
-                var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var list = query.OrderByDescending(x => x.RealName).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 var userIdList = list.Select(x => x.ID).ToList();
                 var newsGroupDic = db.News.Where(x=> userIdList.Contains(x.UserID)).GroupBy(x=>x.UserID).ToDictionary(x=>x.Key,x=>x.ToList());
                 var roleDic = new Dictionary<string, Role>();

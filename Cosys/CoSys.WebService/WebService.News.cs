@@ -29,7 +29,7 @@ namespace CoSys.Service
                 var query = db.News.AsQueryable().AsNoTracking();
                 if (title.IsNotNullOrEmpty())
                 {
-                    query = query.Where(x => x.Title.Contains(title)|| x.PenName.Contains(title));
+                    query = query.Where(x => x.Title.Contains(title) || x.PenName.Contains(title));
                 }
 
                 var userDic = new Dictionary<string, string>();
@@ -38,10 +38,10 @@ namespace CoSys.Service
                 {
                     query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(Client.LoginUser.ID));
                 }
-                else if(areaId!=null)
+                else if (areaId != null)
                 {
                     var userIdList = new List<string>();
-                    if (type==0)
+                    if (type == 0)
                     {
                         userIdList = db.User.Where(x => x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
@@ -59,18 +59,18 @@ namespace CoSys.Service
                     }
                     query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && userIdList.Contains(x.UserID));
                 }
-                if (state != null&&(int)state!=-1)
+                if (state != null && (int)state != -1)
                 {
                     query = query.Where(x => x.State == state);
                 }
                 var count = query.Count();
-                if(type==null&&areaId==null)
+                if (type == null && areaId == null)
                 {
                     query = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize);
                 }
                 var list = query.ToList();
-                
-                return ResultPageList(GetReturnList(list,db), pageIndex, pageSize, count);
+
+                return ResultPageList(GetReturnList(list, db), pageIndex, pageSize, count);
             }
         }
 
@@ -85,18 +85,33 @@ namespace CoSys.Service
             var ids = list.Select(x => x.UserID).ToList();
             ids.AddRange(list.Select(x => x.UpdateAdminID).ToList());
 
-            var userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID, x => x.RealName);
-
+            var userDic = db.User.Where(x => ids.Contains(x.ID)).ToDictionary(x => x.ID);
+            var roleDic = db.Role.ToDictionary(x => x.ID);
             var departmentDic = db.Department.ToDictionary(x => x.ID);
             var typeIdList = list.Select(x => x.NewsTypeID).ToList();
             var typeDic = db.DataDictionary.Where(x => x.GroupCode == GroupCode.Type && typeIdList.Contains(x.ID)).ToDictionary(x => x.ID, x => x.Value);
             list.ForEach(x =>
             {
                 if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
-                    x.UserName = userDic.GetValue(x.UserID);
-                if (admin!=null&&!admin.IsSuperAdmin)
+                    x.UserName = userDic.GetValue(x.UserID).RealName;
+                if (admin != null && !admin.IsSuperAdmin)
                 {
-                    if (x.State == NewsState.Pass || x.State == NewsState.Plush)
+                    if (x.State == NewsState.Pass)
+                    {
+                        var updateAdmin = userDic[x.UpdateAdminID];
+                        if (roleDic.ContainsKey(updateAdmin.RoleID))
+                        {
+                            if (roleDic[updateAdmin.RoleID].AuditState == NewsAuditState.EditorialAudit)
+                            {
+                                x.StateStr = "编委会转稿";
+                            }
+                            else
+                                x.StateStr = x.State.GetDescription();
+                        }
+                        else
+                            x.StateStr = x.State.GetDescription();
+                    }
+                    else if (x.State == NewsState.Plush)
                     {
                         x.StateStr = x.State.GetDescription();
                     }
@@ -104,24 +119,63 @@ namespace CoSys.Service
                     {
                         if (x.AuditState == role.AuditState)
                         {
-                            x.StateStr = x.State.GetDescription();
+                            //判断是否被上级退回
+                            if (x.UpdateAdminID.IsNullOrEmpty())
+                                x.StateStr = x.State.GetDescription();
+                            else
+                            {
+                                if (userDic.ContainsKey(x.UpdateAdminID))
+                                {
+                                    var updateAdmin = userDic[x.UpdateAdminID];
+                                    if (roleDic.ContainsKey(updateAdmin.RoleID))
+                                    {
+                                        if (roleDic[updateAdmin.RoleID].AuditState.GetInt() > x.AuditState.GetInt())
+                                        {
+                                            x.StateStr = "退回";
+                                        }
+                                        else
+                                            x.StateStr = x.State.GetDescription();
+                                    }
+                                    else
+                                        x.StateStr = x.State.GetDescription();
+                                }
+                                else
+                                {
+                                    x.StateStr = "未知";
+                                }
+                            }
                         }
                         else if (x.AuditState.GetInt() > role.AuditState.GetInt())
                         {
-                            x.StateStr = "已审核";
+                            if (x.UpdateAdminID.Equals(admin.ID))
+                            {
+                                var updateAdmin = userDic[x.UpdateAdminID];
+                                if (x.UpdateAdminID.Equals(admin.ID))
+                                {
+                                    if (roleDic[updateAdmin.RoleID].AuditState == NewsAuditState.EditorialAudit)
+                                    {
+                                        x.StateStr = "转稿给稿件审核员";
+                                    }
+                                }
+                                else
+                                {
+                                    x.StateStr = "编委会转稿";
+                                }
+                            }
+                            else
+                                x.StateStr = "已审核";
                         }
                         else
                         {
-                            x.StateStr = "上节点未审核";
+                            if (x.UpdateAdminID.Equals(admin.ID))
+                                x.StateStr = "已退回";
+                            else
+                                x.StateStr = "上一节点未审核";
                         }
                     }
                 }
-                else
-                {
-                    x.StateStr = x.State.GetDescription();
-                }
                 if (x.UpdateAdminID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UpdateAdminID))
-                    x.UpdateAdminName = userDic.GetValue(x.UpdateAdminID);
+                    x.UpdateAdminName = userDic.GetValue(x.UpdateAdminID).RealName;
                 if (x.NewsTypeID.IsNotNullOrEmpty() && typeDic.ContainsKey(x.NewsTypeID))
                     x.NewsTypeName = typeDic[x.NewsTypeID];
                 if (x.DepartmentID.IsNotNullOrEmpty())
@@ -169,11 +223,11 @@ namespace CoSys.Service
                 }
                 if (userId.IsNotNullOrEmpty())
                 {
-                    query = query.Where(x =>x.UserID.Equals(userId));
+                    query = query.Where(x => x.UserID.Equals(userId));
                 }
                 var userDic = new Dictionary<string, string>();
 
-                 if (areaId != null&&type!=null)
+                if (areaId != null && type != null)
                 {
                     var userIdList = new List<string>();
                     if (type == 0)
@@ -200,7 +254,7 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    query = query.Where(x => x.State == NewsState.Pass|| x.State == NewsState.WaitAudit|| x.State == NewsState.Plush);
+                    query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.WaitAudit || x.State == NewsState.Plush);
                 }
                 var count = query.Count();
                 if (type == null && areaId == null)
@@ -221,7 +275,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title,string userId, bool isAudit, NewsState? state)
+        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string userId, bool isAudit, NewsState? state)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -241,7 +295,7 @@ namespace CoSys.Service
                 }
                 if (!isAudit)
                 {
-                    query = query.Where(x =>  x.UserID.Equals(admin.ID));
+                    query = query.Where(x => x.UserID.Equals(admin.ID));
                 }
                 else
                 {
@@ -252,11 +306,11 @@ namespace CoSys.Service
                         query = query.Where(x => departmentIds.Contains(x.DepartmentID));
                         if (role.AuditState == NewsAuditState.EditorialAudit)
                         {
-                            query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit|| x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
+                            query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
                         }
                         if (role.AuditState == NewsAuditState.MinisterAudit || role.AuditState == NewsAuditState.LastAudit)
                         {
-                            query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.MinisterAudit || x.AuditState == NewsAuditState.LastAudit|| x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
+                            query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.MinisterAudit || x.AuditState == NewsAuditState.LastAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
                         }
                     }
                 }
@@ -347,8 +401,8 @@ namespace CoSys.Service
                 }
                 else
                     return Result(false, ErrorCode.sys_param_format_error);
-               
-               
+
+
                 if (db.SaveChanges() > 0)
                 {
                     var adminLogin = LoginHelper.GetCurrentAdmin();
@@ -482,7 +536,7 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public WebResult<bool> News_EditorialPass(string id,string msg)
+        public WebResult<bool> News_EditorialPass(string id, string msg)
         {
             if (!id.IsNotNullOrEmpty())
             {
@@ -495,7 +549,7 @@ namespace CoSys.Service
                     return Result(false, ErrorCode.sys_param_format_error);
 
                 var admin = db.User.Find(LoginHelper.GetCurrentAdminID());
-                if (news.State != NewsState.WaitAudit || admin == null||news.AuditState!=NewsAuditState.EditorialAudit)
+                if (news.State != NewsState.WaitAudit || admin == null || news.AuditState != NewsAuditState.EditorialAudit)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
@@ -533,7 +587,7 @@ namespace CoSys.Service
                     return Result(false, ErrorCode.sys_param_format_error);
 
                 var admin = db.User.Find(LoginHelper.GetCurrentAdminID());
-                if ((news.State != NewsState.WaitAudit&&news.State!=NewsState.Pass) || admin == null)
+                if ((news.State != NewsState.WaitAudit && news.State != NewsState.Pass) || admin == null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
@@ -638,7 +692,7 @@ namespace CoSys.Service
                                 return Result(false, ErrorCode.sys_user_role_error);
                         }
                     }
-                    else if(news.State==NewsState.Pass)
+                    else if (news.State == NewsState.Pass)
                     {
                         news.UpdateAdminID = admin.ID;
                         news.AuditState = NewsAuditState.LastAudit;
@@ -669,8 +723,8 @@ namespace CoSys.Service
                 if (news == null)
                     return Result(false, ErrorCode.sys_param_format_error);
 
-                var admin =db.User.Find(LoginHelper.GetCurrentAdminID());
-                if (news.State != NewsState.Pass || admin == null)
+                var admin = db.User.Find(LoginHelper.GetCurrentAdminID());
+                if ((news.State != NewsState.Pass&& news.State != NewsState.Plush) || admin == null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
@@ -678,7 +732,7 @@ namespace CoSys.Service
 
                 news.UpdateAdminID = admin.ID;
                 news.State = NewsState.Plush;
-                news.PlushMethodFlag = channelFlag;
+                news.PlushMethodFlag = channelFlag| news.PlushMethodFlag;
                 //邮箱头盖
                 Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0 && x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
                   {
@@ -687,7 +741,7 @@ namespace CoSys.Service
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, msg);
                 if (db.SaveChanges() > 0)
                 {
-                    
+
                     return Result(true);
                 }
                 else
@@ -741,6 +795,21 @@ namespace CoSys.Service
                                     });
                                 }
                             });
+
+                            var uidList = query.Where(x => string.IsNullOrEmpty(x.StreetCode) && !string.IsNullOrEmpty(x.CountyCode)).Select(x => x.ID).ToList();
+                            var unewsList = db.News.Where(y => (!string.IsNullOrEmpty(y.UserID) && uidList.Contains(y.UserID)) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                            if (unewsList != null && unewsList.Count > 0)
+                            {
+                                model.Add(new StatisticsModel()
+                                {
+                                    Key = "未填写",
+                                    AllCount = unewsList.Count,
+                                    Name = "未填写",
+                                    PassCount = unewsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
+                                    AreaType = 4,
+                                    AreaId = ""
+                                });
+                            }
                             return model;
                         }
                         else
@@ -754,7 +823,7 @@ namespace CoSys.Service
                                 if (countyUserDic.ContainsKey(x.Value))
                                 {
                                     var idList = countyUserDic[x.Value];
-                                    var newsList = db.News.Where(y => !string.IsNullOrEmpty(y.UserID) && idList.Contains(y.UserID)&& (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                                    var newsList = db.News.Where(y => !string.IsNullOrEmpty(y.UserID) && idList.Contains(y.UserID) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
                                     model.Add(new StatisticsModel()
                                     {
                                         Key = x.Text,
@@ -767,11 +836,25 @@ namespace CoSys.Service
                                 }
                             });
 
+                            var uidList = query.Where(x => string.IsNullOrEmpty(x.CountyCode) && !string.IsNullOrEmpty(x.CityCode)).Select(x => x.ID).ToList();
+                            var unewsList = db.News.Where(y => (!string.IsNullOrEmpty(y.UserID) && uidList.Contains(y.UserID)) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                            if (unewsList != null && unewsList.Count > 0)
+                            {
+                                model.Add(new StatisticsModel()
+                                {
+                                    Key = "未填写",
+                                    AllCount = unewsList.Count,
+                                    Name = "未填写",
+                                    PassCount = unewsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
+                                    AreaType = 4,
+                                    AreaId = ""
+                                });
+                            }
                         }
                     }
                     else
                     {
-                        var userList = query.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode)&&x.ProvoniceCode == province.ToString()).Select(x => new SelectItem() { Value = x.CityCode, Text = x.ID }).ToList();
+                        var userList = query.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode == province.ToString()).Select(x => new SelectItem() { Value = x.CityCode, Text = x.ID }).ToList();
 
                         var cityUserDic = userList.GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(y => y.Text).ToList());
                         var cityList = Get_AreaList(province.ToString());
@@ -792,11 +875,26 @@ namespace CoSys.Service
                                 });
                             }
                         });
+
+                        var uidList = query.Where(x => string.IsNullOrEmpty(x.CityCode) && !string.IsNullOrEmpty(x.ProvoniceCode)).Select(x => x.ID).ToList();
+                        var unewsList = db.News.Where(y => (!string.IsNullOrEmpty(y.UserID) && uidList.Contains(y.UserID)) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                        if (unewsList != null && unewsList.Count > 0)
+                        {
+                            model.Add(new StatisticsModel()
+                            {
+                                Key = "未填写",
+                                AllCount = unewsList.Count,
+                                Name = "未填写",
+                                PassCount = unewsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
+                                AreaType = 4,
+                                AreaId = ""
+                            });
+                        }
                     }
                 }
                 else
                 {
-                    var userList = query.Where(x=>!string.IsNullOrEmpty(x.ProvoniceCode)).Select(x => new SelectItem() { Value = x.ProvoniceCode, Text = x.ID }).ToList();
+                    var userList = query.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode)).Select(x => new SelectItem() { Value = x.ProvoniceCode, Text = x.ID }).ToList();
 
                     var provinceUserDic = userList.GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(y => y.Text).ToList());
                     var provinceList = Get_AreaList("");
@@ -817,6 +915,21 @@ namespace CoSys.Service
                             });
                         }
                     });
+
+                    var uidList = query.Where(x => string.IsNullOrEmpty(x.ProvoniceCode)).Select(x => x.ID).ToList();
+                    var unewsList = db.News.Where(y => (!string.IsNullOrEmpty(y.UserID) && uidList.Contains(y.UserID)) && (methodFlag == -1 ? 1 == 1 : (y.MethodFlag & methodFlag) != 0)).ToList();
+                    if (unewsList != null && unewsList.Count > 0)
+                    {
+                        model.Add(new StatisticsModel()
+                        {
+                            Key = "未填写",
+                            AllCount = unewsList.Count,
+                            Name = "未填写",
+                            PassCount = unewsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
+                            AreaType = 4,
+                            AreaId = ""
+                        });
+                    }
                 }
                 return model;
             }
@@ -845,7 +958,7 @@ namespace CoSys.Service
                       {
                           Key = x.Key,
                           AllCount = x.Count(),
-                          Name= dic[x.Key].Value,
+                          Name = dic[x.Key].Value,
                           PassCount = x.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count()
                       });
                   });
@@ -868,7 +981,7 @@ namespace CoSys.Service
             {
                 var query = db.User.AsQueryable().AsNoTracking();
 
-                if (province != null&&province!=-1)
+                if (province != null && province != -1)
                 {
                     if (city != null && city != 0)
                     {
@@ -885,9 +998,9 @@ namespace CoSys.Service
                                     {
                                         Key = x.Text,
                                         AllCount = townUserDic[x.Value].Count(),
-                                        AreaType=3,
+                                        AreaType = 3,
                                         Name = x.Text,
-                                        AreaId =x.Value
+                                        AreaId = x.Value
                                     });
                                 }
                             });
@@ -938,7 +1051,7 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    var provniceserDic = query.Where(x=> !string.IsNullOrEmpty(x.ProvoniceCode)).GroupBy(x => x.ProvoniceCode).ToDictionary(x => x.Key, x => x.Select(y => y.ID).ToList());
+                    var provniceserDic = query.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode)).GroupBy(x => x.ProvoniceCode).ToDictionary(x => x.Key, x => x.Select(y => y.ID).ToList());
                     var provniceList = Get_AreaList("");
                     provniceList.ForEach(x =>
                     {

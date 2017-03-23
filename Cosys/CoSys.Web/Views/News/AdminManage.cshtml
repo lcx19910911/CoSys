@@ -252,25 +252,44 @@
                                 <label class="am-u-sm-3 am-u-end am-form-label">发布于</label>
                                 <div class="am-u-sm-9">
                                     @if (Model.MethodList != null && Model.MethodList.Count != 0)
-                        {
-                            foreach (var item in Model.MethodList)
-                            {
-                                if ((Model.PlushMethodFlag & item.Value.GetLong()) != 0)
-                                {
-                                                <label class="am-checkbox">
-                                                    <input type="checkbox" checked="checked" value="@(item.Value)" data-am-ucheck checked>@item.Text
-                                                </label>
-                                            }
-                                            else
+                                    {
+                                        foreach (var item in Model.MethodList)
+                                        {
+                                            if ((Model.PlushMethodFlag & item.Value.GetLong()) != 0)
                                             {
                                                 <label class="am-checkbox">
-                                                    <input type="checkbox" value="@(item.Value)" data-am-ucheck>@item.Text
+                                                    <input type="checkbox" checked="checked" value="@(item.Value)" data-am-ucheck checked>@item.Text
                                                 </label>
                                             }
                                         }
                                     }
                                 </div>
                             </div>
+                            if (Model.MethodList.Where(x => (Model.PlushMethodFlag & x.Value.GetLong()) == 0).Any())
+                            {
+                            <div class="am-form-group">
+                                <label class="am-u-sm-3 am-u-end am-form-label">发布渠道</label>
+                                <div class="am-u-sm-9" id="plushFlagDiv">
+                                    @if (Model.MethodList != null && Model.MethodList.Count != 0)
+                                    {
+                                        foreach (var item in Model.MethodList)
+                                        {
+                                            if ((Model.PlushMethodFlag & item.Value.GetLong()) == 0)
+                                            {
+                                                <label class="am-checkbox">
+                                                    <input type="checkbox" value="@(item.Value)" data-am-ucheck />@item.Text
+                                                </label>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                                <div class="am-form-group">
+                                    <div class="am-u-sm-5 am-u-sm-push-3">
+                                        <button type="button" class="am-btn am-u-sm-6  am-btn-success" id="plushBtn">发布</button>
+                                    </div>
+                                </div>
+                            }
                         }
                         else if (Model.State == NewsState.WaitAudit)
                         {
@@ -278,6 +297,12 @@
                             {
                                 if (Model.AuditState == NewsAuditState.EditorialAudit)
                                 {
+                                    <div class="am-form-group">
+                                        <label for="user-email" class="am-u-sm-3 am-form-label">意见</label>
+                                        <div class="am-u-sm-9">
+                                            <textarea name="Msg" rows="4"></textarea>
+                                        </div>
+                                    </div>
                                     <div class="am-form-group">
                                         <div class="am-u-sm-3 am-u-sm-push-2">
                                             <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
@@ -293,8 +318,8 @@
                                 else if (Model.AuditState == NewsAuditState.LastAudit)
                                 {
                                     <div class="am-form-group">
-                                        <button type="button" class="am-btn am-u-sm-3  am-btn-success" id="plushBtn">发布</button>
-                                        <div class="am-u-sm-9">
+                                        <label class="am-u-sm-3 am-u-end am-form-label">发布渠道</label>
+                                        <div class="am-u-sm-9" id="plushFlagDiv">
                                             @if (Model.MethodList != null && Model.MethodList.Count != 0)
                                             {
                                                 foreach (var item in Model.MethodList)
@@ -306,6 +331,13 @@
                                             }
                                         </div>
                                     </div>
+
+                                    <div class="am-form-group">
+                                        <div class="am-u-sm-5 am-u-sm-push-3">
+                                            <button type="button" class="am-btn am-u-sm-6  am-btn-success" id="plushBtn">发布</button>
+                                        </div>
+                                    </div>
+
                                     if (canEdit)
                                     {
                                         <div class="am-form-group">

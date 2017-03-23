@@ -1,0 +1,363 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "管理员管理";
+}
+<style>
+    #menuFlagDiv, #storeFlagDiv input {
+        float: left;
+    }
+
+    #menuFlagDiv, #storeFlagDiv label {
+        float: left;
+    }
+</style>
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><a href="/home/admin"><strong class="am-text-primary am-text-lg">首页</strong></a> /<small>管理员管理</small></div>
+</div>
+<div id="searchDomain">
+
+    <div class="am-g">
+        <div class="am-u-lg-3">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label">名称：</span>
+                <input type="text" class="am-form-field" placeholder="按管理员名称搜索" style="width:100px;" name="name" ;>
+
+                <span class="am-input-group-btn am-margin-left-sm">
+                    <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
+                    <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                </span>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="am-g am-margin-top-sm">
+        <div class="am-u-lg-6">
+            <div class="am-btn-toolbar">
+                <div class="am-btn-group am-btn-group-xs">
+                    <button onclick="add()" type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增</button>
+                    <button onclick="batchDelete()" type="button" class="am-btn am-btn-default"><span class="am-icon-trash-o"></span> 删除</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div class="grid_container">
+    <table id="dataTable" class="am-table am-table-compact am-table-hover table-main">
+        <thead>
+            <tr>
+                <th dataname="ID" type="checkbox"></th>
+                <th dataname="Account">账号</th>
+                <th dataname="RealName">名称</th>
+                <th dataname="RoleName">角色</th>
+                <th dataname="AuditCount">审核数</th>
+                <th dataname="EditCount">修稿数</th>
+                <th dataname="AuditPassCount">审核通过数</th>
+                <th type="eventlist"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        function ClearFilter() {
+            $("#searchDomain input").val("");
+        }
+        //批量删除
+        function batchDelete() {
+            $.Nuoya.confirm("确认删除？", function () {
+                grid.del({
+                    ajaxUrl: "/User/Delete",
+                    callback: function (json) {
+                        grid.reload();
+                    }
+                });
+            });
+        }
+
+
+        function loadArea(obj, i) {
+            var thatObj = $(obj);
+            var value = thatObj.val();
+
+            var nextSelect = thatObj.parents(".am-margin-top").next().find("select");
+            if (value != "0") {
+                //赋值
+                $.ajax({
+                    type: "GET",
+                    url: "/area/GetAreaCodeSelectItem",
+                    datatype: "json",
+                    data: { value: value },
+                    success: function (data) {
+                        nextSelect.html("");
+                        $(data.Result).each(function (index, item) {
+                            nextSelect.append("<option value='" + item.Value + "'>" + item.Text + "</option>")
+                        });
+
+                    }
+                });
+
+            }
+        }
+
+ 
+        function formInit(dataitem) {
+            //添加表单验证
+            $.Nuoya.form("form").validate({
+                rules: {
+                    RealName: {
+                        required: true,
+                        maxlength: 100
+                    },
+                    Account: {
+                        required: true,
+                        maxlength: 12
+                    },
+                    Phone: {
+                        required: true,
+                        maxlength: 11
+                    }
+                },
+                messages: {
+                    RealName: {
+                        required: "不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    Account: {
+                        required: "不允许为空",
+                        maxlength: "最多{0}个字符"
+                    },
+                    Phone: {
+                        required: "不允许为空",
+                        maxlength: "最多{0}个字符"
+                    }
+                }
+            });
+
+            $.Nuoya.action("/Role/GetSelectItem", { }, function (json) {
+                $(json).each(function () {
+                    $("select[name='RoleID']").append("<option " + (dataitem!=null&&this.Value == dataitem.RoleID ? "selected" : "") + " value='" + this.Value + "'>" + this.Text + "</option>");
+                });
+            });
+            $("#form [name='DepartmentFlagSelect']").ztreeSelect($("[name='DepartmentFlag']"), "/Department/GetZTreeChildren", dataitem != null ? dataitem.DepartmentFlag : 0, true, true);
+            if (dataitem == null) {
+                $.Nuoya.action("/area/GetAreaCodeSelectItem", {}, function (json) {
+                    $(json).each(function () {
+                        $("select[name='ProvoniceCode']").append("<option  value='" + this.Value + "'>" + this.Text + "</option>");
+                    });
+                });
+            }
+            else {
+
+                $("#operateFlagDiv input[type='checkbox']").each(function () {
+                    if ((parseInt($(this).val()) & dataitem.OperateFlag) != 0) {
+                        $(this).attr("checked", true)
+                    }
+                });
+                
+                $.Nuoya.action("/area/GetAreaCodeSelectItem", {}, function (json) {
+                    $(json).each(function () {
+                        $("select[name='ProvoniceCode']").append("<option " + (dataitem.ProvoniceCode&&this.Value == dataitem.ProvoniceCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
+                    });
+                });
+                if (dataitem.ProvoniceCode) {
+                    $.Nuoya.action("/area/GetAreaCodeSelectItem", { value: dataitem.ProvoniceCode }, function (json) {
+                        $(json).each(function () {
+                            $("select[name='CityCode']").append("<option " + (this.Value == dataitem.CityCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
+                        });
+                    });
+                    if (dataitem.CityCode) {
+                        $.Nuoya.action("/area/GetAreaCodeSelectItem", { value: dataitem.CityCode }, function (json) {
+                            $(json).each(function () {
+                                $("select[name='CountyCode']").append("<option " + (this.Value == dataitem.CountyCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
+                            });
+                        });
+                        if (dataitem.CountyCode) {
+                            $.Nuoya.action("/area/GetAreaCodeSelectItem", { value: dataitem.CountyCode }, function (json) {
+                                $(json).each(function () {
+                                    $("select[name='StreetCode']").append("<option " + (this.Value == dataitem.StreetCode ? "selected" : "") + "  value='" + this.Value + "'>" + this.Text + "</option>");
+                                });
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        //新增
+        function add() {
+            $.Nuoya.ajaxDialog({
+                closeViaDimmer: false,
+                width: "1000px",
+                height: "680px",
+                ajaxUrl: "/HtmlTemplates/Admin/Update.html",
+                title: "添加管理员",
+                callback: function (e) {
+                    formInit();//表单初始化
+                },
+                buttons: [{
+                    label: "保存",
+                    callback: function (e) {
+                        var flag = 0;
+                        $("#operateFlagDiv input[type='checkbox']:checked").each(function () {
+                            flag = flag | parseInt($(this).val());
+                        });
+                        $("#operateFlagDiv [name='OperateFlag']").val(flag);
+                        $.Nuoya.form("form").ajaxSubmit({
+                            ajaxUrl: "/User/Add",
+                            params: {
+                                IsAdmin:true
+                            },
+                            callback: function (data) {
+                                if (!data.ErrorDesc) {
+                                    e.hide();
+                                    grid.reload();
+                                }
+                                else
+                                    $.Nuoya.alert(data.ErrorDesc);
+                            }
+                        });
+                    }
+                }]
+            })
+        }
+
+        var grid = $.Nuoya.grid({
+            tableId: "dataTable",
+            //表格id
+            search: {
+                domainId: "searchDomain",
+                subId: "btnSearch"
+            },
+            ajaxUrl: "/User/GetPageList",
+            params: {
+                IsAdmin:true
+            },
+            //数据请求地址
+
+            events: [
+
+                {
+                    className: "am-text-secondary",
+                    icon: "icon-pencil-square-o",
+                    name: "编辑",
+                    click: function (item) {
+                        $.Nuoya.ajaxDialog({
+                            closeViaDimmer: false,
+                            width: "1000px",
+                            height: "680px",
+                            ajaxUrl: "/HtmlTemplates/Admin/Update.html",
+                            title: "编辑管理员",
+                            callback: function (e) {
+                                $.Nuoya.action("/User/Find", { id: item.ID }, function (model) {
+                                    formInit(model);//表单初始化
+                                    //载入数据
+                                    $.Nuoya.form("form").dataLoad({
+                                        data: model
+                                    });
+                                    $("[name='Account']").prop("readonly", true);
+                                });
+                            },
+                            buttons: [{
+                                label: "保存",
+                                callback: function (e) {
+                                    var flag = 0;
+                                    $("#operateFlagDiv input[type='checkbox']:checked").each(function () {
+                                        flag = flag | parseInt($(this).val());
+                                    });
+                                    $("#operateFlagDiv [name='OperateFlag']").val(flag);
+
+                                    $.Nuoya.form("form").ajaxSubmit({
+                                        ajaxUrl: "/User/Update",
+                                        params: {
+                                            ID: item.ID
+                                        },
+                                        callback: function (data) {
+                                            if (!data.ErrorDesc) {
+                                                e.hide();
+                                                grid.reload();
+                                            }
+                                            else
+                                                $.Nuoya.alert(data.ErrorDesc);
+                                        }
+                                    });
+                                }
+                            }]
+                        })
+                    }
+                }
+                ,
+                {
+                    className: "am-text-success",
+                    icon: "icon-pencil-square-o",
+                    name: "用户稿件",
+                    click: function (item) {
+                        //window.open("/Account/Register?id=" + item.ID);
+                        $.Nuoya.ajaxDialog({
+                            ajaxUrl: "/HtmlTemplates/News/Index.html",
+                            width: "1000px",
+                            height: "680px",
+                            title: "用户稿件",
+                            callback: function (ce) {
+                                var childrenGrid = $.Nuoya.grid({
+                                    tableId: "newsDataTable",
+                                    //表格id
+                                    search: {
+                                        domainId: "newsSearchDomain",
+                                        subId: "newsBtnSearch"
+                                    },
+                                    ajaxUrl: "/News/GetUserPageList",
+                                    params: {
+                                        userId: item.ID
+                                    },
+                                    isForPhone: '@(WebHelper.CheckAgent()?1:0)' == "1",
+                                    //数据请求地址
+                                    events: [
+                                        {
+                                            className: "am-text-danger",
+                                            icon: "icon-edit",
+                                            name: "查看",
+                                            click: function (childrenItem) {
+                                                window.open("/News/AdminManage/" + childrenItem.ID);
+                                            }
+                                        }
+                                    ]
+                                });
+                            }
+                        })
+                    }
+                },
+            {
+                className: "am-text-danger",
+                icon: "icon-hand-rock-o",
+                name: "重置密码",
+                click: function (item) {
+                    changePassword(item.ID);
+                }
+            }
+                ,
+                {
+                    className: "am-text-danger",
+                    icon: "icon-trash-o",
+                    name: "删除",
+                    click: function (item) {
+                        $.Nuoya.confirm("确认删除？", function () {
+                            $.Nuoya.deleteAction("/User/Delete", {
+                                ids: item.ID
+                            },
+                            function () {
+                                grid.reload();
+                            });
+                        });
+                    }
+                }
+            ]
+        });
+
+    </script>
+
+}

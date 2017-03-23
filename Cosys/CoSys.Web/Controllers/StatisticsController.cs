@@ -55,15 +55,15 @@ namespace CoSys.Web.Controllers
             var list = WebService.Get_NewsStatisticsArea(province, city, county, methodFlag);
             string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
             string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
-            NPOIHelper<StatisticsModel>.GetExcel(list, GetHT(type), filePath);
+            NPOIHelper<StatisticsModel>.GetExcel(list, GetHT(province,city,county), filePath);
             //Directory.Delete(filePath);
             return File(filePath, "application/vnd.ms-excel", fileName);
         }
 
-        private Hashtable GetHT(int type)
+        private Hashtable GetHT(int? province, int? city, int? county)
         {
             Hashtable hs = new Hashtable();
-            hs["Name"] = type==1?"市":(type==2?"县/区":"街道")+"名称";
+            hs["Name"] = (province==null||province==-1)?"省份":((city==null || city == 0) ?  "市" : ((county == null || county == 0) ? "县/区": "街道"))+"名称";
             hs["AllCount"] = "总投稿数";
             hs["PassCount"] = "总采纳数";
             return hs;
@@ -137,7 +137,7 @@ namespace CoSys.Web.Controllers
                 else
                     type = 1;
             }
-            NPOIHelper<StatisticsModel>.GetExcel(list, GetHT(type), filePath);
+            NPOIHelper<StatisticsModel>.GetExcel(list, GetHT(province, city, county), filePath);
             //Directory.Delete(filePath);
             return File(filePath, "application/vnd.ms-excel", fileName);
         }
