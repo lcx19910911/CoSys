@@ -51,6 +51,8 @@ namespace CoSys.Model
 
         [NotMapped]
         public string StateStr { get; set; }
+        [NotMapped]
+        public string RoleName { get; set; }
 
         [MaxLength(1024)]
         public string Msg { get; set; }

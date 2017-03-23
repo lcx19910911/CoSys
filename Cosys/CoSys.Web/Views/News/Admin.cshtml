@@ -70,7 +70,7 @@
             <tr>
                 <th dataname="ID" type="checkbox"></th>
                 <th dataname="Title">标题</th>
-                <th dataname="StateStr">状态</th>
+                <th render="ShowStateStr">状态</th>
                 @if (!WebHelper.CheckAgent())
                 {
                     <th dataname="SubmitTime" datatype="jsondate">投递日期</th>
@@ -91,6 +91,11 @@
 
         function ClearFilter() {
             $("#searchDomain input").val("");
+        }
+
+        function ShowStateStr(item)
+        {
+            return item.RoleName + "-" + item.StateStr;
         }
 
         var grid = $.Nuoya.grid({

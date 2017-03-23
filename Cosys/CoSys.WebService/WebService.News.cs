@@ -94,13 +94,15 @@ namespace CoSys.Service
             {
                 if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
                     x.UserName = userDic.GetValue(x.UserID).RealName;
-                if (admin != null && !admin.IsSuperAdmin)
+         
+                if (admin != null)
                 {
                     if (x.State == NewsState.Pass)
                     {
                         var updateAdmin = userDic[x.UpdateAdminID];
                         if (roleDic.ContainsKey(updateAdmin.RoleID))
                         {
+                            x.RoleName = roleDic[updateAdmin.RoleID].Name;
                             if (roleDic[updateAdmin.RoleID].AuditState == NewsAuditState.EditorialAudit)
                             {
                                 x.StateStr = "编委会转稿";
@@ -114,6 +116,9 @@ namespace CoSys.Service
                     else if (x.State == NewsState.Plush)
                     {
                         x.StateStr = x.State.GetDescription();
+                        var updateAdmin = userDic[x.UpdateAdminID];
+                        if (roleDic.ContainsKey(updateAdmin.RoleID))
+                            x.RoleName = roleDic[updateAdmin.RoleID].Name;
                     }
                     else
                     {
@@ -129,6 +134,7 @@ namespace CoSys.Service
                                     var updateAdmin = userDic[x.UpdateAdminID];
                                     if (roleDic.ContainsKey(updateAdmin.RoleID))
                                     {
+                                        x.RoleName = roleDic[updateAdmin.RoleID].Name;
                                         if (roleDic[updateAdmin.RoleID].AuditState.GetInt() > x.AuditState.GetInt())
                                         {
                                             x.StateStr = "退回";
@@ -152,6 +158,7 @@ namespace CoSys.Service
                                 var updateAdmin = userDic[x.UpdateAdminID];
                                 if (x.UpdateAdminID.Equals(admin.ID))
                                 {
+                                    x.RoleName = roleDic[updateAdmin.RoleID].Name;
                                     if (roleDic[updateAdmin.RoleID].AuditState == NewsAuditState.EditorialAudit)
                                     {
                                         x.StateStr = "转稿给稿件审核员";
@@ -732,7 +739,7 @@ namespace CoSys.Service
 
                 news.UpdateAdminID = admin.ID;
                 news.State = NewsState.Plush;
-                news.PlushMethodFlag = channelFlag| news.PlushMethodFlag;
+                news.PlushMethodFlag = news.PlushMethodFlag;
                 //邮箱头盖
                 Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0 && x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
                   {
