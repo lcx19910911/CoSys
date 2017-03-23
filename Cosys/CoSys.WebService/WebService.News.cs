@@ -94,90 +94,114 @@ namespace CoSys.Service
             {
                 if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
                     x.UserName = userDic.GetValue(x.UserID).RealName;
-         
+
                 if (admin != null)
                 {
                     if (x.State == NewsState.Pass)
                     {
-                        var updateAdmin = userDic[x.UpdateAdminID];
-                        if (roleDic.ContainsKey(updateAdmin.RoleID))
+                        if (userDic.ContainsKey(x.UpdateAdminID))
                         {
-                            x.RoleName = roleDic[updateAdmin.RoleID].Name;
-                            if (roleDic[updateAdmin.RoleID].AuditState == NewsAuditState.EditorialAudit)
+                            var updateAdmin = userDic[x.UpdateAdminID];
+                            if (roleDic.ContainsKey(updateAdmin.RoleID))
                             {
-                                x.StateStr = "编委会转稿";
+                                x.RoleName = roleDic[updateAdmin.RoleID].Name;
+                                if (roleDic[updateAdmin.RoleID].AuditState == NewsAuditState.EditorialAudit)
+                                {
+                                    x.StateStr = "编委会转稿";
+                                }
+                                else
+                                    x.StateStr = x.State.GetDescription();
                             }
                             else
                                 x.StateStr = x.State.GetDescription();
                         }
-                        else
-                            x.StateStr = x.State.GetDescription();
                     }
                     else if (x.State == NewsState.Plush)
                     {
                         x.StateStr = x.State.GetDescription();
-                        var updateAdmin = userDic[x.UpdateAdminID];
-                        if (roleDic.ContainsKey(updateAdmin.RoleID))
-                            x.RoleName = roleDic[updateAdmin.RoleID].Name;
+                        if (userDic.ContainsKey(x.UpdateAdminID))
+                        {
+                            var updateAdmin = userDic[x.UpdateAdminID];
+                            if (roleDic.ContainsKey(updateAdmin.RoleID) && updateAdmin != null)
+                                x.RoleName = roleDic[updateAdmin.RoleID].Name;
+                        }
                     }
                     else
                     {
-                        if (x.AuditState == role.AuditState)
+                        if (!admin.IsSuperAdmin)
                         {
-                            //判断是否被上级退回
-                            if (x.UpdateAdminID.IsNullOrEmpty())
-                                x.StateStr = x.State.GetDescription();
-                            else
+                            if (x.AuditState == role.AuditState)
                             {
-                                if (userDic.ContainsKey(x.UpdateAdminID))
+                                //判断是否被上级退回
+                                if (x.UpdateAdminID.IsNullOrEmpty())
+                                    x.StateStr = x.State.GetDescription();
+                                else
                                 {
-                                    var updateAdmin = userDic[x.UpdateAdminID];
-                                    if (roleDic.ContainsKey(updateAdmin.RoleID))
+                                    if (userDic.ContainsKey(x.UpdateAdminID))
                                     {
-                                        x.RoleName = roleDic[updateAdmin.RoleID].Name;
-                                        if (roleDic[updateAdmin.RoleID].AuditState.GetInt() > x.AuditState.GetInt())
+                                        var updateAdmin = userDic[x.UpdateAdminID];
+                                        if (roleDic.ContainsKey(updateAdmin.RoleID))
                                         {
-                                            x.StateStr = "退回";
+                                            x.RoleName = roleDic[updateAdmin.RoleID].Name;
+                                            if (roleDic[updateAdmin.RoleID].AuditState.GetInt() > x.AuditState.GetInt())
+                                            {
+                                                x.StateStr = "退回";
+                                            }
+                                            else
+                                                x.StateStr = x.State.GetDescription();
                                         }
                                         else
                                             x.StateStr = x.State.GetDescription();
                                     }
                                     else
-                                        x.StateStr = x.State.GetDescription();
-                                }
-                                else
-                                {
-                                    x.StateStr = "未知";
+                                    {
+                                        x.StateStr = "未知";
+                                    }
                                 }
                             }
-                        }
-                        else if (x.AuditState.GetInt() > role.AuditState.GetInt())
-                        {
-                            if (x.UpdateAdminID.Equals(admin.ID))
+                            else if (x.AuditState.GetInt() > role.AuditState.GetInt())
                             {
-                                var updateAdmin = userDic[x.UpdateAdminID];
                                 if (x.UpdateAdminID.Equals(admin.ID))
                                 {
-                                    x.RoleName = roleDic[updateAdmin.RoleID].Name;
-                                    if (roleDic[updateAdmin.RoleID].AuditState == NewsAuditState.EditorialAudit)
+                                    var updateAdmin = userDic[x.UpdateAdminID];
+                                    if (x.UpdateAdminID.Equals(admin.ID))
                                     {
-                                        x.StateStr = "转稿给稿件审核员";
+                                        x.RoleName = roleDic[updateAdmin.RoleID].Name;
+                                        if (roleDic[updateAdmin.RoleID].AuditState == NewsAuditState.EditorialAudit)
+                                        {
+                                            x.StateStr = "转稿给稿件审核员";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        x.StateStr = "编委会转稿";
                                     }
                                 }
                                 else
-                                {
-                                    x.StateStr = "编委会转稿";
-                                }
+                                    x.StateStr = "已审核";
                             }
                             else
-                                x.StateStr = "已审核";
+                            {
+                                if (x.UpdateAdminID.Equals(admin.ID))
+                                    x.StateStr = "已退回";
+                                else
+                                    x.StateStr = "上一节点未审核";
+                            }
                         }
                         else
                         {
-                            if (x.UpdateAdminID.Equals(admin.ID))
-                                x.StateStr = "已退回";
+                            x.StateStr = x.State.GetDescription();
+                            if (x.UpdateAdminID.IsNotNullOrEmpty())
+                            {
+                                if (userDic.ContainsKey(x.UpdateAdminID))
+                                {
+                                    var updateAdmin = userDic[x.UpdateAdminID];
+                                    if (roleDic.ContainsKey(updateAdmin.RoleID) && updateAdmin != null)
+                                        x.RoleName = roleDic[updateAdmin.RoleID].Name;
+                                }
+                            }
                             else
-                                x.StateStr = "上一节点未审核";
+                                x.RoleName = "未审核";
                         }
                     }
                 }
@@ -731,7 +755,7 @@ namespace CoSys.Service
                     return Result(false, ErrorCode.sys_param_format_error);
 
                 var admin = db.User.Find(LoginHelper.GetCurrentAdminID());
-                if ((news.State != NewsState.Pass&& news.State != NewsState.Plush) || admin == null)
+                if ((news.State != NewsState.Pass && news.State != NewsState.Plush) || admin == null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
