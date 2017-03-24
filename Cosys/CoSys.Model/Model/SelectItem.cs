@@ -29,6 +29,5 @@ namespace CoSys.Model
 
         public string ParentKey { get; set; }
 
-
     }
 }

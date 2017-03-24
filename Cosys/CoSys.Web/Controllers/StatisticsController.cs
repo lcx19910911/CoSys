@@ -63,7 +63,28 @@ namespace CoSys.Web.Controllers
         private Hashtable GetHT(int? province, int? city, int? county)
         {
             Hashtable hs = new Hashtable();
-            hs["Name"] = (province==null||province==-1)?"省份":((city==null || city == 0) ?  "市" : ((county == null || county == 0) ? "县/区": "街道"))+"名称";
+            if (province == null || province == -1)
+            {
+                hs["Name"] = "省份";
+            } 
+            else if (city == null || city == 0 || city == -1)
+            {
+                hs["ProvinceName"] = "省份";
+                hs["Name"] = "市";
+            }
+            else if (county == null || county == 0 || county == -1)
+            {
+                hs["ProvinceName"] = "省份";
+                hs["CityName"] = "市";
+                hs["Name"] = "县/区";
+            }
+            else
+            {
+                hs["ProvinceName"] = "省份";
+                hs["CityName"] = "市";
+                hs["CountyName"] = "县/区";
+                hs["Name"] = "街道";
+            }
             hs["AllCount"] = "总投稿数";
             hs["PassCount"] = "总采纳数";
             return hs;

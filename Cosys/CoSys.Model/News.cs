@@ -46,6 +46,11 @@ namespace CoSys.Model
         public string Content { get; set; }
 
         public NewsAuditState AuditState { get; set; } = NewsAuditState.None;
+        /// <summary>
+        /// 标题
+        /// </summary>
+        [NotMapped]
+        public string AuditStateStr { get; set; }
 
         public NewsState State { get; set; }
 

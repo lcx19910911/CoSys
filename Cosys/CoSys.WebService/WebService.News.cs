@@ -95,10 +95,12 @@ namespace CoSys.Service
                 if (x.UserID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UserID))
                     x.UserName = userDic.GetValue(x.UserID).RealName;
 
+                x.AuditStateStr = x.AuditState.GetDescription();
                 if (admin != null)
                 {
                     if (x.State == NewsState.Pass)
                     {
+                        
                         if (userDic.ContainsKey(x.UpdateAdminID))
                         {
                             var updateAdmin = userDic[x.UpdateAdminID];
@@ -110,7 +112,10 @@ namespace CoSys.Service
                                     x.StateStr = "编委会转稿";
                                 }
                                 else
+                                {
                                     x.StateStr = x.State.GetDescription();
+
+                                }
                             }
                             else
                                 x.StateStr = x.State.GetDescription();
@@ -132,6 +137,7 @@ namespace CoSys.Service
                         {
                             if (x.AuditState == role.AuditState)
                             {
+
                                 //判断是否被上级退回
                                 if (x.UpdateAdminID.IsNullOrEmpty())
                                     x.StateStr = x.State.GetDescription();
@@ -801,10 +807,13 @@ namespace CoSys.Service
                 var query = db.User.AsQueryable().AsNoTracking();
                 if (province != null && province != -1)
                 {
+                    var provinceName = GetValue(GroupCode.Area, province.ToString());
                     if (city != null && city != 0 && city != -1)
                     {
+                        var cityName = GetValue(GroupCode.Area, city.ToString());
                         if (county != null && county != 0 && county != -1)
                         {
+                            var countyName = GetValue(GroupCode.Area, county.ToString());
                             var userList = query.Where(x => !string.IsNullOrEmpty(x.CountyCode) && x.CountyCode == county.ToString()).Select(x => new SelectItem() { Value = x.StreetCode, Text = x.ID }).ToList();
 
                             var townUserDic = userList.GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(y => y.Text).ToList());
@@ -822,7 +831,10 @@ namespace CoSys.Service
                                         Name = x.Text,
                                         PassCount = newsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
                                         AreaType = 3,
-                                        AreaId = x.Value
+                                        AreaId = x.Value,
+                                        ProvinceName=provinceName,
+                                        CityName=cityName,
+                                        CountyName=countyName
                                     });
                                 }
                             });
@@ -838,7 +850,10 @@ namespace CoSys.Service
                                     Name = "未填写",
                                     PassCount = unewsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
                                     AreaType = 4,
-                                    AreaId = ""
+                                    AreaId = "",
+                                    ProvinceName = provinceName,
+                                    CityName = cityName,
+                                    CountyName = countyName
                                 });
                             }
                             return model;
@@ -862,7 +877,9 @@ namespace CoSys.Service
                                         Name = x.Text,
                                         PassCount = newsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
                                         AreaType = 2,
-                                        AreaId = x.Value
+                                        AreaId = x.Value,
+                                        ProvinceName = provinceName,
+                                        CityName = cityName,
                                     });
                                 }
                             });
@@ -878,7 +895,9 @@ namespace CoSys.Service
                                     Name = "未填写",
                                     PassCount = unewsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
                                     AreaType = 4,
-                                    AreaId = ""
+                                    AreaId = "",
+                                    ProvinceName = provinceName,
+                                    CityName = cityName,
                                 });
                             }
                         }
@@ -902,7 +921,8 @@ namespace CoSys.Service
                                     Name = x.Text,
                                     PassCount = newsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
                                     AreaType = 1,
-                                    AreaId = x.Value
+                                    AreaId = x.Value,
+                                    ProvinceName = provinceName,
                                 });
                             }
                         });
@@ -918,7 +938,8 @@ namespace CoSys.Service
                                 Name = "未填写",
                                 PassCount = unewsList.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count(),
                                 AreaType = 4,
-                                AreaId = ""
+                                AreaId = "",
+                                ProvinceName = provinceName,
                             });
                         }
                     }

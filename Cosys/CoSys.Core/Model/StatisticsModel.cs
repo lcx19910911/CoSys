@@ -8,6 +8,10 @@ namespace CoSys.Core
 {
     public class StatisticsModel
     {
+
+        public string ProvinceName { get; set; }
+        public string CityName { get; set; }
+        public string CountyName { get; set; }
         public string Name { get; set; }
 
         public int AllCount { get; set; }
