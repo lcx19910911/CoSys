@@ -669,7 +669,7 @@
                 DepartmentID: departmentID,
                 Paths: paths,
                 Content: content,
-                isAduit: '@(Model.ID.IsNotNullOrEmpty() ? 1 : 0)' == '1',
+                isAduit: isAduit,
             }, function (data) {
                 if (!data.ErrorDesc) {
                     $.Nuoya.alert("保存成功");
