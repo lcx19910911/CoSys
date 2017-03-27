@@ -263,7 +263,20 @@ namespace CoSys.Web.Controllers
         {
             return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, userId, state,type,areaId));
         }
-        
+
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="name">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public ActionResult GetMyPageList(int pageIndex, int pageSize, string title, NewsState? state, int? type, int? areaId)
+        {
+            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, Client.LoginAdmin.ID, state, type, areaId));
+        }
+
         /// <summary>
         /// 查找实体
         /// </summary>

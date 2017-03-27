@@ -188,10 +188,15 @@ namespace CoSys.Service
                             }
                             else
                             {
-                                if (x.UpdateAdminID.Equals(admin.ID))
-                                    x.StateStr = "已退回";
+                                if (x.UpdateAdminID.IsNotNullOrEmpty())
+                                {
+                                    if (x.UpdateAdminID.Equals(admin.ID))
+                                        x.StateStr = "已退回";
+                                    else
+                                        x.StateStr = "上一节点未审核";
+                                }
                                 else
-                                    x.StateStr = "上一节点未审核";
+                                    x.StateStr = x.State.GetDescription(); ;
                             }
                         }
                         else
@@ -291,7 +296,10 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.WaitAudit || x.State == NewsState.Plush);
+                    if (Client.LoginAdmin!=null&&userId != Client.LoginAdmin.ID)
+                    {
+                        query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.WaitAudit || x.State == NewsState.Plush);
+                    }
                 }
                 var count = query.Count();
                 if (type == null && areaId == null)
