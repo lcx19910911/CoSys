@@ -238,6 +238,10 @@ namespace CoSys.Service
                         x.RoleName = "未审核";
                     }
                 }
+                else
+                {
+                    x.StateStr = x.State.GetDescription();
+                }
                 if (x.UpdateAdminID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UpdateAdminID))
                     x.UpdateAdminName = userDic.GetValue(x.UpdateAdminID).RealName;
                 if (x.NewsTypeID.IsNotNullOrEmpty() && typeDic.ContainsKey(x.NewsTypeID))
@@ -416,7 +420,7 @@ namespace CoSys.Service
                 {
                     model.SubmitTime = DateTime.Now;
                     model.State = NewsState.WaitAudit;
-                    if (Client.LoginAdmin != null)
+                    if (Client.LoginAdmin != null&&Client.LoginUser==null)
                     {
                         var role = db.Role.Find(Client.LoginAdmin.RoleID);
                         if (role == null)
@@ -563,7 +567,8 @@ namespace CoSys.Service
                                 }
                                 else
                                 {
-                                    oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
+                                    if(Client.LoginUser==null)
+                                        oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
                                 }
                             }
                             else
@@ -902,7 +907,7 @@ namespace CoSys.Service
                     return Result(false, ErrorCode.sys_param_format_error);
 
                 var admin = db.User.Find(LoginHelper.GetCurrentAdminID());
-                if ((news.State != NewsState.Pass && news.State != NewsState.Plush) || admin == null)
+                if ((news.State != NewsState.Pass && news.State != NewsState.Plush && news.State != NewsState.WaitAudit) || admin == null)
                 {
                     return Result(false, ErrorCode.sys_param_format_error);
                 }
