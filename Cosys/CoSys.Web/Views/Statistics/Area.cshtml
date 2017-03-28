@@ -1,4 +1,4 @@
-﻿@model Tuple<List<SelectItem>, List<SelectItem>, List<SelectItem>, List<SelectItem>>
+﻿@model Tuple<List<SelectItem>, List<SelectItem>>
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "地区统计";
@@ -15,7 +15,7 @@
             <div class="am-u-lg-12">
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">省份</span>
-                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,1)">
+                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         <option value="-1">请选择</option>
                         @if (Model.Item1 != null && Model.Item1.Count > 0)
                         {
@@ -30,47 +30,10 @@
 
             <div class="am-u-lg-12 am-margin-top-sm">
                 <div class="am-input-group am-input-group-sm">
-                    <span class="am-input-group-label am-margin-left-sm">市</span>
-                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)">
-                        <option value="-1">请选择</option>
-                        @if (Model.Item2 != null && Model.Item2.Count > 0)
-                        {
-                            foreach (var item in Model.Item2)
-                            {
-                                <option value="@item.Value" @(item.Value == "1303" ? "selected" : "")>@item.Text</option>
-                            }
-                        }
-                    </select>
-                </div>
-            </div>
-
-            <div class="am-u-lg-12 am-margin-top-sm">
-                <div class="am-input-group am-input-group-sm">
-                    <span class="am-input-group-label am-margin-left-sm">县/区</span>
-                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)">
-                        @if (Model.Item3 != null && Model.Item3.Count > 0)
-                        {
-                            foreach (var item in Model.Item3)
-                            {
-                                <option value="@item.Value">@item.Text</option>
-                            }
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="am-u-lg-12 am-margin-top-sm">
-                <div class="am-input-group am-input-group-sm">
-                    <span class="am-input-group-label am-margin-left-sm">街道</span>
-                    <select name="street" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,4)"></select>
-                </div>
-            </div>
-
-            <div class="am-u-lg-12 am-margin-top-sm">
-                <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">渠道</span>
                     <select name="methodFlag" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         <option value="-1" selected>请选择</option>
-                        @if (Model.Item4 != null && Model.Item4.Count > 0)
+                        @if (Model.Item2 != null && Model.Item2.Count > 0)
                         {
                             foreach (var item in Model.Item2) 
                             {
@@ -95,7 +58,7 @@
             <div class="am-u-lg-12">
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label">省份</span>
-                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,1)">
+                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" >
                         <option value="-1">请选择</option>
                         @if (Model.Item1 != null && Model.Item1.Count > 0)
                         {
@@ -105,36 +68,13 @@
                             }
                         }
                     </select>
-                    <span class="am-input-group-label am-margin-left-sm">市</span>
-                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)">
-                        <option value="-1">请选择</option>
-                        @if (Model.Item2 != null && Model.Item2.Count > 0)
-                        {
-                            foreach (var item in Model.Item2)
-                            {
-                                <option value="@item.Value" @(item.Value == "1303" ? "selected" : "")>@item.Text</option>
-                            }
-                        }
-                    </select>
-                    <span class="am-input-group-label am-margin-left-sm">县/区</span>
-                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)">
-                        <option value="-1" selected>请选择</option>
-                        @if (Model.Item3 != null && Model.Item3.Count > 0)
-                        {
-                            foreach (var item in Model.Item3)
-                            {
-                                <option value="@item.Value">@item.Text</option>
-                            }
-                        }
-                    </select>
-                    <span class="am-input-group-label am-margin-left-sm">街道</span>
-                    <select name="street" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;"></select>
+                 
                     <span class="am-input-group-label am-margin-left-sm">渠道</span>
                     <select name="methodFlag" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         <option value="-1" selected>请选择</option>
-                        @if (Model.Item4 != null && Model.Item4.Count > 0)
+                        @if (Model.Item2 != null && Model.Item2.Count > 0)
                         {
-                            foreach (var item in Model.Item4)
+                            foreach (var item in Model.Item2)
                             {
                                 <option value="@item.Value">@item.Text</option>
                             }
@@ -152,6 +92,9 @@
         </div>
     </div>
 
+<div class="am am-margin-top am-margin-left am-margin-right">
+    <span class="am-input-group-label am-margin-left-sm" id="searchName"></span>
+</div>
     <div class="grid_container">
         <div class="am-g am-margin-top-lg">
             <div class="am-u-lg-10 ">
@@ -162,6 +105,7 @@
                             <th id="areaName">地区名称</th>
                             <th>总投稿数</th>
                             <th>总采纳数</th>
+                            <th>查看明细</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -197,8 +141,17 @@
                 else {
                     $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), city: $("[name='city']").val(), county: $("[name='county']").val(), methodFlag: $("[name='methodFlag']").val() }, function (json) {
                         $("tbody").html("");
-                        $(json).each(function (index, item) {
-                            $("tbody").append("<tr data-href='/user/index?type=" + item.AreaType + "&areaId=" + item.AreaId + "'><td>" + (index + 1) + "</td><td>" + item.Name + "</td> <td>" + item.AllCount + "</td> <td>" + item.PassCount + "</td> </tr>");
+                        $("#searchName").text(json.Name + " 总投稿数:" + json.AllCount + " 通过数："+json.PassCount);
+                        $(json.List).each(function (index, item) {
+                            $("tbody").append("<tr><td>" + (index + 1) + "</td><td class='am-text-success'>" + item.Name + "</td> <td>总投稿数：" + item.AllCount + "</td> <td>通过数：" + item.PassCount + "</td> <td><a href='" + item.Link + "'>查看明细</a></td> </tr>");
+                            if (item.Childrens.length > 0) {
+                                $(item.Childrens).each(function (y, obj) {
+                                    $("tbody").append("<tr><td>" + (index + 1) + "_" + (y + 1) + "</td><td class='am-text-warning'>" + obj.Name + "</td> <td>总投稿数：" + obj.AllCount + "</td> <td>通过数：" + obj.PassCount + "</td><td><a href='" + obj.Link + "'>查看明细</a> </td></tr>");
+                                    $(obj.Childrens).each(function (z, temp) {
+                                        $("tbody").append("<tr><td>" + (index + 1) + "_" + (y + 1) + "_" + (z + 1) + "</td><td >" + temp.Name + "</td> <td>总投稿数：" + temp.AllCount + "</td> <td>通过数：" + temp.PassCount + "</td><td><a href='" + temp.Link + "'>查看明细</a> </td></tr>");
+                                    });
+                                });
+                            }
                         });
                     });
                 }
@@ -209,10 +162,6 @@
                     $("select[name='methodFlag']").append("<option  value='" + this.Value + "' >" + this.Text + "</option>");
                 });
             });
-
-            $("table").on("click", "tbody tr", function () {
-                window.location.href = $(this).attr("data-href");
-            })
 
             function loadArea(obj, i) {
                 var thatObj = $(obj);

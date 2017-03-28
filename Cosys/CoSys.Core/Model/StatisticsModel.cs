@@ -8,7 +8,6 @@ namespace CoSys.Core
 {
     public class StatisticsModel
     {
-
         public string ProvinceName { get; set; }
         public string CityName { get; set; }
         public string CountyName { get; set; }
@@ -17,11 +16,16 @@ namespace CoSys.Core
         public int AllCount { get; set; }
         public int PassCount { get; set; }
 
-        public string Key { get; set; }
+        public string Link { get; set; }
 
+        public int PeopleCount { get; set; }
+
+        public string Key { get; set; }
 
         public string AreaId { get; set; }
 
         public int AreaType { get; set; }
+
+        public List<StatisticsModel> Childrens { get; set; }
     }
 }

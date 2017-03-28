@@ -119,7 +119,7 @@ namespace CoSys.Web.Controllers
                     if (model.State == NewsState.WaitAudit)
                     {
                         //判断投递部门权限
-                        if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin)
+                        if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin&&!model.UserID.Equals(admin.ID))
                         {
                             return View("Admin");
                         }

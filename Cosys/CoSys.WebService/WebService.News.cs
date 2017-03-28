@@ -1,5 +1,6 @@
 ﻿
 using CoSys.Core;
+using CoSys.Core.Model;
 using CoSys.Model;
 using CoSys.Repository;
 using System;
@@ -211,8 +212,21 @@ namespace CoSys.Service
                                     }
                                     else
                                     {
-                                        x.StateStr = "上一节点未审核";
-                                        x.RoleName = "未审核";
+                                        var updateAdmin = userDic[x.UpdateAdminID];
+                                        if (roleDic.ContainsKey(updateAdmin.RoleID))
+                                        {
+                                            x.RoleName = roleDic[updateAdmin.RoleID].Name;
+                                            if (roleDic[updateAdmin.RoleID].AuditState.GetInt() > x.AuditState.GetInt())
+                                            {
+                                                x.StateStr = "退回";
+                                            }
+                                            else
+                                                x.StateStr = x.State.GetDescription();
+                                        }
+                                        else {
+                                            x.StateStr = x.State.GetDescription();
+                                            x.RoleName = "未审核";
+                                        }
                                     }
                                 }
                                 else
@@ -906,7 +920,14 @@ namespace CoSys.Service
                                 else
                                 {
                                     news.Msg = msg;
-                                    news.AuditState = NewsAuditState.MinisterAudit;
+                                    if (news.DepartmentID.Split(';').Length == 2)
+                                    {
+                                        news.AuditState = NewsAuditState.EditorialAudit;
+                                    }
+                                    else
+                                    {
+                                        news.AuditState = NewsAuditState.MinisterAudit;
+                                    }
                                 }
                             }
                             else
@@ -915,6 +936,7 @@ namespace CoSys.Service
                     }
                     else if (news.State == NewsState.Pass)
                     {
+                        news.State = NewsState.WaitAudit;
                         news.UpdateAdminID = admin.ID;
                         news.AuditState = NewsAuditState.LastAudit;
                     }
@@ -974,6 +996,120 @@ namespace CoSys.Service
 
 
         #region 统计
+
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="title">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public StatisticsTotal Get_NewsStatisticsArea(int? province,long methodFlag)
+        {
+
+            StatisticsTotal returnModel = new StatisticsTotal();
+            returnModel.List = new List<StatisticsModel>();
+            using (DbRepository db = new DbRepository())
+            {
+                if (province != null && province != -1)
+                {
+                    var provinceName = "";
+                    var cityList = new List<SelectItem>(); var countyList = new List<SelectItem>();
+                    var userList = db.User.Where(x=>!string.IsNullOrEmpty(x.ProvoniceCode)&&x.ProvoniceCode==province.ToString()).ToList();
+                    var newsQuery = db.News.Where(x=>!x.IsDelete&&(x.State==NewsState.Pass||x.State==NewsState.Plush));
+                    if (methodFlag != 0 && methodFlag != -1)
+                        newsQuery = newsQuery.Where(x => (methodFlag & x.MethodFlag) != 0);
+                    var newsList = newsQuery.ToList();
+                    returnModel.AllCount = newsList.Where(x => userList.Select(y => y.ID).Contains(x.UserID)).Count();
+                    returnModel.PassCount = newsList.Where(x => userList.Select(y => y.ID).Contains(x.UserID) && (x.State == NewsState.Pass || x.State == NewsState.Plush)).Count();
+
+                    provinceName = GetValue(GroupCode.Area, province.ToString());
+                    cityList = Get_AreaList(province.ToString());
+                    var cityIdList = cityList.Select(x => x.Value).ToList();
+                    countyList = Cache_Get_DataDictionary()[GroupCode.Area].Values.Where(x => x.ParentKey.IsNotNullOrEmpty() && cityIdList.Contains(x.ParentKey.Trim())).ToList().Select(x => new SelectItem()
+                    {
+                        Value = x.Key,
+                        Text = x.Value,
+                        ParentKey = x.ParentKey
+                    }).ToList();
+                    var countyIdList = countyList.Select(x => x.Value).ToList();
+                    var streetList = Cache_Get_DataDictionary()[GroupCode.Area].Values.Where(x => x.ParentKey.IsNotNullOrEmpty() && countyIdList.Contains(x.ParentKey.Trim())).ToList().Select(x => new SelectItem()
+                    {
+                        Value = x.Key,
+                        Text = x.Value,
+                        ParentKey = x.ParentKey
+                    }).ToList();
+
+                    returnModel.Name = provinceName;
+
+                    var noUserIdList = userList.Where(y => y.CityCode.IsNullOrEmpty() && y.ProvoniceCode.IsNotNullOrEmpty() && y.ProvoniceCode == province.ToString()).ToList();
+                    returnModel.List.Add(new StatisticsModel()
+                    {
+                        Name = "未选择地区",
+                        AllCount = newsList.Where(y => noUserIdList.Select(z => z.ID).ToList().Contains(y.UserID)).Count(),
+                        PassCount = newsList.Where(y => noUserIdList.Select(z => z.ID).ToList().Contains(y.UserID) && (y.State == NewsState.Pass || y.State == NewsState.Plush)).Count(),
+                        PeopleCount = noUserIdList.Count,
+                        Link = $"/user/index?type=0&areaId={province}",
+                        Childrens =new List<StatisticsModel>()
+                    });
+                    cityList.ForEach(x =>
+                    {
+                        if (x.Value != "0")
+                        {
+                            var userIdList = userList.Where(y => y.CityCode.IsNotNullOrEmpty() && y.CityCode == x.Value).ToList();
+                            var staticModel = new Core.StatisticsModel()
+                            {
+                                Name = x.Text,
+                                AllCount = newsList.Where(y => userIdList.Select(z => z.ID).ToList().Contains(y.UserID)).Count(),
+                                PassCount = newsList.Where(y => userIdList.Select(z => z.ID).ToList().Contains(y.UserID) && (y.State == NewsState.Pass || y.State == NewsState.Plush)).Count(),
+                                PeopleCount = userIdList.Count,
+                                AreaId = x.Value,
+                                Link = $"/user/index?type=1&areaId={x.Value}",
+                                Childrens = countyList.Where(z => z.ParentKey.Trim().Equals(x.Value) && z.Value != "0").ToList().Select(z =>
+                                    {
+                                        return new Core.StatisticsModel()
+                                        {
+                                            Name = z.Text,
+                                            AllCount = newsList.Where(u => userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID)).Count(),
+                                            PassCount = newsList.Where(u => userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID) && (u.State == NewsState.Pass || u.State == NewsState.Plush)).Count(),
+                                            PeopleCount = userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).Count(),
+                                            Link = $"/user/index?type=2&areaId={z.Value}",
+                                            AreaId = z.Value
+                                        };
+                                    }).ToList()
+                            };
+                            staticModel.Childrens = staticModel.Childrens.Where(y => y.AllCount != 0).ToList();
+                            if (staticModel.Childrens.Count > 0)
+                            {
+                                staticModel.Childrens.ForEach(y =>
+                                {
+                                    y.Childrens = streetList.Where(z => z.ParentKey.Trim().Equals(y.AreaId) && z.Value != "0").ToList().Select(z =>
+                                     {
+                                         return new Core.StatisticsModel()
+                                         {
+                                             Name = z.Text,
+                                             AllCount = newsList.Where(u => userIdList.Where(t => t.StreetCode.IsNotNullOrEmpty() && t.StreetCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID)).Count(),
+                                             PassCount = newsList.Where(u => userIdList.Where(t => t.StreetCode.IsNotNullOrEmpty() && t.StreetCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID) && (u.State == NewsState.Pass || u.State == NewsState.Plush)).Count(),
+                                             PeopleCount = userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).Count(),
+                                             Link = $"/user/index?type=3&areaId={z.Value}",
+                                             AreaId = z.Value
+                                         };
+                                     }).ToList();
+
+                                    y.Childrens = y.Childrens.Where(z => z.AllCount != 0).ToList();
+                                });
+                            }
+                            returnModel.List.Add(staticModel);
+                        
+                        }
+                    });
+                }
+
+                return returnModel;
+            }
+        }
+
 
         /// <summary>
         /// 获取分页列表
@@ -1170,9 +1306,6 @@ namespace CoSys.Service
                 return model;
             }
         }
-
-
-
 
         /// <summary>
         /// 获取分页列表

@@ -89,7 +89,12 @@ namespace CoSys.Service
         {
             using (DbRepository db = new DbRepository())
             {
-                var query = db.User.AsQueryable().AsNoTracking().AsNoTracking().Where(x => !x.IsDelete&&x.IsAdmin== isAdmin&&!x.IsSuperAdmin);
+                var query = db.User.AsQueryable().AsNoTracking().AsNoTracking().Where(x => !x.IsDelete&&!x.IsSuperAdmin);
+
+                if (areaId == null && type == null)
+                {
+                    query = query.Where(x => x.IsAdmin == isAdmin);
+                }
 
                 if (name.IsNotNullOrEmpty())
                 {
@@ -99,7 +104,7 @@ namespace CoSys.Service
                 {
                     if (type == 0)
                     {
-                        query = query.Where(x =>!string.IsNullOrEmpty(x.ProvoniceCode)&& x.ProvoniceCode.Equals(areaId.ToString()));
+                        query = query.Where(x =>!string.IsNullOrEmpty(x.ProvoniceCode)&& x.ProvoniceCode.Equals(areaId.ToString())&& string.IsNullOrEmpty(x.CityCode));
                     }
                     else if (type == 1)
                     {

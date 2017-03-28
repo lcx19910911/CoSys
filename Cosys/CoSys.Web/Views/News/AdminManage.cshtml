@@ -16,7 +16,7 @@
                 canEdit = true;
             }
         }
-        if (role.AuditState == NewsAuditState.LastAudit)
+        if (role.AuditState == NewsAuditState.LastAudit|| role.AuditState == Model.AuditState)
         {
             canEdit = true;
         }
@@ -41,18 +41,18 @@
                 <div class="am-form-group">
                     <label for="user-name" class="am-u-sm-3 am-form-label">标题<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <input type="text" name="Title" placeholder="标题" maxlength="64" value="@(Model.Title)" @(!canEdit ? "readonly" : "")>
+                        <input type="text" name="Title" placeholder="标题" maxlength="64" value="@(Model.Title)" @(!canEdit ? "readonly" : "" )>
                     </div>
                 </div>
                 <div class="am-form-group">
                     <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <select name="NewsTypeID" @(!canEdit ? "disabled" : "")>
+                        <select name="NewsTypeID" @(!canEdit ? "disabled": "" )>
                             @if (Model.TypeList != null && Model.TypeList.Count != 0)
                             {
                                 foreach (var item in Model.TypeList)
                                 {
-                                    <option value="@item.Value" @(Model.NewsTypeID.IsNotNullOrEmpty() && Model.NewsTypeID.Equals(item.Value) ? "selected" : "")>@item.Text</option>
+                                    <option value="@item.Value" @(Model.NewsTypeID.IsNotNullOrEmpty() && Model.NewsTypeID.Equals(item.Value) ? "selected" : "" )>@item.Text</option>
                                 }
                             }
                         </select>
@@ -70,33 +70,33 @@
                 <div class="am-form-group">
                     <label for="user-name" class="am-u-sm-3 am-form-label">见刊笔名<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <input type="text" name="PenName" placeholder="见刊笔名" maxlength="64" value="@((Model.ID.IsNullOrEmpty()?(admin.PenName.IsNullOrEmpty()?admin.RealName:admin.PenName): Model.PenName))" @(!canEdit ? "readonly" : "")>
+                        <input type="text" name="PenName" placeholder="见刊笔名" maxlength="64" value="@((Model.ID.IsNullOrEmpty()?(admin.PenName.IsNullOrEmpty()?admin.RealName:admin.PenName): Model.PenName))" @(!canEdit ? "readonly": "" )>
                     </div>
                 </div>
                 <div class="am-form-group">
                     <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <select name="DepartmentID" onchange="loadChildren(this)" @(!canEdit ? "disabled" : "")>
-                            <option value="-1" @(Model.DepartmentID.IsNullOrEmpty() ? "selected" : "")>请选择</option>
+                        <select name="DepartmentID" onchange="loadChildren(this)" @(!canEdit ? "disabled": "" )>
+                            <option value="-1" @(Model.DepartmentID.IsNullOrEmpty() ? "selected":"" )>请选择</option>
                             @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
                             {
                                 foreach (var item in Model.DepartmentList)
                                 {
-                                    <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                    <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" :"" )>@item.Text</option>
                                 }
                             }
                         </select>
                     </div>
                 </div>
-                <div class="am-form-group" id="childrenDiv" style="@(Model.ChildrenDepartmentList!=null&&Model.ChildrenDepartmentList.Count>0?"":"display:none;")">
+                <div class="am-form-group" id="childrenDiv" style="@(Model.ChildrenDepartmentList!=null&&Model.ChildrenDepartmentList.Count>0?" ":" display:none;")">
                     <label for="user-email" class="am-u-sm-3 am-form-label">小组<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <select name="ChildrenDepartmentID" @(!canEdit ? "disabled" : "")>
+                        <select name="ChildrenDepartmentID" @(!canEdit ? "disabled":"" )>
                             @if (Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count != 0)
                             {
                                 foreach (var item in Model.ChildrenDepartmentList)
                                 {
-                                    <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                    <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected":"" )>@item.Text</option>
                                 }
                             }
                         </select>
@@ -106,11 +106,11 @@
                 {
                     <div class="am-form-group">
                         <div class="am-u-sm-12">
-                            <textarea name="Content" rows="8" @(!canEdit ? "readonly" : "")>@(Html.Raw(Model?.Content))</textarea>
+                            <textarea name="Content" rows="8" @(!canEdit ? "readonly" :"" )>@(Html.Raw(Model?.Content))</textarea>
                         </div>
                     </div>
                     <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
-                    <div class="am-form-group" style="@(!canEdit? "display:none" : "")">
+                    <div class="am-form-group" style="@(!canEdit? " display:none":"" )">
                         <label for="user-email" class="am-u-sm-3 am-form-label">图片</label>
                         <div class="am-u-sm-9">
                             <a id="imageFile" class="am-icon-plus am-text-lg" style="line-height:30px;">上传图片</a>
@@ -130,7 +130,7 @@
                         </div>
                     </div>
                 }
-                <div class="am-form-group" style="@(!canEdit||Model.Paths.IsNotNullOrEmpty() ? "display:none" : "")">
+                <div class="am-form-group" style="@(!canEdit||Model.Paths.IsNotNullOrEmpty() ? " display:none":"" )">
                     <label for="user-email" class="am-u-sm-3 am-form-label">稿件图片</label>
                     <div class="am-u-sm-9" id="div_imageShow">
                         @if (Model.Paths.IsNotNullOrEmpty())
@@ -172,7 +172,7 @@
                                                     </header>
                                                     @if (item.Remark.IsNotNullOrEmpty())
                                                     {
-                                                        <div class="am-comment-bd" style="@(isFormPhone?"padding:2px;":"")">
+                                                        <div class="am-comment-bd" style="@(isFormPhone?" padding:2px;":"")">
                                                             <p class="am-text-success">意见:@(item.Remark)</p>
                                                         </div>
                                                     }
@@ -256,37 +256,37 @@
                         {
                             if (canEdit)
                             {
-                            <div class="am-form-group">
-                                <label class="am-u-sm-3 am-u-end am-form-label">发布于</label>
-                                <div class="am-u-sm-9">
-                                    @if (Model.MethodList != null && Model.MethodList.Count != 0)
-                                    {
-                                        foreach (var item in Model.MethodList)
+                                <div class="am-form-group">
+                                    <label class="am-u-sm-3 am-u-end am-form-label">发布于</label>
+                                    <div class="am-u-sm-9">
+                                        @if (Model.MethodList != null && Model.MethodList.Count != 0)
                                         {
-                                            if ((Model.PlushMethodFlag & item.Value.GetLong()) != 0)
+                                            foreach (var item in Model.MethodList)
                                             {
-                                                <label class="am-checkbox">
-                                                    <input type="checkbox" checked="checked" value="@(item.Value)" data-am-ucheck checked>@item.Text
-                                                </label>
+                                                if ((Model.PlushMethodFlag & item.Value.GetLong()) != 0)
+                                                {
+                                                    <label class="am-checkbox">
+                                                        <input type="checkbox" checked="checked" value="@(item.Value)" data-am-ucheck checked>@item.Text
+                                                    </label>
+                                                }
                                             }
                                         }
-                                    }
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="am-form-group">
-                                <label class="am-u-sm-3 am-u-end am-form-label">发布渠道</label>
-                                <div class="am-u-sm-9" id="plushFlagDiv">
-                                    @if (Model.MethodList != null && Model.MethodList.Count != 0)
-                                    {
-                                        foreach (var item in Model.MethodList)
+                                <div class="am-form-group">
+                                    <label class="am-u-sm-3 am-u-end am-form-label">发布渠道</label>
+                                    <div class="am-u-sm-9" id="plushFlagDiv">
+                                        @if (Model.MethodList != null && Model.MethodList.Count != 0)
                                         {
+                                            foreach (var item in Model.MethodList)
+                                            {
                                                 <label class="am-checkbox">
                                                     <input type="checkbox" value="@(item.Value)" data-am-ucheck />@item.Text
                                                 </label>
+                                            }
                                         }
-                                    }
+                                    </div>
                                 </div>
-                            </div>
                                 <div class="am-form-group">
                                     <div class="am-u-sm-5 am-u-sm-push-3">
                                         <button type="button" class="am-btn am-u-sm-6  am-btn-success" id="plushBtn">发布</button>
@@ -307,12 +307,21 @@
                                         </div>
                                     </div>
                                     <div class="am-form-group">
-                                        <div class="am-u-sm-3 am-u-sm-push-2">
-                                            <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
-                                        </div>
-                                        <div class="am-u-sm-3">
-                                            <button id="editorialPassBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
-                                        </div>
+                                        @if (!Model.UserID.Equals(admin.ID))
+                                        {
+                                            <div class="am-u-sm-3 am-u-sm-push-2">
+                                                <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
+                                            </div>
+                                            <div class="am-u-sm-3">
+                                                <button id="editorialPassBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="am-u-sm-3 am-u-sm-push-2">
+                                                <button id="editorialPassBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
+                                            </div>
+                                        }
                                         <div class="am-u-sm-4">
                                             <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过(到稿件审核员)</button>
                                         </div>
@@ -353,9 +362,13 @@
                                             <div class="am-u-sm-4 am-u-sm-push-2">
                                                 <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
                                             </div>
-                                            <div class="am-u-sm-4">
-                                                <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
-                                            </div>
+
+                                            @if (!Model.UserID.Equals(admin.ID))
+                                            {
+                                                <div class="am-u-sm-4">
+                                                    <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
+                                                </div>
+                                            }
                                         </div>
                                     }
                                 }
@@ -373,9 +386,12 @@
                                             <div class="am-u-sm-4 am-u-sm-push-2">
                                                 <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
                                             </div>
-                                            <div class="am-u-sm-4">
-                                                <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
-                                            </div>
+                                            @if (!Model.UserID.Equals(admin.ID))
+                                            {
+                                                <div class="am-u-sm-4">
+                                                    <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
+                                                </div>
+                                            }
                                         </div>
                                     }
                                 }
