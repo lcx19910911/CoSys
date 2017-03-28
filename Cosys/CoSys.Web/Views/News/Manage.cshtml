@@ -71,6 +71,7 @@
                     <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
                         <select name="DepartmentID" onchange="loadChildren(this)" @(!canEdit ? "disabled" : "")>
+                            <option value="-1" @(Model.DepartmentID.IsNullOrEmpty()? "selected" : "")>请选择</option>
                             @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
                             {
                                 foreach (var item in Model.DepartmentList)
@@ -354,12 +355,12 @@
                 return;
             }
             var newsTypeID = $("[name='NewsTypeID']").val();
-            if (title == "") {
+            if (newsTypeID == "") {
                 $.Nuoya.alert("请选择类型");
                 return;
             }
             var departmentID = $("[name='DepartmentID']").val();
-            if (title == "") {
+            if (departmentID == "" || departmentID == "-1") {
                 $.Nuoya.alert("请选择投递部门");
                 return;
             }
@@ -411,12 +412,12 @@
                 return;
             }
             var newsTypeID = $("[name='NewsTypeID']").val();
-            if (title == "") {
+            if (newsTypeID == "") {
                 $.Nuoya.alert("请选择类型");
                 return;
             }
             var departmentID = $("[name='DepartmentID']").val();
-            if (title == "") {
+            if (departmentID == "" || departmentID == "-1") {
                 $.Nuoya.alert("请选择投递部门");
                 return;
             }

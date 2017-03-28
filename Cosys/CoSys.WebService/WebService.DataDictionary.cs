@@ -19,7 +19,7 @@ namespace CoSys.Service
         public Dictionary<GroupCode, Dictionary<string, DataDictionary>> Cache_Get_DataDictionary()
         {
 
-            return CacheHelper.Get<Dictionary<GroupCode, Dictionary<string, DataDictionary>>>(dictionaryKey, () =>
+            return CacheHelper.Get<Dictionary<GroupCode, Dictionary<string, DataDictionary>>>(dictionaryKey,CacheTimeOption.OneYear, () =>
             {
                 var listss = new List<string>();
                 using (var db = new DbRepository())

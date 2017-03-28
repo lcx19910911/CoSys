@@ -179,7 +179,7 @@ namespace CoSys.Service
             {
                 if (id.IsNotNullOrEmpty())
                 {
-                    db.Department.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&!string.IsNullOrEmpty(x.ParentID)&&x.ParentID.Equals(id)).ToList().ForEach(x =>
+                    db.Department.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&!string.IsNullOrEmpty(x.ParentID)&&x.ParentID.Equals(id)).OrderBy(x=>x.Flag).ToList().ForEach(x =>
                     {
                         list.Add(new SelectItem()
                         {
@@ -191,7 +191,7 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    db.Department.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&string.IsNullOrEmpty(x.ParentID)).ToList().ForEach(x =>
+                    db.Department.AsQueryable().AsNoTracking().Where(x => !x.IsDelete&&string.IsNullOrEmpty(x.ParentID)).OrderBy(x => x.Flag).ToList().ForEach(x =>
                     {
                         list.Add(new SelectItem()
                         {

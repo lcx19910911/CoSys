@@ -205,9 +205,15 @@ namespace CoSys.Service
                                 if (x.UpdateAdminID.IsNotNullOrEmpty())
                                 {
                                     if (x.UpdateAdminID.Equals(admin.ID))
+                                    {
                                         x.StateStr = "已退回";
+                                        x.RoleName = "已审核";
+                                    }
                                     else
+                                    {
                                         x.StateStr = "上一节点未审核";
+                                        x.RoleName = "未审核";
+                                    }
                                 }
                                 else
                                 {
@@ -420,6 +426,7 @@ namespace CoSys.Service
                 {
                     model.SubmitTime = DateTime.Now;
                     model.State = NewsState.WaitAudit;
+
                     if (Client.LoginAdmin != null&&Client.LoginUser==null)
                     {
                         var role = db.Role.Find(Client.LoginAdmin.RoleID);
@@ -437,10 +444,14 @@ namespace CoSys.Service
                                 {
                                     if (role.AuditState == NewsAuditState.EditorialAudit)
                                     {
-                                        model.AuditState = NewsAuditState.EditorAudit;
+                                        model.AuditState = NewsAuditState.LastAudit;
                                     }
                                     else
-                                        model.AuditState = (NewsAuditState)(role.AuditState.GetInt() - 1);
+                                    {
+                                        model.State = NewsState.Pass;
+                                        model.AuditState = NewsAuditState.LastAudit;
+                                        model.UpdateAdminID = Client.LoginAdmin.ID;
+                                    }
                                 }
                                 else
                                 {
@@ -454,18 +465,27 @@ namespace CoSys.Service
                         }
                         else
                         {
-                            if (role.AuditState != NewsAuditState.EditorAudit)
+                            if (departmentList.Contains(newsDeparmentIdList[0]))
                             {
-                                if (role.AuditState == NewsAuditState.LastAudit)
+                                if (role.AuditState != NewsAuditState.EditorAudit)
+                                {
+                                    if (role.AuditState == NewsAuditState.LastAudit)
+                                    {
+                                        model.State = NewsState.Pass;
+                                        model.UpdateAdminID = Client.LoginAdmin.ID;
+                                        model.AuditState = NewsAuditState.LastAudit;
+                                    }
+                                    else
+                                        model.AuditState = NewsAuditState.LastAudit;
+                                }
+                                else
                                 {
                                     model.AuditState = NewsAuditState.MinisterAudit;
                                 }
-                                else
-                                    model.AuditState = NewsAuditState.EditorAudit;
                             }
                             else
                             {
-                                model.AuditState = NewsAuditState.MinisterAudit;
+                                model.AuditState = NewsAuditState.EditorAudit;
                             }
                         }
                     }
@@ -533,10 +553,15 @@ namespace CoSys.Service
                                             {
                                                 if (role.AuditState == NewsAuditState.EditorialAudit)
                                                 {
-                                                    oldEntity.AuditState = NewsAuditState.EditorAudit;
+                                                    oldEntity.AuditState = NewsAuditState.LastAudit;
                                                 }
                                                 else
-                                                    oldEntity.AuditState = (NewsAuditState)(role.AuditState.GetInt() - 1);
+                                                {
+                                                    oldEntity.State = NewsState.Pass;
+                                                    oldEntity.AuditState = NewsAuditState.LastAudit;
+                                                    oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
+                                                }
+
                                             }
                                             else
                                             {
@@ -550,18 +575,31 @@ namespace CoSys.Service
                                     }
                                     else
                                     {
-                                        if (role.AuditState != NewsAuditState.EditorAudit)
+
+                                        if (departmentList.Contains(newsDeparmentIdList[0]))
                                         {
-                                            if (role.AuditState == NewsAuditState.LastAudit)
+
+                                            if (role.AuditState != NewsAuditState.EditorAudit)
+                                            {
+                                                if (role.AuditState == NewsAuditState.MinisterAudit)
+                                                {
+                                                    oldEntity.AuditState = NewsAuditState.LastAudit;
+                                                }
+                                                else
+                                                {
+                                                    oldEntity.State = NewsState.Pass;
+                                                    oldEntity.AuditState = NewsAuditState.LastAudit;
+                                                    oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
+                                                }
+                                            }
+                                            else
                                             {
                                                 oldEntity.AuditState = NewsAuditState.MinisterAudit;
                                             }
-                                            else
-                                                oldEntity.AuditState = NewsAuditState.EditorAudit;
                                         }
                                         else
                                         {
-                                            oldEntity.AuditState = NewsAuditState.MinisterAudit;
+                                            oldEntity.AuditState = NewsAuditState.EditorAudit;
                                         }
                                     }
                                 }
@@ -915,7 +953,7 @@ namespace CoSys.Service
 
                 news.UpdateAdminID = admin.ID;
                 news.State = NewsState.Plush;
-                news.PlushMethodFlag = news.PlushMethodFlag;
+                news.PlushMethodFlag = channelFlag;
                 //邮箱头盖
                 Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0 && x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
                   {

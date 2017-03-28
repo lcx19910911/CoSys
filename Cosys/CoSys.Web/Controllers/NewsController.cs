@@ -43,8 +43,6 @@ namespace CoSys.Web.Controllers
                 model = new News();
                 model.ChildrenDepartmentList = new List<SelectItem>();
                 model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
-                if(model.DepartmentList!=null&& model.DepartmentList.Count>0)
-                model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentList[0].Value);
             }
             else
             {
@@ -84,8 +82,6 @@ namespace CoSys.Web.Controllers
                 model = new News();
                 model.ChildrenDepartmentList = new List<SelectItem>();
                 model.DepartmentList = WebService.Get_DepartmentSelectItem(null);
-                if (model.DepartmentList != null && model.DepartmentList.Count > 0)
-                    model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentList[0].Value);
             }
             else
             {
@@ -118,6 +114,7 @@ namespace CoSys.Web.Controllers
                     {
                         return View("Admin");
                     }
+                    ViewBag.Role = role;
                     //审核中
                     if (model.State == NewsState.WaitAudit)
                     {

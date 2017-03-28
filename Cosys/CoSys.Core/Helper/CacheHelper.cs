@@ -819,6 +819,16 @@ namespace CoSys.Core
         /// <summary>
         /// 半天(12小时)
         /// </summary>
-        HalfDay = 720
+        HalfDay = 720,
+
+        /// <summary>
+        /// 半天(12小时)
+        /// </summary>
+        OneMonth = 720*2*31,
+
+        /// <summary>
+        /// 半天(12小时)
+        /// </summary>
+        OneYear= 720 * 2 * 31*12,
     }
 }
