@@ -1017,7 +1017,7 @@ namespace CoSys.Service
                     var provinceName = "";
                     var cityList = new List<SelectItem>(); var countyList = new List<SelectItem>();
                     var userList = db.User.Where(x=>!string.IsNullOrEmpty(x.ProvoniceCode)&&x.ProvoniceCode==province.ToString()).ToList();
-                    var newsQuery = db.News.Where(x=>!x.IsDelete&&(x.State==NewsState.Pass||x.State==NewsState.Plush));
+                    var newsQuery = db.News.AsQueryable();
                     if (methodFlag != 0 && methodFlag != -1)
                         newsQuery = newsQuery.Where(x => (methodFlag & x.MethodFlag) != 0);
                     var newsList = newsQuery.ToList();
