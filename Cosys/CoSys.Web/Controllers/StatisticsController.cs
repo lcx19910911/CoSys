@@ -19,9 +19,9 @@ namespace CoSys.Web.Controllers
             return View(new Tuple<List<SelectItem>, List<SelectItem>>(WebService.Get_AreaList(""), WebService.Get_DataDictorySelectItem(GroupCode.Channel)));
         }
 
-        public ActionResult GetAreaList(int? province,long methodFlag)
+        public ActionResult GetAreaList(int? province,long methodFlag=0,bool isArea=true)
         {
-            return JResult(WebService.Get_NewsStatisticsArea(province, methodFlag));
+            return JResult(WebService.Get_NewsStatisticsArea(province, methodFlag, isArea));
         }
 
 

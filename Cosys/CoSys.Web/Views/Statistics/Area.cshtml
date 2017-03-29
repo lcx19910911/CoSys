@@ -134,28 +134,23 @@
                 $("#searchDomain input").val("");
             }
             function Search() {
-                var street = $("[name='street']").val();
-                if (street && street != "" && street != "-1" && street != "0") {
-                    window.location.href = "/user/index?type=3&areaId=" + street;
-                }
-                else {
-                    $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), city: $("[name='city']").val(), county: $("[name='county']").val(), methodFlag: $("[name='methodFlag']").val() }, function (json) {
+                    $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), methodFlag: $("[name='methodFlag']").val() }, function (json) {
                         $("tbody").html("");
                         $("#searchName").text(json.Name + " 总投稿数:" + json.AllCount + " 通过数："+json.PassCount);
                         $(json.List).each(function (index, item) {
-                            $("tbody").append("<tr><td>" + (index + 1) + "</td><td class='am-text-success'>" + item.Name + "</td> <td>总投稿数：" + item.AllCount + "</td> <td>通过数：" + item.PassCount + "</td> <td><a href='" + item.Link + "'>查看明细</a></td> </tr>");
+                            $("tbody").append("<tr><td>" + (index + 1) + "</td><td class='am-text-success'>" + item.Name + "</td> <td>总投稿数：" + item.AllCount + "</td> <td>通过数：" + item.PassCount + "</td> <td><a href='" + item.NewsLink + "'>查看明细</a></td> </tr>");
                             if (item.Childrens.length > 0) {
                                 $(item.Childrens).each(function (y, obj) {
-                                    $("tbody").append("<tr><td>" + (index + 1) + "_" + (y + 1) + "</td><td class='am-text-warning'>" + obj.Name + "</td> <td>总投稿数：" + obj.AllCount + "</td> <td>通过数：" + obj.PassCount + "</td><td><a href='" + obj.Link + "'>查看明细</a> </td></tr>");
+                                    $("tbody").append("<tr><td>" + (index + 1) + "_" + (y + 1) + "</td><td class='am-text-warning'>" + obj.Name + "</td> <td>总投稿数：" + obj.AllCount + "</td> <td>通过数：" + obj.PassCount + "</td><td><a href='" + obj.NewsLink + "'>查看明细</a> </td></tr>");
                                     $(obj.Childrens).each(function (z, temp) {
-                                        $("tbody").append("<tr><td>" + (index + 1) + "_" + (y + 1) + "_" + (z + 1) + "</td><td >" + temp.Name + "</td> <td>总投稿数：" + temp.AllCount + "</td> <td>通过数：" + temp.PassCount + "</td><td><a href='" + temp.Link + "'>查看明细</a> </td></tr>");
+                                        $("tbody").append("<tr><td>" + (index + 1) + "_" + (y + 1) + "_" + (z + 1) + "</td><td >" + temp.Name + "</td> <td>总投稿数：" + temp.AllCount + "</td> <td>通过数：" + temp.PassCount + "</td><td><a href='" + temp.NewsLink + "'>查看明细</a> </td></tr>");
                                     });
                                 });
                             }
                         });
                     });
-                }
             }
+
             Search();
             $.Nuoya.action("/DataDictionary/GetSelectItem", { group: 2 }, function (json) {
                 $(json).each(function () {

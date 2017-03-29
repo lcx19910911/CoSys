@@ -15,30 +15,15 @@
             <div class="am-u-lg-12">
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">省份</span>
-                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,1)">
-                        <option value="-1" selected>请选择</option>
+                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         @if (Model != null && Model.Count > 0)
                         {
                             foreach (var item in Model)
                             {
-                                <option value="@item.Value">@item.Text</option>
+                                <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
                             }
                         }
                     </select>
-                </div>
-            </div>
-
-            <div class="am-u-lg-12 am-margin-top-sm">
-                <div class="am-input-group am-input-group-sm">
-                    <span class="am-input-group-label am-margin-left-sm">市</span>
-                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)"></select>
-                </div>
-            </div>
-
-            <div class="am-u-lg-12 am-margin-top-sm">
-                <div class="am-input-group am-input-group-sm">
-                    <span class="am-input-group-label am-margin-left-sm">县/区</span>
-                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)"></select>
                 </div>
             </div>
 
@@ -56,20 +41,15 @@
             <div class="am-u-lg-8">
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-u-lg-2">省份</span>
-                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,1)">
-                        <option value="-1" selected>请选择</option>
+                    <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         @if (Model != null && Model.Count > 0)
                         {
                             foreach (var item in Model)
                             {
-                                <option value="@item.Value">@item.Text</option>
+                                <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
                             }
                         }
                     </select>
-                    <span class="am-input-group-label am-margin-left-sm">市</span>
-                    <select name="city" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,2)"></select>
-                    <span class="am-input-group-label am-margin-left-sm">县/区</span>
-                    <select name="county" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" onchange="loadArea(this,3)"></select>
                     <span class="am-input-group-btn am-margin-left-sm">
                         <button class="am-btn am-btn-default" onclick="Search()" type="button">搜索</button>
                         <button class="am-btn am-btn-default" onclick="Export()" type="button">导出</button>
@@ -81,7 +61,27 @@
     </div>
 </div>
 
-<div class="grid_container">
+@*<div class="am am-margin-top am-margin-left am-margin-right">
+    <span class="am-input-group-label am-margin-left-sm" id="searchName"></span>
+</div>*@
+<div class="am-g am-margin-top-lg" id="resultDiv">
+    <div class="am-g">
+        <div class="am-u-lg-12">
+            <div class="am-input-group am-input-group-sm">
+                <span class="am-input-group-label ">姓名：</span>
+                <input type="text" class="am-form-field" placeholder="按姓名搜索" style="width:80px;" name="name" ;="">
+
+                <span class="am-input-group-label   am-margin-left-sm">身份证：</span>
+                <input type="text" class="am-form-field" placeholder="按身份证搜索" style="width:100px;" name="no" ;="">
+
+                <span class="am-input-group-label   am-margin-left-sm">手机：</span>
+                <input type="text" class="am-form-field" placeholder="按手机号码搜索" style="width:80px;" name="mobile" ;="">
+
+                </div>
+        </div>
+    </div>
+</div>
+@*<div class="grid_container">
     <div class="am-g am-margin-top-lg">
         <div class="am-u-lg-10">
             <table class="am-table am-table-compact am-table-hover table-main am-table-bordered">
@@ -90,14 +90,15 @@
                         <th>编号</th>
                         <th id="areaName">地区名称</th>
                         <th>注册总数</th>
+                        <th>查看明细</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @*<tr>
+                    <tr>
                             <td>@inde</td>
                             <td >@item.Name</td>
                             <td>@item.AllCount</td>
-                        </tr>*@
+                        </tr>
                 </tbody>
 
             </table>
@@ -106,7 +107,7 @@
         </div>
     </div>
 
-</div>
+</div>*@
 @section scripts
 {
     <script>
@@ -117,13 +118,46 @@
         }
 
         function Search() {
-            $.Nuoya.action("/Statistics/GetRegisterList", { province: $("[name='province']").val(), city: $("[name='city']").val(), county: $("[name='county']").val() }, function (json) {
-                $("tbody").html("");
-                $(json).each(function (index, item) {
-                    $("tbody").append("<tr><td>" + (index + 1) + "</td><td>" + item.Name + "</td> <td>" + item.AllCount + "</td>  </tr>");
+            $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), isArea:true }, function (json) {
+                $("#resultDiv").html("");
+                $("#searchName").text(json.Name + " 注册总数:" + json.PeopleCount);
+                var str = "";
+                $(json.List).each(function (index, item) {
+                    str += "<div class='am-g'><div class='am-u-lg-4 am-u-end'><div class='am-input-group am-input-group-sm'><span class='am-input-group-label am-margin-left-sm'>" + item.Name + "</span><span  class='am-text-warning'>注册总数：" + item.PeopleCount + "</span> <a href='" + item.UserLink + "'>查看明细</a>   </div>  </div>  </div>";
+
+                   // $("#searchName").append('<div class="am-g">');
+                    if (item.Childrens.length > 0) {
+
+                        $(item.Childrens).each(function (y, obj) {
+                            if(y%3==0||y==0)
+                            {
+                                str +="<div class='am-g'><div class='am-u-lg-12'><div class='am-input-group am-input-group-sm'>";
+                            }
+                            str +="<span class='am-input-group-label am-margin-left-sm'>" + obj.Name + "</span><span  class='am-text-warning'>注册总数：" + obj.PeopleCount + "</span> <a href='" + obj.UserLink + "'>查看明细</a>";
+                            if (y % 3 == 0 || y == 0)
+                            {
+                                str +='</div></div></div>';
+                            }
+                            if (obj.Childrens.length > 0)
+                            {
+                                $(obj.Childrens).each(function (z, temp) {
+                                    if (z % 3 == 0 || z == 0) {
+                                        str += "<div class='am-g'><div class='am-u-lg-12'><div class='am-input-group am-input-group-sm'>";
+                                    }
+                                    str += "<span class='am-input-group-label am-margin-left-sm'>" + temp.Name + "</span><span  class='am-text-warning'>注册总数：" + temp.PeopleCount + "</span> <a href='" + temp.UserLink + "'>查看明细</a>";
+                                    if (z % 3 == 0 || z == 0) {
+                                        str += '</div></div></div>';
+                                    }
+                                });
+                            }
+                        });
+                    }
                 });
+
+                $("#resultDiv").append(str);
             });
         }
+
         Search();
         function loadArea(obj, i) {
             var thatObj = $(obj);

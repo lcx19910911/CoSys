@@ -1010,7 +1010,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public StatisticsTotal Get_NewsStatisticsArea(int? province,long methodFlag)
+        public StatisticsTotal Get_NewsStatisticsArea(int? province,long methodFlag,bool isArea=true)
         {
 
             StatisticsTotal returnModel = new StatisticsTotal();
@@ -1055,7 +1055,8 @@ namespace CoSys.Service
                         AllCount = newsList.Where(y => noUserIdList.Select(z => z.ID).ToList().Contains(y.UserID)).Count(),
                         PassCount = newsList.Where(y => noUserIdList.Select(z => z.ID).ToList().Contains(y.UserID) && (y.State == NewsState.Pass || y.State == NewsState.Plush)).Count(),
                         PeopleCount = noUserIdList.Count,
-                        Link = $"/user/index?type=0&areaId={province}",
+                        UserLink = $"/user/index?type=0&areaId={province}",
+                        NewsLink = $"/news/index?type=0&areaId={province}",
                         Childrens =new List<StatisticsModel>()
                     });
                     cityList.ForEach(x =>
@@ -1070,7 +1071,8 @@ namespace CoSys.Service
                                 PassCount = newsList.Where(y => userIdList.Select(z => z.ID).ToList().Contains(y.UserID) && (y.State == NewsState.Pass || y.State == NewsState.Plush)).Count(),
                                 PeopleCount = userIdList.Count,
                                 AreaId = x.Value,
-                                Link = $"/user/index?type=1&areaId={x.Value}",
+                                UserLink = $"/user/index?type=1&areaId={province}",
+                                NewsLink = $"/news/index?type=1&areaId={province}",
                                 Childrens = countyList.Where(z => z.ParentKey.Trim().Equals(x.Value) && z.Value != "0").ToList().Select(z =>
                                     {
                                         return new Core.StatisticsModel()
@@ -1079,12 +1081,16 @@ namespace CoSys.Service
                                             AllCount = newsList.Where(u => userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID)).Count(),
                                             PassCount = newsList.Where(u => userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID) && (u.State == NewsState.Pass || u.State == NewsState.Plush)).Count(),
                                             PeopleCount = userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).Count(),
-                                            Link = $"/user/index?type=2&areaId={z.Value}",
+                                            UserLink = $"/user/index?type=2&areaId={z.Value}",
+                                            NewsLink = $"/news/index?type=2&areaId={z.Value}",
                                             AreaId = z.Value
                                         };
                                     }).ToList()
                             };
-                            staticModel.Childrens = staticModel.Childrens.Where(y => y.AllCount != 0).ToList();
+                            if(isArea)
+                                staticModel.Childrens = staticModel.Childrens.Where(y => y.AllCount != 0).ToList();
+                            else
+                                staticModel.Childrens = staticModel.Childrens.Where(y => y.PeopleCount != 0).ToList();
                             if (staticModel.Childrens.Count > 0)
                             {
                                 staticModel.Childrens.ForEach(y =>
@@ -1097,12 +1103,16 @@ namespace CoSys.Service
                                              AllCount = newsList.Where(u => userIdList.Where(t => t.StreetCode.IsNotNullOrEmpty() && t.StreetCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID)).Count(),
                                              PassCount = newsList.Where(u => userIdList.Where(t => t.StreetCode.IsNotNullOrEmpty() && t.StreetCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID) && (u.State == NewsState.Pass || u.State == NewsState.Plush)).Count(),
                                              PeopleCount = userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).Count(),
-                                             Link = $"/user/index?type=3&areaId={z.Value}",
+                                             UserLink = $"/user/index?type=3&areaId={z.Value}",
+                                             NewsLink = $"/news/index?type=3&areaId={z.Value}",
                                              AreaId = z.Value
                                          };
                                      }).ToList();
 
-                                    y.Childrens = y.Childrens.Where(z => z.AllCount != 0).ToList();
+                                    if (isArea)
+                                        y.Childrens = y.Childrens.Where(z => z.AllCount != 0).ToList();
+                                    else
+                                        y.Childrens = y.Childrens.Where(z => z.PeopleCount != 0).ToList();
                                 });
                             }
                             returnModel.List.Add(staticModel);
