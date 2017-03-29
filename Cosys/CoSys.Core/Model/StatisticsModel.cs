@@ -16,7 +16,10 @@ namespace CoSys.Core
         public int AllCount { get; set; }
         public int PassCount { get; set; }
 
-        public string Link { get; set; }
+        public string UserLink { get; set; }
+
+
+        public string NewsLink { get; set; }
 
         public int PeopleCount { get; set; }
 
