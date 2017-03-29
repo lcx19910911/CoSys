@@ -212,7 +212,7 @@
                     }
                     else if (Model.State == NewsState.Plush)
                     {
-                        <div class="am-form-group">
+                        @*<div class="am-form-group">
                             <label class="am-u-sm-3 am-u-end am-form-label">发布于</label>
                             <div class="am-u-sm-9">
                                 @if (Model.MethodList != null && Model.MethodList.Count != 0)
@@ -234,7 +234,7 @@
                                     }
                                 }
                             </div>
-                        </div>
+                        </div>*@
                     }
                     else if (Model.State == NewsState.WaitAudit|| Model.State == NewsState.Pass)
                     {

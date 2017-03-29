@@ -193,7 +193,10 @@ namespace CoSys.Service
                                         }
                                     }
                                     else
+                                    {
                                         x.StateStr = "已审核";
+                                        x.RoleName = "已审核";
+                                    }
                                 }
                                 else
                                 {
@@ -977,11 +980,13 @@ namespace CoSys.Service
                 news.State = NewsState.Plush;
                 news.PlushMethodFlag = channelFlag;
                 //邮箱头盖
+                var plushMethod = "";
                 Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0 && x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
                   {
+                      plushMethod +=" "+x.Value;
                       var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, "");
                   });
-                Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, msg);
+                Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
                 if (db.SaveChanges() > 0)
                 {
 
