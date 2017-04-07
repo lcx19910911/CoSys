@@ -13,5 +13,7 @@ namespace CoSys.Core.Model
 
         public int AllCount { get; set; }
         public int PassCount { get; set; }
+
+        public int PeopleCount { get; set; }
     }
 }

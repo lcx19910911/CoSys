@@ -47,7 +47,7 @@
                         <input type="text" name="Title" placeholder="标题" maxlength="64" value="@(Model.Title)" @(!canEdit ? "readonly" : "" )>
                     </div>
                 </div>
-                <div class="am-form-group">
+                <div class="am-form-group" style="display:none;">
                     <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
                         <select name="NewsTypeID" @(!canEdit ? "disabled": "" )>
@@ -133,7 +133,7 @@
                         </div>
                     </div>
                 }
-                <div class="am-form-group" style="@(!canEdit||Model.Paths.IsNotNullOrEmpty() ? " display:none":"" )">
+                <div class="am-form-group" style="@(Model.Paths.IsNullOrEmpty() ? "display:none" : "")">
                     <label for="user-email" class="am-u-sm-3 am-form-label">稿件图片</label>
                     <div class="am-u-sm-9" id="div_imageShow">
                         @if (Model.Paths.IsNotNullOrEmpty())
@@ -142,7 +142,7 @@
                             foreach (var item in Model.Paths.Split(','))
                             {
                                 <div class="am-u-lg-4">
-                                    <a class="am-close am-icon-times am-u-sm-1"></a><img class="am-u-lg-3" src="@(item)" style="width:140px;" /><hr />
+                                    <a class="am-close am-icon-times am-u-sm-1" style="opacity:1"><img class="am-u-lg-3" src="@(item)" style="width:140px;" /></a><hr />
                                 </div>
                             }
                         }
@@ -640,34 +640,41 @@
         });
 
         $("#saveBtn,#submitBtn").on("click", function () {
-            var id = '@(Model.ID)';
+             var id = '@(Model.ID)';
             var title = $("[name='Title']").val();
             if (title == "") {
                 $.Nuoya.alert("请填写标题");
                 return;
             }
             var newsTypeID = $("[name='NewsTypeID']").val();
-            if (newsTypeID == "") {
-                $.Nuoya.alert("请选择类型");
-                return;
-            }
-            var departmentID = $("[name='DepartmentID']").val();
-            if (departmentID == "" || departmentID == "-1") {
-                $.Nuoya.alert("请选择投递部门");
-                return;
-            }
-            var children = $("[name='ChildrenDepartmentID']").val();
             var penName = $("[name='PenName']").val();
-
-            if (!children == false && children != "") {
-                departmentID += ";" + children;
+            var departmentFlag = "";
+            var departmentID = $("[name='DepartmentID']").val();
+            if (id == "") {
+                departmentFlag = $("[name='DepartmentFlag']").val();
+                if (departmentFlag == "0")
+                {
+                    $.Nuoya.alert("请选择投递部门");
+                    return;
+                }
+            }
+            else {
+                if (departmentID == "" || departmentID == "-1") {
+                    $.Nuoya.alert("请选择投递部门");
+                    return;
+                }
+                var children = $("[name='ChildrenDepartmentID']").val();
+                var penName = $("[name='PenName']").val();
+                if (!children == false && children != "") {
+                    departmentID += ";" + children;
+                }
             }
             var content = "";
             var imgAry = new Array();
             var isPhone = '@(isFormPhone?1:0)';
             var paths = "";
             if (isPhone == "1") {
-                content = $("[name='Content']").text();
+                content = $("[name='Content']").val();
                 $("#div_imageShow img").each(function () {
                     imgAry.push($(this).prop("src"));
                 })
@@ -692,9 +699,10 @@
                 Paths: paths,
                 Content: content,
                 isAduit: isAduit,
+                departmentFlag: departmentFlag
             }, function (data) {
                 if (!data.ErrorDesc) {
-                    $.Nuoya.alert("保存成功");
+                    $.Nuoya.alert(isAduit ? "投稿成功" : "保存成功");
                     window.location.href = "/news/admin";
                 }
                 else

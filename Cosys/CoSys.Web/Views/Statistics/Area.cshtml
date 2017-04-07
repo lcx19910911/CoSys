@@ -14,6 +14,12 @@
         {
             <div class="am-u-lg-12">
                 <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">会员名称</span>
+                    <input type="text" class="am-form-field" placeholder="按会员名称搜索"  name="name" ;>
+                </div>
+            </div>
+            <div class="am-u-lg-12">
+                <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">省份</span>
                     <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         <option value="-1">请选择</option>
@@ -21,13 +27,19 @@
                         {
                             foreach (var item in Model.Item1)
                             {
-                                <option value="@item.Value" @(item.Value=="16"? "selected" : "")>@item.Text</option>
+                                <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
                             }
                         }
                     </select>
                 </div>
             </div>
-
+            <div class="am-u-lg-12">
+                <div class="am-input-group am-input-group-sm">
+                    <span class="am-input-group-label am-margin-left-sm">部门</span>
+                    <input type="hidden" name="DepartmentFlag" />
+                    <input type="text" class="am-form-field" placeholder="按选择部门" name="DepartmentFlagSelect" />
+                </div>
+            </div>
             <div class="am-u-lg-12 am-margin-top-sm">
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">渠道</span>
@@ -57,7 +69,9 @@
         {
             <div class="am-u-lg-12">
                 <div class="am-input-group am-input-group-sm">
-                    <span class="am-input-group-label">省份</span>
+                    <span class="am-input-group-label">会员名称：</span>
+                    <input type="text" class="am-form-field" placeholder="按会员名称搜索" style="width:100px;" name="name" ;>
+                    <span class="am-input-group-label  am-margin-left-sm">省份</span>
                     <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;" >
                         <option value="-1">请选择</option>
                         @if (Model.Item1 != null && Model.Item1.Count > 0)
@@ -68,7 +82,9 @@
                             }
                         }
                     </select>
-                 
+                    <span class="am-input-group-label am-margin-left-sm">部门</span>
+                    <input type="hidden" name="DepartmentFlag" /> 
+                    <input type="text" class="am-form-field" placeholder="按选择部门" name="DepartmentFlagSelect" style="width:300px;" />
                     <span class="am-input-group-label am-margin-left-sm">渠道</span>
                     <select name="methodFlag" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
                         <option value="-1" selected>请选择</option>
@@ -81,6 +97,10 @@
                         }
                     </select>
 
+                    <span class="am-input-group-label  am-margin-left-sm">搜索日期</span>
+                    <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeStart" readonly style="width:120px;">
+                    <span class="am-input-group-label"> - </span>
+                    <input type="text" class="am-form-field" placeholder="请选择日期" name="searchTimeEnd" readonly style="width:120px;">
                     <span class="am-input-group-btn am-margin-left-sm">
                         <button class="am-btn am-btn-default" onclick="Search()" type="button">搜索</button>
                         <button class="am-btn am-btn-default" onclick="Export()" type="button">导出</button>
@@ -95,59 +115,58 @@
 <div class="am am-margin-top am-margin-left am-margin-right">
     <span class="am-input-group-label am-margin-left-sm" id="searchName"></span>
 </div>
-    <div class="grid_container">
-        <div class="am-g am-margin-top-lg">
-            <div class="am-u-lg-10 ">
-                <table class="am-table am-table-compact am-table-hover table-main am-table-bordered">
-                    <thead>
-                        <tr>
-                            <th>编号</th>
-                            <th id="areaName">地区名称</th>
-                            <th>总投稿数</th>
-                            <th>总采纳数</th>
-                            <th>查看明细</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @*<tr>
-                                <td>@inde</td>
-                                <td >@item.Name</td>
-                                <td>@item.AllCount</td>
-                                <td>@item.PassCount</td>
-                            </tr>*@
-                    </tbody>
 
-                </table>
-
-                <a></a>
-            </div>
-        </div>
-
-    </div>
+<div id="resultDiv">
+</div>
     @section scripts
 {
         <script>
             var type = 1;
-            $('[name=searchTime]').datepicker({ format: 'yyyy-mm', viewMode: 'years', minViewMode: 'months' });
+            $("[name='DepartmentFlagSelect']").ztreeSelect($("[name='DepartmentFlag']"), "/Department/GetZTreeChildren", 0, true, true);
+
+            $('[name=searchTimeStart]').datepicker({ format: 'yyyy-mm-dd' });
+            $('[name=searchTimeEnd]').datepicker({ format: 'yyyy-mm-dd' });
 
             function ClearFilter() {
                 $("#searchDomain input").val("");
             }
             function Search() {
-                    $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), methodFlag: $("[name='methodFlag']").val() }, function (json) {
-                        $("tbody").html("");
-                        $("#searchName").text(json.Name + " 总投稿数:" + json.AllCount + " 通过数："+json.PassCount);
+                $.Nuoya.action("/Statistics/GetAreaList", { province: $("[name='province']").val(), methodFlag: $("[name='methodFlag']").val(), searchTimeEnd: $('[name=searchTimeEnd]').val(), searchTimeStart: $('[name=searchTimeStart]').val(), name: $("[name='name']").val(), departmentFlag: $("[name='DepartmentFlag']").val() }, function (json) {
+                        $("#resultDiv").html("");
+                        var str = "";
+                        var allCount = 0;
+                        var passCount = 0;
                         $(json.List).each(function (index, item) {
-                            $("tbody").append("<tr><td>" + (index + 1) + "</td><td class='am-text-success'>" + item.Name + "</td> <td>总投稿数：" + item.AllCount + "</td> <td>通过数：" + item.PassCount + "</td> <td><a href='" + item.NewsLink + "'>查看明细</a></td> </tr>");
+                            str += "<div class='am-g  am-margin-top am-margin-left am-margin-right'><span class='am-input-group-label am-margin-left-sm am-text-left'><strong>" + item.Name + "</strong> 总投稿数：" + item.AllCount + "通过数：" + item.PassCount + " <a href='" + item.NewsLink + "'>查看明细</a></span>   </div>";
+                            allCount += item.AllCount;
+                            passCount += item.PassCount;
                             if (item.Childrens.length > 0) {
+
                                 $(item.Childrens).each(function (y, obj) {
-                                    $("tbody").append("<tr><td>" + (index + 1) + "_" + (y + 1) + "</td><td class='am-text-warning'>" + obj.Name + "</td> <td>总投稿数：" + obj.AllCount + "</td> <td>通过数：" + obj.PassCount + "</td><td><a href='" + obj.NewsLink + "'>查看明细</a> </td></tr>");
-                                    $(obj.Childrens).each(function (z, temp) {
-                                        $("tbody").append("<tr><td>" + (index + 1) + "_" + (y + 1) + "_" + (z + 1) + "</td><td >" + temp.Name + "</td> <td>总投稿数：" + temp.AllCount + "</td> <td>通过数：" + temp.PassCount + "</td><td><a href='" + temp.NewsLink + "'>查看明细</a> </td></tr>");
-                                    });
+                                    str += "<div class='am-g  am-margin-top am-margin-left-lg am-margin-right'>";
+                                    str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-warning'>" + obj.Name + "</strong> 总投稿数：" + obj.AllCount + "通过数：" + obj.PassCount + "<a href='" + obj.NewsLink + "'>查看明细</a></span>";
+                                    str += '</div>';
+                                    allCount += obj.AllCount;
+                                    passCount += obj.PassCount;
+                                    if (obj.Childrens.length > 0) {
+                                        $(obj.Childrens).each(function (z, temp) {
+                                            if (z % 3 == 0 || z == 0) {
+                                                str += "<div class='am-g  am-margin-top am-margin-left-lg am-margin-right'><div class='am-u-lg-12 am-u-end'>";
+                                            }
+                                            allCount += temp.AllCount;
+                                            passCount += temp.PassCount;
+                                            str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-success'>" + temp.Name + "</strong> 总投稿数：" + temp.AllCount + "通过数：" + temp.PassCount + "<a href='" + temp.NewsLink + "'>查看明细</a></span>";
+                                            if ((z % 3 == 0 && z != 0) || z == obj.Childrens.length - 1) {
+                                                str += '</div></div>';
+                                            }
+                                        });
+                                    }
                                 });
                             }
                         });
+
+                        $("#searchName").text(json.Name + " 总投稿数:" + allCount + " 通过数：" + passCount);
+                        $("#resultDiv").append(str);
                     });
             }
 
@@ -196,7 +215,7 @@
             }
 
             function Export() {
-                var url = "/Statistics/ExportAreaPageList?province=" + $("[name='province']").val() + "&city=" + $("[name='city']").val() + "&county=" + $("[name='county']").val() + "&methodFlag=" + $("[name='methodFlag']").val();
+                var url = "/Statistics/ExportAreaPageList?province=" + $("[name='province']").val() + "&name=" + $("[name='name']").val() + "&searchTimeStart=" + $("[name='searchTimeStart']").val() + "&searchTimeEnd=" + $("[name='searchTimeEnd']").val() + "&methodFlag=" + $("[name='methodFlag']").val()+"&departmentFlag"+$("[name='DepartmentFlag']").val();
                 window.open(url);
             }
 

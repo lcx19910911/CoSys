@@ -21,6 +21,11 @@ namespace CoSys.Web.Controllers
                 return RedirectToAction("Login", "Account");
             return View();
         }
+
+        public ActionResult Statistics()
+        {
+            return View();
+        }
         public ActionResult Admin()
         {
             if (Client.LoginAdmin == null)
@@ -152,7 +157,7 @@ namespace CoSys.Web.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [ValidateInput(false)]
-        public JsonResult Add(News model,bool isAduit=true)
+        public JsonResult Add(News model,bool isAduit=true,long departmentFlag=0)
         {
             ModelState.Remove("ID");
             ModelState.Remove("CreatedTime");
@@ -160,10 +165,10 @@ namespace CoSys.Web.Controllers
             ModelState.Remove("UserID");
             ModelState.Remove("MethodFlag");
             ModelState.Remove("State");
-            
+            ModelState.Remove("DepartmentID");
             if (ModelState.IsValid)
             {
-                var result = WebService.Add_News(model, isAduit);
+                var result = WebService.Add_News(model, isAduit, departmentFlag);
                 return JResult(result);
             }
             else
@@ -196,11 +201,6 @@ namespace CoSys.Web.Controllers
             }
         }
 
-
-        public ActionResult Statistics()
-        {
-            return View();
-        }
 
         public ActionResult ExportStatistics(string title,string userId, NewsState? state, int? type, int? areaId)
         {

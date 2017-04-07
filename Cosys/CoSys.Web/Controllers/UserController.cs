@@ -42,7 +42,7 @@ namespace CoSys.Web.Controllers
 
         public ActionResult ExportList(string name, string userId, int? type, int? areaId)
         {
-            var list = WebService.Get_UserPageList(1, 100000, name, type, areaId).Result.List;
+            var list = WebService.Get_UserPageList(1, 100000, name, type, areaId,true).Result.List;
             string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
             string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
             NPOIHelper<User>.GetExcel(list, GetChanelHT(), filePath);

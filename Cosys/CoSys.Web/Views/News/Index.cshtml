@@ -107,7 +107,8 @@
                      icon: "icon-edit",
                      name: "查看",
                      click: function (item) {
-                         window.location.href="/News/Manage/" + item.ID;
+
+                         window.location.href = '@(LoginHelper.AdminIsLogin()? "/News/AdminManage/" : "/News/Manage/")' + item.ID;
                      }
                  }
             ]

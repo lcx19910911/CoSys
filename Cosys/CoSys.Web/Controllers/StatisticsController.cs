@@ -19,9 +19,9 @@ namespace CoSys.Web.Controllers
             return View(new Tuple<List<SelectItem>, List<SelectItem>>(WebService.Get_AreaList(""), WebService.Get_DataDictorySelectItem(GroupCode.Channel)));
         }
 
-        public ActionResult GetAreaList(int? province,long methodFlag=0,bool isArea=true)
+        public ActionResult GetAreaList(string name,int? province,DateTime ? searchTimeStart, DateTime? searchTimeEnd, long methodFlag=0,bool isArea=true,long departmentFlag=0)
         {
-            return JResult(WebService.Get_NewsStatisticsArea(province, methodFlag, isArea));
+            return JResult(WebService.Get_NewsStatisticsArea(name,province, searchTimeStart, searchTimeEnd, methodFlag, isArea, departmentFlag));
         }
 
 
@@ -33,60 +33,58 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult ExportAreaPageList(int? province, int? city, int? county, long methodFlag)
+        public ActionResult ExportAreaPageList(string name, int? province, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag = 0)
         {
-            int type = 1;
-            if (province != null)
+            var list = new List<StatisticsModel>();
+            var result = WebService.Get_NewsStatisticsArea(name,province, searchTimeStart, searchTimeEnd, methodFlag, true).List;
+            if (result != null&&result.Count!=0)
             {
-                if (city != null)
+                result.ForEach(x =>
                 {
-                    if (county != null)
+                    list.Add(x);
+                    if (x.Childrens != null && x.Childrens.Count != 0)
                     {
-                        type = 3;
+                        x.Childrens.ForEach(y =>
+                        {
+                            list.Add(y);
+                            if (y.Childrens != null && y.Childrens.Count != 0)
+                            {
+                                y.Childrens.ForEach(z =>
+                                {
+                                    list.Add(z);
+                                });
+                            }
+                        });
                     }
-                    else
-                        type = 2;
-                }
-                else
-                {
-                    type = 1;
-                }
+                });
             }
-            var list = WebService.Get_NewsStatisticsArea(province, city, county, methodFlag);
             string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
             string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
-            NPOIHelper<StatisticsModel>.GetExcel(list, GetHT(province,city,county), filePath);
+            NPOIHelper<StatisticsModel>.GetExcel(list, GetAreaHT(), filePath);
             //Directory.Delete(filePath);
             return File(filePath, "application/vnd.ms-excel", fileName);
         }
 
-        private Hashtable GetHT(int? province, int? city, int? county)
+        private Hashtable GetAreaHT()
         {
             Hashtable hs = new Hashtable();
-            if (province == null || province == -1)
-            {
-                hs["Name"] = "省份";
-            } 
-            else if (city == null || city == 0 || city == -1)
-            {
-                hs["ProvinceName"] = "省份";
-                hs["Name"] = "市";
-            }
-            else if (county == null || county == 0 || county == -1)
-            {
-                hs["ProvinceName"] = "省份";
-                hs["CityName"] = "市";
-                hs["Name"] = "县/区";
-            }
-            else
-            {
-                hs["ProvinceName"] = "省份";
-                hs["CityName"] = "市";
-                hs["CountyName"] = "县/区";
-                hs["Name"] = "街道";
-            }
+            hs["ProvinceName"] = "省份";
+            hs["CityName"] = "市";
+            hs["CountyName"] = "县/区";
+            hs["StreetName"] = "街道";
             hs["AllCount"] = "总投稿数";
             hs["PassCount"] = "总采纳数";
+            return hs;
+        }
+
+        private Hashtable GetUserHT()
+        {
+            Hashtable hs = new Hashtable();
+            hs["ProvinceName"] = "省份";
+            hs["CityName"] = "市";
+            hs["CountyName"] = "县/区";
+            hs["StreetName"] = "街道";
+            hs["PeopleCount"] = "注册人数";
             return hs;
         }
 
@@ -114,9 +112,8 @@ namespace CoSys.Web.Controllers
         private Hashtable GetChanelHT()
         {
             Hashtable hs = new Hashtable();
-            hs["Name"] ="投稿渠道";
-            hs["AllCount"] = "总投稿数";
-            hs["PassCount"] = "总采纳数";
+            hs["Name"] = "发布渠道";
+            hs["AllCount"] = "总发布数";
             return hs;
         }
 
@@ -138,27 +135,35 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult ExportRegisterPageList(int? province, int? city, int? county)
-        {
-            var list = WebService.Get_NewsStatisticsRegister(province, city, county);
+        public ActionResult ExportRegisterPageList(string name, int? province, DateTime? searchTimeStart, DateTime? searchTimeEnd)
+           {
+            var list = new List<StatisticsModel>();
+            var result = WebService.Get_NewsStatisticsArea(name, province, searchTimeStart, searchTimeEnd, 0,false).List;
+            if (result != null && result.Count != 0)
+            {
+                result.ForEach(x =>
+                {
+                    list.Add(x);
+                    if (x.Childrens != null && x.Childrens.Count != 0)
+                    {
+                        x.Childrens.ForEach(y =>
+                        {
+                            list.Add(y);
+                            if (y.Childrens != null && y.Childrens.Count != 0)
+                            {
+                                y.Childrens.ForEach(z =>
+                                {
+                                    list.Add(z);
+                                });
+                            }
+                        });
+                    }
+                });
+            }
             string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
             string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
-            int type = 1;
-            if(province!=null)
-            {
-                if (city != null)
-                {
-                    if (county != null)
-                    {
-                        type = 3;
-                    }
-                    else
-                        type = 2;
-                }
-                else
-                    type = 1;
-            }
-            NPOIHelper<StatisticsModel>.GetExcel(list, GetHT(province, city, county), filePath);
+
+            NPOIHelper<StatisticsModel>.GetExcel(list, GetUserHT(), filePath);
             //Directory.Delete(filePath);
             return File(filePath, "application/vnd.ms-excel", fileName);
         }

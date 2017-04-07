@@ -226,7 +226,8 @@ namespace CoSys.Service
                                             else
                                                 x.StateStr = x.State.GetDescription();
                                         }
-                                        else {
+                                        else
+                                        {
                                             x.StateStr = x.State.GetDescription();
                                             x.RoleName = "未审核";
                                         }
@@ -428,7 +429,26 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Add_News(News model, bool isAudit)
+        public WebResult<bool> Add_News(News model, bool isAudit, long departmentFlag)
+        {
+            var departmentList = new List<Department>();
+            var parentIdList = new List<string>();
+            using (DbRepository db = new DbRepository())
+            {
+                departmentList = db.Department.Where(x => !x.IsDelete && (departmentFlag & x.Flag) != 0).ToList();
+                parentIdList = departmentList.Select(x => x.ParentID).ToList();
+            }
+            departmentList.Where(x => !parentIdList.Contains(x.ID)).ToList().ForEach(x =>
+            {
+                model.DepartmentID = x.ParentID.IsNotNullOrEmpty() ? $"{x.ParentID};{x.ID}" : x.ID;
+                AddNews(model, isAudit);
+            });
+
+            return Result(true);
+
+        }
+
+        private void AddNews(News model, bool isAudit)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -444,65 +464,64 @@ namespace CoSys.Service
                     model.SubmitTime = DateTime.Now;
                     model.State = NewsState.WaitAudit;
 
-                    if (Client.LoginAdmin != null&&Client.LoginUser==null)
+                    if (Client.LoginAdmin != null && Client.LoginUser == null)
                     {
                         var role = db.Role.Find(Client.LoginAdmin.RoleID);
-                        if (role == null)
+                        if (role != null)
                         {
-                            return Result(false, ErrorCode.sys_param_format_error);
-                        }
-                        var departmentList = db.Department.Where(x => !x.IsDelete && (Client.LoginAdmin.DepartmentFlag & x.Flag) != 0).Select(x => x.ID).ToList();
-                        var newsDeparmentIdList = model.DepartmentID.Split(';');
-                        if (newsDeparmentIdList.Count() == 2)
-                        {
-                            if (departmentList.Contains(newsDeparmentIdList[1]))
+                            var departmentList = db.Department.Where(x => !x.IsDelete && (Client.LoginAdmin.DepartmentFlag & x.Flag) != 0).Select(x => x.ID).ToList();
+                            var newsDeparmentIdList = model.DepartmentID.Split(';');
+                            if (newsDeparmentIdList.Count() == 2)
                             {
-                                if (role.AuditState != NewsAuditState.EditorAudit)
+                                if (departmentList.Contains(newsDeparmentIdList[1]))
                                 {
-                                    if (role.AuditState == NewsAuditState.EditorialAudit)
+                                    if (role.AuditState != NewsAuditState.EditorAudit)
                                     {
-                                        model.AuditState = NewsAuditState.LastAudit;
+                                        if (role.AuditState == NewsAuditState.EditorialAudit)
+                                        {
+                                            model.AuditState = NewsAuditState.LastAudit;
+                                        }
+                                        else
+                                        {
+                                            model.State = NewsState.Pass;
+                                            model.AuditState = NewsAuditState.LastAudit;
+                                            model.UpdateAdminID = Client.LoginAdmin.ID;
+                                        }
                                     }
                                     else
                                     {
-                                        model.State = NewsState.Pass;
-                                        model.AuditState = NewsAuditState.LastAudit;
-                                        model.UpdateAdminID = Client.LoginAdmin.ID;
+                                        model.AuditState = NewsAuditState.EditorialAudit;
                                     }
                                 }
                                 else
                                 {
-                                    model.AuditState = NewsAuditState.EditorialAudit;
+                                    model.AuditState = NewsAuditState.EditorAudit;
                                 }
                             }
                             else
                             {
-                                model.AuditState = NewsAuditState.EditorAudit;
-                            }
-                        }
-                        else
-                        {
-                            if (departmentList.Contains(newsDeparmentIdList[0]))
-                            {
-                                if (role.AuditState != NewsAuditState.EditorAudit)
+                                if (departmentList.Contains(newsDeparmentIdList[0]))
                                 {
-                                    if (role.AuditState == NewsAuditState.LastAudit)
+                                    if (role.AuditState != NewsAuditState.EditorAudit)
                                     {
-                                        model.State = NewsState.Pass;
-                                        model.UpdateAdminID = Client.LoginAdmin.ID;
-                                        model.AuditState = NewsAuditState.LastAudit;
+                                        if (role.AuditState == NewsAuditState.LastAudit)
+                                        {
+                                            model.State = NewsState.Pass;
+                                            model.UpdateAdminID = Client.LoginAdmin.ID;
+                                            model.AuditState = NewsAuditState.LastAudit;
+                                        }
+                                        else
+                                            model.AuditState = NewsAuditState.LastAudit;
                                     }
                                     else
-                                        model.AuditState = NewsAuditState.LastAudit;
+                                    {
+                                        model.AuditState = NewsAuditState.MinisterAudit;
+                                    }
                                 }
                                 else
                                 {
-                                    model.AuditState = NewsAuditState.MinisterAudit;
+                                    model.AuditState = NewsAuditState.EditorAudit;
                                 }
-                            }
-                            else
-                            {
-                                model.AuditState = NewsAuditState.EditorAudit;
                             }
                         }
                     }
@@ -512,18 +531,10 @@ namespace CoSys.Service
                     }
                 }
                 db.News.Add(model);
-                if (db.SaveChanges() > 0)
-                {
-                    return Result(true);
-                }
-                else
-                {
-                    return Result(false, ErrorCode.sys_fail);
-                }
+
+                db.SaveChanges();
             }
-
         }
-
 
         /// <summary>
         /// 修改
@@ -622,7 +633,7 @@ namespace CoSys.Service
                                 }
                                 else
                                 {
-                                    if(Client.LoginUser==null)
+                                    if (Client.LoginUser == null)
                                         oldEntity.UpdateAdminID = Client.LoginAdmin.ID;
                                 }
                             }
@@ -983,7 +994,7 @@ namespace CoSys.Service
                 var plushMethod = "";
                 Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0 && x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
                   {
-                      plushMethod +=" "+x.Value;
+                      plushMethod += " " + x.Value;
                       var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, "");
                   });
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
@@ -1010,7 +1021,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public StatisticsTotal Get_NewsStatisticsArea(int? province,long methodFlag,bool isArea=true)
+        public StatisticsTotal Get_NewsStatisticsArea(string name, int? province, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag, bool isArea = true,long departmentFlag=0)
         {
 
             StatisticsTotal returnModel = new StatisticsTotal();
@@ -1021,11 +1032,30 @@ namespace CoSys.Service
                 {
                     var provinceName = "";
                     var cityList = new List<SelectItem>(); var countyList = new List<SelectItem>();
-                    var userList = db.User.Where(x=>!string.IsNullOrEmpty(x.ProvoniceCode)&&x.ProvoniceCode==province.ToString()).ToList();
-                    var newsQuery = db.News.AsQueryable();
+                    var userQuery = db.User.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode == province.ToString() && !x.IsDelete);
+                    var newsQuery = db.News.Where(x => !x.IsDelete&&x.State!=NewsState.None);
                     if (methodFlag != 0 && methodFlag != -1)
                         newsQuery = newsQuery.Where(x => (methodFlag & x.MethodFlag) != 0);
+                    if (name.IsNotNullOrEmpty())
+                    {
+                        userQuery = userQuery.Where(x => x.RealName.Contains(name));
+                    }
+                    if (searchTimeStart != null)
+                    {
+                        newsQuery = newsQuery.Where(x => x.CreatedTime >= searchTimeStart);
+                    }
+                    if (searchTimeEnd != null)
+                    {
+                        searchTimeEnd = searchTimeEnd.Value.AddDays(1);
+                        newsQuery = newsQuery.Where(x => x.CreatedTime < searchTimeEnd);
+                    }
+                    if (departmentFlag != 0)
+                    {
+                        var departmentIdList = db.Department.Where(x => (x.Flag & departmentFlag) != 0).Select(x => (string.IsNullOrEmpty(x.ParentID) ? x.ID : x.ParentID + ";" + x.ID)).ToList();
+                        newsQuery = newsQuery.Where(x => departmentIdList.Contains(x.DepartmentID));
+                    }
                     var newsList = newsQuery.ToList();
+                    var userList = userQuery.ToList();
                     returnModel.AllCount = newsList.Where(x => userList.Select(y => y.ID).Contains(x.UserID)).Count();
                     returnModel.PassCount = newsList.Where(x => userList.Select(y => y.ID).Contains(x.UserID) && (x.State == NewsState.Pass || x.State == NewsState.Plush)).Count();
 
@@ -1051,13 +1081,15 @@ namespace CoSys.Service
                     var noUserIdList = userList.Where(y => y.CityCode.IsNullOrEmpty() && y.ProvoniceCode.IsNotNullOrEmpty() && y.ProvoniceCode == province.ToString()).ToList();
                     returnModel.List.Add(new StatisticsModel()
                     {
+                        CityName = "未选择地区",
                         Name = "未选择地区",
+                        ProvinceName = provinceName,
                         AllCount = newsList.Where(y => noUserIdList.Select(z => z.ID).ToList().Contains(y.UserID)).Count(),
                         PassCount = newsList.Where(y => noUserIdList.Select(z => z.ID).ToList().Contains(y.UserID) && (y.State == NewsState.Pass || y.State == NewsState.Plush)).Count(),
                         PeopleCount = noUserIdList.Count,
                         UserLink = $"/user/index?type=0&areaId={province}",
-                        NewsLink = $"/news/index?type=0&areaId={province}",
-                        Childrens =new List<StatisticsModel>()
+                        NewsLink = $"/news/Statistics?type=0&areaId={province}",
+                        Childrens = new List<StatisticsModel>()
                     });
                     cityList.ForEach(x =>
                     {
@@ -1067,27 +1099,32 @@ namespace CoSys.Service
                             var staticModel = new Core.StatisticsModel()
                             {
                                 Name = x.Text,
+                                ProvinceName = provinceName,
+                                CityName = x.Text,
                                 AllCount = newsList.Where(y => userIdList.Select(z => z.ID).ToList().Contains(y.UserID)).Count(),
                                 PassCount = newsList.Where(y => userIdList.Select(z => z.ID).ToList().Contains(y.UserID) && (y.State == NewsState.Pass || y.State == NewsState.Plush)).Count(),
                                 PeopleCount = userIdList.Count,
                                 AreaId = x.Value,
                                 UserLink = $"/user/index?type=1&areaId={province}",
-                                NewsLink = $"/news/index?type=1&areaId={province}",
+                                NewsLink = $"/news/Statistics?type=1&areaId={province}",
                                 Childrens = countyList.Where(z => z.ParentKey.Trim().Equals(x.Value) && z.Value != "0").ToList().Select(z =>
                                     {
                                         return new Core.StatisticsModel()
                                         {
+                                            ProvinceName = provinceName,
+                                            CityName = x.Text,
+                                            CountyName = z.Text,
                                             Name = z.Text,
                                             AllCount = newsList.Where(u => userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID)).Count(),
                                             PassCount = newsList.Where(u => userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID) && (u.State == NewsState.Pass || u.State == NewsState.Plush)).Count(),
                                             PeopleCount = userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).Count(),
                                             UserLink = $"/user/index?type=2&areaId={z.Value}",
-                                            NewsLink = $"/news/index?type=2&areaId={z.Value}",
+                                            NewsLink = $"/news/Statistics?type=2&areaId={z.Value}",
                                             AreaId = z.Value
                                         };
                                     }).ToList()
                             };
-                            if(isArea)
+                            if (isArea)
                                 staticModel.Childrens = staticModel.Childrens.Where(y => y.AllCount != 0).ToList();
                             else
                                 staticModel.Childrens = staticModel.Childrens.Where(y => y.PeopleCount != 0).ToList();
@@ -1099,12 +1136,16 @@ namespace CoSys.Service
                                      {
                                          return new Core.StatisticsModel()
                                          {
+                                             ProvinceName = provinceName,
+                                             CityName = x.Text,
+                                             CountyName = y.Name,
+                                             StreetName = z.Text,
                                              Name = z.Text,
                                              AllCount = newsList.Where(u => userIdList.Where(t => t.StreetCode.IsNotNullOrEmpty() && t.StreetCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID)).Count(),
                                              PassCount = newsList.Where(u => userIdList.Where(t => t.StreetCode.IsNotNullOrEmpty() && t.StreetCode == z.Value).Select(i => i.ID).ToList().Contains(u.UserID) && (u.State == NewsState.Pass || u.State == NewsState.Plush)).Count(),
-                                             PeopleCount = userIdList.Where(t => t.CountyCode.IsNotNullOrEmpty() && t.CountyCode == z.Value).Select(i => i.ID).Count(),
+                                             PeopleCount = userIdList.Where(t => t.StreetCode.IsNotNullOrEmpty() && t.StreetCode == z.Value).Select(i => i.ID).Count(),
                                              UserLink = $"/user/index?type=3&areaId={z.Value}",
-                                             NewsLink = $"/news/index?type=3&areaId={z.Value}",
+                                             NewsLink = $"/news/Statistics?type=3&areaId={z.Value}",
                                              AreaId = z.Value
                                          };
                                      }).ToList();
@@ -1116,7 +1157,7 @@ namespace CoSys.Service
                                 });
                             }
                             returnModel.List.Add(staticModel);
-                        
+
                         }
                     });
                 }
@@ -1335,17 +1376,17 @@ namespace CoSys.Service
             List<StatisticsModel> model = new List<StatisticsModel>();
             using (DbRepository db = new DbRepository())
             {
-                var dic = Cache_Get_DataDictionary()[GroupCode.Type];
-                db.News.AsQueryable().AsNoTracking().GroupBy(x => x.NewsTypeID).ToList().ForEach(x =>
-                  {
-                      model.Add(new StatisticsModel()
-                      {
-                          Key = x.Key,
-                          AllCount = x.Count(),
-                          Name = dic[x.Key].Value,
-                          PassCount = x.Where(y => y.State == NewsState.Pass || y.State == NewsState.Plush).Count()
-                      });
-                  });
+                var dic = Cache_Get_DataDictionary()[GroupCode.Channel];
+                dic.Values.ToList().ForEach(x =>
+                {
+                    var key = x.Key.GetLong();
+                    model.Add(new StatisticsModel()
+                    {
+                        Key = x.Key,
+                        AllCount = db.News.Where(y => (y.PlushMethodFlag & key) != 0).Select(y => y.ID).Count(),
+                        Name = dic[x.Key].Value
+                    });
+                });
                 return model;
             }
         }
