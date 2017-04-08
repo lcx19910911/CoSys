@@ -44,19 +44,23 @@ namespace CoSys.Service
                     var userIdList = new List<string>();
                     if (type == 0)
                     {
-                        userIdList = db.User.Where(x => x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 1)
                     {
-                        userIdList = db.User.Where(x => x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.CityCode) && x.CityCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 2)
                     {
-                        userIdList = db.User.Where(x => x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.CountyCode) && x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 3)
                     {
-                        userIdList = db.User.Where(x => x.StreetCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.StreetCode) && x.StreetCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                    }
+                    else if (type == -1)
+                    {
+                        userIdList = db.User.Where(x => string.IsNullOrEmpty(x.ProvoniceCode)).Select(x => x.ID).ToList();
                     }
                     query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && userIdList.Contains(x.UserID));
                 }
@@ -324,19 +328,23 @@ namespace CoSys.Service
                     var userIdList = new List<string>();
                     if (type == 0)
                     {
-                        userIdList = db.User.Where(x => x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 1)
                     {
-                        userIdList = db.User.Where(x => x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.CityCode) && x.CityCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 2)
                     {
-                        userIdList = db.User.Where(x => x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.CountyCode) && x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 3)
                     {
-                        userIdList = db.User.Where(x => x.StreetCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.StreetCode) &&x.StreetCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                    }
+                    else if (type == -1)
+                    {
+                        userIdList = db.User.Where(x => string.IsNullOrEmpty(x.ProvoniceCode)).Select(x => x.ID).ToList();
                     }
                     query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && userIdList.Contains(x.UserID));
                 }
@@ -995,7 +1003,7 @@ namespace CoSys.Service
                 Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0 && x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
                   {
                       plushMethod += " " + x.Value;
-                      var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, "");
+                      var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, news.Paths);
                   });
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
                 if (db.SaveChanges() > 0)
@@ -1021,19 +1029,19 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public StatisticsTotal Get_NewsStatisticsArea(string name, int? province, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag, bool isArea = true,long departmentFlag=0)
+        public StatisticsTotal Get_NewsStatisticsArea(string name, int? province, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag, bool isArea = true, long departmentFlag = 0)
         {
 
             StatisticsTotal returnModel = new StatisticsTotal();
             returnModel.List = new List<StatisticsModel>();
             using (DbRepository db = new DbRepository())
             {
-                if (province != null && province != -1)
+                if (province != null && province != -1 && province != -2)
                 {
                     var provinceName = "";
                     var cityList = new List<SelectItem>(); var countyList = new List<SelectItem>();
-                    var userQuery = db.User.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode == province.ToString() && !x.IsDelete);
-                    var newsQuery = db.News.Where(x => !x.IsDelete&&x.State!=NewsState.None);
+                    var userQuery = db.User.Where(x => !x.IsDelete);
+                    var newsQuery = db.News.Where(x => !x.IsDelete && x.State != NewsState.None);
                     if (methodFlag != 0 && methodFlag != -1)
                         newsQuery = newsQuery.Where(x => (methodFlag & x.MethodFlag) != 0);
                     if (name.IsNotNullOrEmpty())
@@ -1055,7 +1063,7 @@ namespace CoSys.Service
                         newsQuery = newsQuery.Where(x => departmentIdList.Contains(x.DepartmentID));
                     }
                     var newsList = newsQuery.ToList();
-                    var userList = userQuery.ToList();
+                    var userList = userQuery.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode == province.ToString()).ToList();
                     returnModel.AllCount = newsList.Where(x => userList.Select(y => y.ID).Contains(x.UserID)).Count();
                     returnModel.PassCount = newsList.Where(x => userList.Select(y => y.ID).Contains(x.UserID) && (x.State == NewsState.Pass || x.State == NewsState.Plush)).Count();
 
@@ -1078,7 +1086,7 @@ namespace CoSys.Service
 
                     returnModel.Name = provinceName;
 
-                    var noUserIdList = userList.Where(y => y.CityCode.IsNullOrEmpty() && y.ProvoniceCode.IsNotNullOrEmpty() && y.ProvoniceCode == province.ToString()).ToList();
+                    var noUserIdList = userQuery.Where(y => string.IsNullOrEmpty(y.CityCode) && !string.IsNullOrEmpty(y.ProvoniceCode) && y.ProvoniceCode == province.ToString()).ToList();
                     returnModel.List.Add(new StatisticsModel()
                     {
                         CityName = "未选择地区",
@@ -1105,8 +1113,8 @@ namespace CoSys.Service
                                 PassCount = newsList.Where(y => userIdList.Select(z => z.ID).ToList().Contains(y.UserID) && (y.State == NewsState.Pass || y.State == NewsState.Plush)).Count(),
                                 PeopleCount = userIdList.Count,
                                 AreaId = x.Value,
-                                UserLink = $"/user/index?type=1&areaId={province}",
-                                NewsLink = $"/news/Statistics?type=1&areaId={province}",
+                                UserLink = $"/user/index?type=1&areaId={x.Value}",
+                                NewsLink = $"/news/Statistics?type=1&areaId={x.Value}",
                                 Childrens = countyList.Where(z => z.ParentKey.Trim().Equals(x.Value) && z.Value != "0").ToList().Select(z =>
                                     {
                                         return new Core.StatisticsModel()
@@ -1159,6 +1167,49 @@ namespace CoSys.Service
                             returnModel.List.Add(staticModel);
 
                         }
+                    });
+                }
+                else if (province != null && province == -2)
+                {
+                    var provinceName = "未选择省份";
+                    var userQuery = db.User.Where(x => !x.IsDelete);
+                    var newsQuery = db.News.Where(x => !x.IsDelete && x.State != NewsState.None);
+                    if (methodFlag != 0 && methodFlag != -1)
+                        newsQuery = newsQuery.Where(x => (methodFlag & x.MethodFlag) != 0);
+                    if (name.IsNotNullOrEmpty())
+                    {
+                        userQuery = userQuery.Where(x => x.RealName.Contains(name));
+                    }
+                    if (searchTimeStart != null)
+                    {
+                        newsQuery = newsQuery.Where(x => x.CreatedTime >= searchTimeStart);
+                    }
+                    if (searchTimeEnd != null)
+                    {
+                        searchTimeEnd = searchTimeEnd.Value.AddDays(1);
+                        newsQuery = newsQuery.Where(x => x.CreatedTime < searchTimeEnd);
+                    }
+                    if (departmentFlag != 0)
+                    {
+                        var departmentIdList = db.Department.Where(x => (x.Flag & departmentFlag) != 0).Select(x => (string.IsNullOrEmpty(x.ParentID) ? x.ID : x.ParentID + ";" + x.ID)).ToList();
+                        newsQuery = newsQuery.Where(x => departmentIdList.Contains(x.DepartmentID));
+                    }
+                    var newsList = newsQuery.ToList();
+                    var userList = userQuery.Where(x => string.IsNullOrEmpty(x.ProvoniceCode)).ToList();
+                    returnModel.AllCount = newsList.Where(x => userList.Select(y => y.ID).Contains(x.UserID)).Count();
+                    returnModel.PassCount = newsList.Where(x => userList.Select(y => y.ID).Contains(x.UserID) && (x.State == NewsState.Pass || x.State == NewsState.Plush)).Count();
+                    returnModel.Name = provinceName;
+                    returnModel.List.Add(new StatisticsModel()
+                    {
+                        CityName = "未选择地区",
+                        Name = "未选择地区",
+                        ProvinceName = provinceName,
+                        AllCount = returnModel.AllCount,
+                        PassCount = returnModel.PassCount,
+                        PeopleCount = userList.Count,
+                        UserLink = $"/user/index?type=-1&areaId={province}",
+                        NewsLink = $"/news/Statistics?type=-1&areaId={province}",
+                        Childrens = new List<StatisticsModel>()
                     });
                 }
 

@@ -22,11 +22,15 @@
                 <div class="am-input-group am-input-group-sm">
                     <span class="am-input-group-label am-margin-left-sm">省份</span>
                     <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
+                        <option value="-2">未选择地区</option>
                         @if (Model != null && Model.Count > 0)
                         {
                             foreach (var item in Model)
                             {
-                                <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
+                                if (item.Value != "0")
+                                {
+                                    <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
+                                }
                             }
                         }
                     </select>
@@ -50,11 +54,15 @@
                     <input type="text" class="am-form-field" placeholder="按会员名称搜索" style="width:100px;" name="name" ;>
                     <span class="am-input-group-label am-margin-left-sm">省份</span>
                     <select name="province" data-am-selected="{ btnWidth: '120px',btnSize: 'sm'}" style="width:120px;">
+                        <option value="-2">未选择地区</option>
                         @if (Model != null && Model.Count > 0)
                         {
                             foreach (var item in Model)
                             {
-                                <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
+                                if (item.Value != "0")
+                                {
+                                    <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
+                                }
                             }
                         }
                     </select>

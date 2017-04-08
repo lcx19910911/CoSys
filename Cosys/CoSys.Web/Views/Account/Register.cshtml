@@ -140,10 +140,10 @@
                 <li>
                     <lable class="info">会员类型:<strong class="am-text-danger am-text-sm">*</strong></lable>
                     <select class="area" name="Code">
+                        <option value="4" selected="selected">普通会员</option>
                         <option value="1">协会工作人员</option>
                         <option value="2">协会小组长</option>
                         <option value="3">志愿者</option>
-                        <option value="4" selected>普通会员</option>
                     </select>
                     <div class="clear"> </div>
                 </li>
@@ -304,7 +304,9 @@
                 });
             }
             else {
-                $("[name='Code']").val('@(Model.Code.GetInt())');
+                var id = '@(Model.ID)';
+                if(id!='')
+                    $("[name='Code']").val('@(Model.Code.GetInt())');
                 //添加表单验证
                 $.Nuoya.form("regForm").validate({
                     rules: {

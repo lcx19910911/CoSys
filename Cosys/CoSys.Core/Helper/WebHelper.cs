@@ -1208,9 +1208,10 @@ namespace CoSys.Core
             mmsg.BodyEncoding = Encoding.UTF8;//正文编码
             mmsg.IsBodyHtml = false;//设置为HTML格式 
             mmsg.Priority = MailPriority.High;//优先级
-            if (attachmentFilePath.Trim() != "")
+            if (attachmentFilePath.Trim() != ""&&attachmentFilePath.Split(',').Length>0)
             {
-                mmsg.Attachments.Add(new Attachment(attachmentFilePath));//增加附件
+                foreach(var item in attachmentFilePath.Split(','))
+                    mmsg.Attachments.Add(new Attachment(item));//增加附件
             }
             try
             {

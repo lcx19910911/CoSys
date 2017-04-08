@@ -118,7 +118,7 @@ namespace CoSys.Service
                     {
                         query = query.Where(x => !string.IsNullOrEmpty(x.StreetCode) && x.StreetCode.Equals(areaId.ToString()));
                     }
-                    else if (type == 4)
+                    else if (type == -1)
                     {
                         query = query.Where(x => string.IsNullOrEmpty(x.ProvoniceCode) );
                     }

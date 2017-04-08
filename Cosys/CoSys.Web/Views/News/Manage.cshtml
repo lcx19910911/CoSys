@@ -146,7 +146,7 @@
                             foreach (var item in Model.Paths.Split(','))
                             {
                                 <div class="am-u-lg-4">
-                                    <a class="am-close am-icon-times am-u-sm-1" style="opacity:1"><img class="am-u-lg-3" src="@(item)" style="width:140px;" /></a><hr />
+                                    <a class="am-close am-icon-times am-u-sm-1" style="opacity:1"><img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:140px;" /></a><hr />
                                 </div>
                             }
                         }
@@ -317,7 +317,7 @@
                 if (data) {
 
                     $("#div_imageShow").parents(".am-form-group").show();
-                    $("#div_imageShow").append('<img style="width:100px;height:60px;" src="' + data + '"/>');
+                    $("#div_imageShow").append('<img style="width:100px;height:60px;" data-src="' + data + '" src="' + data + '"/>');
                 }
                 else {
                     alert("上传错误");
@@ -387,7 +387,7 @@
             if (isPhone == "1") {
                 content = $("[name='Content']").text();
                 $("#div_imageShow img").each(function () {
-                    imgAry.push($(this).prop("src"));
+                    imgAry.push($(this).attr("data-src"));
                 })
                 paths = imgAry.join(',');
             }
@@ -451,7 +451,7 @@
             if (isPhone == "1") {
                 content = $("[name='Content']").val();
                 $("#div_imageShow img").each(function () {
-                    imgAry.push($(this).prop("src"));
+                    imgAry.push($(this).attr("data-src"));
                 })
                 paths = imgAry.join(',');
             }
