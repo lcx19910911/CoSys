@@ -108,7 +108,7 @@
                      name: "查看",
                      click: function (item) {
 
-                         window.location.href = '@(LoginHelper.AdminIsLogin()? "/News/AdminManage/" : "/News/Manage/")' + item.ID;
+                         window.location.href = '@(LoginHelper.AdminIsLogin()&&!LoginHelper.UserIsLogin()? "/News/AdminManage/" : "/News/Manage/")' + item.ID;
                      }
                  }
             ]

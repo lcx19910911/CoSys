@@ -34,15 +34,15 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string name,int? type,int ? areaId, bool isAdmin = false)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string name,int? type,int ? areaId, DateTime? searchTimeStart, DateTime? searchTimeEnd, bool isAdmin = false)
         {
-            return JResult(WebService.Get_UserPageList(pageIndex, pageSize, name, type,areaId, isAdmin));
+            return JResult(WebService.Get_UserPageList(pageIndex, pageSize, name, type,areaId, searchTimeStart, searchTimeEnd, isAdmin));
         }
 
 
-        public ActionResult ExportList(string name, string userId, int? type, int? areaId)
+        public ActionResult ExportList(string name, string userId, int? type, int? areaId, DateTime? searchTimeStart, DateTime? searchTimeEnd)
         {
-            var list = WebService.Get_UserPageList(1, 100000, name, type, areaId,true).Result.List;
+            var list = WebService.Get_UserPageList(1, 100000, name, type, areaId, searchTimeStart, searchTimeEnd, true).Result.List;
             string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
             string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
             NPOIHelper<User>.GetExcel(list, GetChanelHT(), filePath);

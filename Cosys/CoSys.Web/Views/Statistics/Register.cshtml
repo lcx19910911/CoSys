@@ -104,13 +104,13 @@
 
                 var allCount = 0;
                 $(json.List).each(function (index, item) {
-                    str += "<div class='am-g  am-margin-top am-margin-left am-margin-right'><span class='am-input-group-label am-margin-left-sm am-text-left'><strong>" + item.Name + "</strong> 注册总数：" + item.PeopleCount + " <a href='" + item.UserLink + "'>查看明细</a></span>   </div>";
+                    str += "<div class='am-g  am-margin-top am-margin-left am-margin-right'><span class='am-input-group-label am-margin-left-sm am-text-left'><strong>" + item.Name + "</strong> 注册总数：" + item.PeopleCount + " <a data-href='" + item.UserLink + "' onclick='searchUser(this)'>查看明细</a></span>   </div>";
                     allCount += item.PeopleCount;
                     if (item.Childrens.length > 0) {
 
                         $(item.Childrens).each(function (y, obj) {
                             str += "<div class='am-g  am-margin-top am-margin-left-lg am-margin-right'>";
-                            str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-warning'>" + obj.Name + "</strong> 注册总数：" + obj.PeopleCount + " <a href='" + obj.UserLink + "'>查看明细</a></span>";
+                            str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-warning'>" + obj.Name + "</strong> 注册总数：" + obj.PeopleCount + " <a data-href='" + obj.UserLink + "' onclick='searchUser(this)'>查看明细</a></span>";
                             str += '</div>';
                             allCount += obj.PeopleCount;
                             if (obj.Childrens.length > 0)
@@ -120,7 +120,7 @@
                                         str += "<div class='am-g  am-margin-top am-margin-left-lg am-margin-right'><div class='am-u-lg-12 am-u-end'>";
                                     }
                                     allCount += temp.PeopleCount;
-                                    str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-success'>" + temp.Name + "</strong> 注册总数：" + temp.PeopleCount + " <a href='" + temp.UserLink + "'>查看明细</a></span>";
+                                    str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-success'>" + temp.Name + "</strong> 注册总数：" + temp.PeopleCount + " <a data-href='" + temp.UserLink + "' onclick='searchUser(this)'>查看明细</a></span>";
                                     if ((z % 3 == 0 && z != 0) || z == obj.Childrens.length - 1) {
                                         str += '</div></div>';
                                     }
@@ -134,7 +134,9 @@
                 $("#resultDiv").append(str);
             });
         }
-
+        function searchUser(obj) {
+            window.location.href = $(obj).attr("data-href") + "&name=" + $("[name='name']").val() + "&searchTimeStart=" + $("[name='searchTimeStart']").val() + "&searchTimeEnd=" + $("[name='searchTimeEnd']").val();
+        }
         Search();
         function loadArea(obj, i) {
             var thatObj = $(obj);

@@ -202,9 +202,9 @@ namespace CoSys.Web.Controllers
         }
 
 
-        public ActionResult ExportStatistics(string title,string userId, NewsState? state, int? type, int? areaId)
+        public ActionResult ExportStatistics(string title,string userId, NewsState? state, int? type, int? areaId, string name, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag = 0, long departmentFlag = 0)
         {
-            var list = WebService.Get_UserNewsPageList(1, 100000, title, userId, state, type,areaId).Result.List;
+            var list = WebService.Get_UserNewsPageList(1, 100000, title, userId, state, type,areaId, name, searchTimeStart, searchTimeEnd, methodFlag, departmentFlag).Result.List;
             string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
             string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
             NPOIHelper<News>.GetExcel(list, GetChanelHT(), filePath);
@@ -256,9 +256,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetUserPageList(int pageIndex, int pageSize, string title, string userId, NewsState? state, int? type, int? areaId)
+        public ActionResult GetUserPageList(int pageIndex, int pageSize, string title, string userId, NewsState? state, int? type, int? areaId, string name, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag = 0, long departmentFlag = 0)
         {
-            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, userId, state,type,areaId));
+            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, userId, state,type,areaId, name, searchTimeStart, searchTimeEnd,methodFlag,departmentFlag));
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult GetMyPageList(int pageIndex, int pageSize, string title, NewsState? state, int? type, int? areaId)
         {
-            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, Client.LoginAdmin.ID, state, type, areaId));
+            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, Client.LoginAdmin.ID, state, type, areaId,"",null,null));
         }
 
         /// <summary>

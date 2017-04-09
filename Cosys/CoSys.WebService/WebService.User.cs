@@ -85,7 +85,7 @@ namespace CoSys.Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name,int? type, int? areaId,bool isAdmin=false)
+        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name,int? type, int? areaId, DateTime? searchTimeStart, DateTime? searchTimeEnd, bool isAdmin=false)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -102,6 +102,15 @@ namespace CoSys.Service
                 }
                 if (areaId != null&& type != null)
                 {
+                    if (searchTimeStart != null)
+                    {
+                        query = query.Where(x => x.CreatedTime >= searchTimeStart);
+                    }
+                    if (searchTimeEnd != null)
+                    {
+                        searchTimeEnd = searchTimeEnd.Value.AddDays(1);
+                        query = query.Where(x => x.CreatedTime < searchTimeEnd);
+                    }
                     if (type == 0)
                     {
                         query = query.Where(x =>!string.IsNullOrEmpty(x.ProvoniceCode)&& x.ProvoniceCode.Equals(areaId.ToString())&& string.IsNullOrEmpty(x.CityCode));

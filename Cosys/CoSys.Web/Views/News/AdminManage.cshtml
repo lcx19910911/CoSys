@@ -76,21 +76,48 @@
                         <input type="text" name="PenName" placeholder="见刊笔名" maxlength="64" value="@((Model.ID.IsNullOrEmpty()?(admin.PenName.IsNullOrEmpty()?admin.RealName:admin.PenName): Model.PenName))" @(!canEdit ? "readonly": "" )>
                     </div>
                 </div>
-                <div class="am-form-group">
-                    <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
-                    <div class="am-u-sm-9">
-                        <select name="DepartmentID" onchange="loadChildren(this)" @(!canEdit ? "disabled": "" )>
-                            <option value="-1" @(Model.DepartmentID.IsNullOrEmpty() ? "selected":"" )>请选择</option>
-                            @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
-                            {
-                                foreach (var item in Model.DepartmentList)
+                @if (Model.ID.IsNotNullOrEmpty())
+                {
+                    <div class="am-form-group">
+                        <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
+                        <div class="am-u-sm-9">
+                            <select name="DepartmentID" onchange="loadChildren(this)" @(!canEdit ? "disabled" : "")>
+                                <option value="-1" @(Model.DepartmentID.IsNullOrEmpty() ? "selected" : "")>请选择</option>
+                                @if (Model.DepartmentList != null && Model.DepartmentList.Count != 0)
                                 {
-                                    <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" :"" )>@item.Text</option>
+                                    foreach (var item in Model.DepartmentList)
+                                    {
+                                        <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                    }
                                 }
-                            }
-                        </select>
+                            </select>
+                        </div>
                     </div>
-                </div>
+                    <div class="am-form-group" id="childrenDiv" style="@(Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count > 0 ? "" : "display:none;")">
+                        <label for="user-email" class="am-u-sm-3 am-form-label">小组<strong class="am-text-danger am-text-sm">*</strong></label>
+                        <div class="am-u-sm-9">
+                            <select name="ChildrenDepartmentID" @(!canEdit ? "disabled" : "")>
+                                @if (Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count != 0)
+                                {
+                                    foreach (var item in Model.ChildrenDepartmentList)
+                                    {
+                                        <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected" : "")>@item.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="am-form-group" id="childrenDiv">
+                        <label for="user-email" class="am-u-sm-3 am-form-label">投递部门<strong class="am-text-danger am-text-sm">*</strong></label>
+                        <div class="am-u-sm-9">
+                            <input type="hidden" name="DepartmentFlag" />
+                            <input type="text" name="DepartmentFlagSelect" />
+                        </div>
+                    </div>
+                }
                 <div class="am-form-group" id="childrenDiv" style="@(Model.ChildrenDepartmentList!=null&&Model.ChildrenDepartmentList.Count>0?" ":" display:none;")">
                     <label for="user-email" class="am-u-sm-3 am-form-label">小组<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
@@ -138,11 +165,17 @@
                     <div class="am-u-sm-9" id="div_imageShow">
                         @if (Model.Paths.IsNotNullOrEmpty())
                         {
-
                             foreach (var item in Model.Paths.Split(','))
                             {
                                 <div class="am-u-lg-4">
-                                    <a class="am-close am-icon-times am-u-sm-1" style="opacity:1"><img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:140px;" /></a><hr />
+                                    @if (canEdit)
+                                    {
+                                        <a class="am-close am-icon-times am-u-sm-1" style="opacity:1"><img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:140px;" /></a><hr />
+                                    }
+                                    else
+                                    {
+                                        <img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:140px;" /><hr />
+                                    }
                                 </div>
                             }
                         }
@@ -474,6 +507,7 @@
     }
     $(function () {
 
+        $("[name='DepartmentFlagSelect']").ztreeSelect($("[name='DepartmentFlag']"), "/Department/GetZTreeChildren", 0, true, true);
         $("#cancleBtn").on("click", function () {
             window.location.href = "/news/admin"
         });
@@ -652,7 +686,7 @@
             var departmentID = $("[name='DepartmentID']").val();
             if (id == "") {
                 departmentFlag = $("[name='DepartmentFlag']").val();
-                if (departmentFlag == "0")
+                if (departmentFlag == ""||departmentFlag == "0")
                 {
                     $.Nuoya.alert("请选择投递部门");
                     return;

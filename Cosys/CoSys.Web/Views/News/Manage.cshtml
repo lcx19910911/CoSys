@@ -146,7 +146,14 @@
                             foreach (var item in Model.Paths.Split(','))
                             {
                                 <div class="am-u-lg-4">
+                                    @if (Model.State == NewsState.None|| Model.State == NewsState.Reject)
+                                    {
                                     <a class="am-close am-icon-times am-u-sm-1" style="opacity:1"><img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:140px;" /></a><hr />
+                                    }
+                                    else
+                                    {
+                                        <img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:140px;" /><hr />
+                                    }
                                 </div>
                             }
                         }
@@ -427,8 +434,7 @@
             var departmentID = $("[name='DepartmentID']").val();
             if (id == "") {
                 departmentFlag = $("[name='DepartmentFlag']").val();
-                if (departmentFlag == "0")
-                {
+                if (departmentFlag == "" || departmentFlag == "0") {
                     $.Nuoya.alert("请选择投递部门");
                     return;
                 }

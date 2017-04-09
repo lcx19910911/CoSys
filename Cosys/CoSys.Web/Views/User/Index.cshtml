@@ -77,7 +77,7 @@
             });
         }
         function Export() {
-            var url = "/User/ExportList?name=" + $("[name='name']").val() + "&areaId=@(Request["areaId"])&type=@(Request["type"])";
+            var url = "/User/ExportList?name=" + $("[name='name']").val() + "&areaId=@(Request["areaId"])&type=@(Request["type"])&name=@(Request["name"])&searchTimeStart=@(Request["searchTimeStart"])&searchTimeEnd=@(Request["searchTimeEnd"])";
             window.open(url);
         }
 
@@ -95,6 +95,9 @@
             params: {
                 areaId:'@(Request["areaId"])',
                 type:'@(Request["type"])',
+                name: "@(Request["name"])",
+                searchTimeStart: "@(Request["searchTimeStart"])",
+                searchTimeEnd: "@(Request["searchTimeEnd"])",
             },
             events: [
                 {

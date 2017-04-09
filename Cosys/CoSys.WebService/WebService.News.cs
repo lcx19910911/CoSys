@@ -308,7 +308,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_UserNewsPageList(int pageIndex, int pageSize, string title, string userId, NewsState? state, int? type, int? areaId)
+        public WebResult<PageList<News>> Get_UserNewsPageList(int pageIndex, int pageSize, string title, string userId, NewsState? state, int? type, int? areaId, string name, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag = 0, long departmentFlag = 0)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -325,26 +325,49 @@ namespace CoSys.Service
 
                 if (areaId != null && type != null)
                 {
+                    var userQUery = db.User.Where(x => !x.IsDelete);
+                    if (name.IsNotNullOrEmpty())
+                    {
+                        userQUery = userQUery.Where(x => x.RealName.Contains(name));
+                    }
+                    if (searchTimeStart != null)
+                    {
+                        query = query.Where(x => x.CreatedTime >= searchTimeStart);
+                    }
+                    if (searchTimeEnd != null)
+                    {
+                        searchTimeEnd = searchTimeEnd.Value.AddDays(1);
+                        query = query.Where(x => x.CreatedTime < searchTimeEnd);
+                    }
+                    if (methodFlag != -1)
+                    {
+                        query = query.Where(x => (x.MethodFlag&methodFlag)!=0);
+                    }
+                    if (departmentFlag != 0)
+                    {
+                        var departmentIdList = db.Department.Where(x => (x.Flag & departmentFlag) != 0).Select(x => (string.IsNullOrEmpty(x.ParentID) ? x.ID : x.ParentID + ";" + x.ID)).ToList();
+                        query = query.Where(x => departmentIdList.Contains(x.DepartmentID));
+                    }
                     var userIdList = new List<string>();
                     if (type == 0)
                     {
-                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = userQUery.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 1)
                     {
-                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.CityCode) && x.CityCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = userQUery.Where(x => !string.IsNullOrEmpty(x.CityCode) && x.CityCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 2)
                     {
-                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.CountyCode) && x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = userQUery.Where(x => !string.IsNullOrEmpty(x.CountyCode) && x.CountyCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == 3)
                     {
-                        userIdList = db.User.Where(x => !string.IsNullOrEmpty(x.StreetCode) &&x.StreetCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
+                        userIdList = userQUery.Where(x => !string.IsNullOrEmpty(x.StreetCode) &&x.StreetCode.Equals(areaId.ToString())).Select(x => x.ID).ToList();
                     }
                     else if (type == -1)
                     {
-                        userIdList = db.User.Where(x => string.IsNullOrEmpty(x.ProvoniceCode)).Select(x => x.ID).ToList();
+                        userIdList = userQUery.Where(x => string.IsNullOrEmpty(x.ProvoniceCode)).Select(x => x.ID).ToList();
                     }
                     query = query.Where(x => !string.IsNullOrEmpty(x.UserID) && userIdList.Contains(x.UserID));
                 }
@@ -1048,14 +1071,29 @@ namespace CoSys.Service
                     {
                         userQuery = userQuery.Where(x => x.RealName.Contains(name));
                     }
-                    if (searchTimeStart != null)
+                    if (isArea)
                     {
-                        newsQuery = newsQuery.Where(x => x.CreatedTime >= searchTimeStart);
+                        if (searchTimeStart != null)
+                        {
+                            newsQuery = newsQuery.Where(x => x.CreatedTime >= searchTimeStart);
+                        }
+                        if (searchTimeEnd != null)
+                        {
+                            searchTimeEnd = searchTimeEnd.Value.AddDays(1);
+                            newsQuery = newsQuery.Where(x => x.CreatedTime < searchTimeEnd);
+                        }
                     }
-                    if (searchTimeEnd != null)
+                    else
                     {
-                        searchTimeEnd = searchTimeEnd.Value.AddDays(1);
-                        newsQuery = newsQuery.Where(x => x.CreatedTime < searchTimeEnd);
+                        if (searchTimeStart != null)
+                        {
+                            userQuery = userQuery.Where(x => x.CreatedTime >= searchTimeStart);
+                        }
+                        if (searchTimeEnd != null)
+                        {
+                            searchTimeEnd = searchTimeEnd.Value.AddDays(1);
+                            userQuery = userQuery.Where(x => x.CreatedTime < searchTimeEnd);
+                        }
                     }
                     if (departmentFlag != 0)
                     {

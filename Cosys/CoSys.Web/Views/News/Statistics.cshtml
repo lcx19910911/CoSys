@@ -66,7 +66,8 @@
 
 
         function Export() {
-            var url = "/news/ExportStatistics?&state=" + $("[name='state']").val() + "&title=" + $("[name='title']").val() + "&type=@(Request["type"])&areaId=@(Request["areaId"])";
+            var url = "/news/ExportStatistics?&state=" + $("[name='state']").val() + "&title=" + $("[name='title']").val() + "&type=@(Request["type"])&areaId=@(Request["areaId"])" +
+                "&name=@(Request["name"])&searchTimeStart=@(Request["searchTimeStart"])&searchTimeEnd=@(Request["searchTimeEnd"])&methodFlag=@(Request["methodFlag"])&departmentFlag=@(Request["departmentFlag"])";
             window.open(url);
         }
 
@@ -83,7 +84,12 @@
             },
             params: {
                 type: "@(Request["type"])",
-                areaId: "@(Request["areaId"])"
+                areaId: "@(Request["areaId"])",
+                name: "@(Request["name"])",
+                searchTimeStart: "@(Request["searchTimeStart"])",
+                searchTimeEnd: "@(Request["searchTimeEnd"])",
+                methodFlag: "@(Request["methodFlag"])",
+                departmentFlag: "@(Request["departmentFlag"])"
             },
             isForPhone: '@(WebHelper.CheckAgent()?1:0)' == "1",
             ajaxUrl: "/News/GetUserPageList",

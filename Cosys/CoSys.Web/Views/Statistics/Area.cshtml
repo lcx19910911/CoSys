@@ -143,14 +143,14 @@
                         var allCount = 0;
                         var passCount = 0;
                         $(json.List).each(function (index, item) {
-                            str += "<div class='am-g  am-margin-top am-margin-left am-margin-right'><span class='am-input-group-label am-margin-left-sm am-text-left'><strong>" + item.Name + "</strong> 总投稿数：" + item.AllCount + "通过数：" + item.PassCount + " <a href='" + item.NewsLink + "'>查看明细</a></span>   </div>";
+                            str += "<div class='am-g  am-margin-top am-margin-left am-margin-right'><span class='am-input-group-label am-margin-left-sm am-text-left'><strong>" + item.Name + "</strong> 总投稿数：" + item.AllCount + "通过数：" + item.PassCount + " <a  data-href='" + item.NewsLink + "' onclick='sreachNews(this)'>查看明细</a></span>   </div>";
                             allCount += item.AllCount;
                             passCount += item.PassCount;
                             if (item.Childrens.length > 0) {
 
                                 $(item.Childrens).each(function (y, obj) {
                                     str += "<div class='am-g  am-margin-top am-margin-left-lg am-margin-right'>";
-                                    str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-warning'>" + obj.Name + "</strong> 总投稿数：" + obj.AllCount + "通过数：" + obj.PassCount + "<a href='" + obj.NewsLink + "'>查看明细</a></span>";
+                                    str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-warning'>" + obj.Name + "</strong> 总投稿数：" + obj.AllCount + "通过数：" + obj.PassCount + "<a  data-href='" + obj.NewsLink + "' onclick='sreachNews(this)'>查看明细</a></span>";
                                     str += '</div>';
                                     allCount += obj.AllCount;
                                     passCount += obj.PassCount;
@@ -161,7 +161,7 @@
                                             }
                                             allCount += temp.AllCount;
                                             passCount += temp.PassCount;
-                                            str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-success'>" + temp.Name + "</strong> 总投稿数：" + temp.AllCount + "通过数：" + temp.PassCount + "<a href='" + temp.NewsLink + "'>查看明细</a></span>";
+                                            str += "<span class='am-input-group-label am-margin-left-sm am-text-left'><strong class='am-text-success'>" + temp.Name + "</strong> 总投稿数：" + temp.AllCount + "通过数：" + temp.PassCount + "<a data-href='" + temp.NewsLink + "' onclick='sreachNews(this)'>查看明细</a></span>";
                                             if ((z % 3 == 0 && z != 0) || z == obj.Childrens.length - 1) {
                                                 str += '</div></div>';
                                             }
@@ -176,13 +176,12 @@
                     });
             }
 
-            Search();
-            $.Nuoya.action("/DataDictionary/GetSelectItem", { group: 2 }, function (json) {
-                $(json).each(function () {
-                    $("select[name='methodFlag']").append("<option  value='" + this.Value + "' >" + this.Text + "</option>");
-                });
-            });
+            function sreachNews(obj)
+            {
+                window.location.href=$(obj).attr("data-href")+"&name=" + $("[name='name']").val() + "&searchTimeStart=" + $("[name='searchTimeStart']").val() + "&searchTimeEnd=" + $("[name='searchTimeEnd']").val() + "&methodFlag=" + $("[name='methodFlag']").val()+"&departmentFlag="+$("[name='DepartmentFlag']").val();
+            }
 
+            Search();
             function loadArea(obj, i) {
                 var thatObj = $(obj);
                 var value = thatObj.val();
