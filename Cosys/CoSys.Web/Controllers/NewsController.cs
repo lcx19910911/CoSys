@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using CoSys.Core;
 using System.Collections;
 using System.IO;
+using System.Text;
 
 namespace CoSys.Web.Controllers
 {
@@ -30,6 +31,21 @@ namespace CoSys.Web.Controllers
         {
             if (Client.LoginAdmin == null)
                 return RedirectToAction("Login", "Account");
+            ViewBag.CanExport = false;
+            if (Client.LoginAdmin.IsSuperAdmin)
+            {
+                ViewBag.CanExport = true;
+            }
+            else
+            {
+                //判断角色
+                var role = WebService.Find_Role(Client.LoginAdmin.RoleID);
+                if (role != null)
+                {
+                    if (role.AuditState == NewsAuditState.EditorialAudit || role.AuditState == NewsAuditState.LastAudit)
+                        ViewBag.CanExport = true;
+                }
+            }
             return View();
         }
 
@@ -331,6 +347,95 @@ namespace CoSys.Web.Controllers
         public ActionResult EditorialPass(string id, string msg)
         {
             return JResult(WebService.News_EditorialPass(id, msg));           
+        }
+
+
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="name">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public void GetExportPageList(int pageIndex, int pageSize, string title, NewsState? state)
+        {
+            var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", true, state);
+            if(result.Result.List!=null&& result.Result.List.Count >0)
+            {
+                var methodDic = WebService.Cache_Get_DataDictionary()[GroupCode.Channel];
+                result.Result.List.Where(x=>x.State==NewsState.Pass||x.State==NewsState.Plush).ToList().ForEach(x =>
+                {
+                    var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
+                    if (list == null)
+                        list = new List<string>();
+                    var str = string.Join(",", list);
+                    Export(x, str);
+                });
+            }
+        }
+
+        public void Export(News model,string str)
+        {
+            using (MemoryStream ms = WordHelper.Export(model, str))
+            {
+
+                //将流的位置设置到开始位置。
+                ms.Position = 0;
+                //块大小
+                long ChunkSize = 102400;
+                //建立100k的缓冲区
+                byte[] buffer = new byte[ChunkSize];
+                //已读字节数
+                long dataLengthToRead = ms.Length;
+                Response.ContentType = "application/octet-stream";
+                Response.ContentType = "application/ms-word";
+                Response.AddHeader("Content-Disposition",
+                    string.Format("attachment; filename={0}", HttpUtility.UrlEncode(model.Title + ".doc", Encoding.UTF8)));
+                Response.BinaryWrite(ms.ToArray());
+            }
+        }
+
+
+
+        public string xxHTML(string html)
+        {
+
+            html = html.Replace("(<style)+[^<>]*>[^\0]*(</style>)+", "");
+            html = html.Replace(@"\<img[^\>] \>", "");
+            html = html.Replace(@"<p>", "");
+            html = html.Replace(@"</p>", "");
+
+
+            System.Text.RegularExpressions.Regex regex0 =
+            new System.Text.RegularExpressions.Regex("(<style)+[^<>]*>[^\0]*(</style>)+", System.Text.RegularExpressions.RegexOptions.Multiline);
+            System.Text.RegularExpressions.Regex regex1 = new System.Text.RegularExpressions.Regex(@"<script[\s\S] </script *>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            System.Text.RegularExpressions.Regex regex2 = new System.Text.RegularExpressions.Regex(@" href *= *[\s\S]*script *:", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            System.Text.RegularExpressions.Regex regex3 = new System.Text.RegularExpressions.Regex(@" on[\s\S]*=", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            System.Text.RegularExpressions.Regex regex4 = new System.Text.RegularExpressions.Regex(@"<iframe[\s\S] </iframe *>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            System.Text.RegularExpressions.Regex regex5 = new System.Text.RegularExpressions.Regex(@"<frameset[\s\S] </frameset *>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            System.Text.RegularExpressions.Regex regex6 = new System.Text.RegularExpressions.Regex(@"\<img[^\>] \>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            System.Text.RegularExpressions.Regex regex7 = new System.Text.RegularExpressions.Regex(@"</p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            System.Text.RegularExpressions.Regex regex8 = new System.Text.RegularExpressions.Regex(@"<p>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            System.Text.RegularExpressions.Regex regex9 = new System.Text.RegularExpressions.Regex(@"<[^>]*>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            html = regex1.Replace(html, ""); //过滤<script></script>标记  
+            html = regex2.Replace(html, ""); //过滤href=javascript: (<A>) 属性   
+            html = regex0.Replace(html, ""); //过滤href=javascript: (<A>) 属性   
+
+
+            //html = regex10.Replace(html, "");  
+            html = regex3.Replace(html, "");// _disibledevent="); //过滤其它控件的on...事件  
+            html = regex4.Replace(html, ""); //过滤iframe  
+            html = regex5.Replace(html, ""); //过滤frameset  
+            html = regex6.Replace(html, ""); //过滤frameset  
+            html = regex7.Replace(html, ""); //过滤frameset  
+            html = regex8.Replace(html, ""); //过滤frameset  
+            html = regex9.Replace(html, "");
+            //html = html.Replace(" ", "");  
+            html = html.Replace("</strong>", "");
+            html = html.Replace("<strong>", "");
+            html = html.Replace(" ", "");
+            return html;
         }
     }
 }

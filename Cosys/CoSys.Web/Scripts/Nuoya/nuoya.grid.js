@@ -420,7 +420,9 @@
                 getCheckItems: _getCheckItems,
                 getParams: _getParams,
                 del: _del,
-                batchAction: _batchAction
+                batchAction: _batchAction,
+                pageIndex: options.pageIndex,
+                pageSize: options.pageSize
             };
         }
         return _init();
