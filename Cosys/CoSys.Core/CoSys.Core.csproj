@@ -97,6 +97,7 @@
     <Compile Include="Helper\UploadHelper.cs" />
     <Compile Include="Helper\WebHelper.cs" />
     <Compile Include="Helper\WordHelper.cs" />
+    <Compile Include="Helper\ZipHelper.cs" />
     <Compile Include="Model\FileCode.cs" />
     <Compile Include="Model\LoginUser.cs" />
     <Compile Include="Model\PageList.cs" />

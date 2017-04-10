@@ -401,7 +401,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string userId, bool isAudit, NewsState? state)
+        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string userId, bool isAudit, NewsState? state, bool isExport = false)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -446,7 +446,10 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    query = query.Where(x => x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush);
+                    if(!isExport)
+                        query = query.Where(x => x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush);
+                    else
+                        query = query.Where(x =>x.State == NewsState.Pass || x.State == NewsState.Plush);
                 }
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

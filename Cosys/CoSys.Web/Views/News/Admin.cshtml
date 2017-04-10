@@ -101,7 +101,9 @@
             return item.RoleName + "-" + item.StateStr;
         }
         function Export(obj) {
-            window.open("/news/GetExportPageList?pageIndex=" + grid.pageIndex + "&pageSize=" + grid.pageSize + "&title=" + $("[name='title']").val() + "&state=" + $("[name='state']").val());
+            $.Nuoya.action("/news/GetExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val() }, function (result) {
+                window.open(result);
+            })
         }
         var grid = $.Nuoya.grid({
             tableId: "dataTable",

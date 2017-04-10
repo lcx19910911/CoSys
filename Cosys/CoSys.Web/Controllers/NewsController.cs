@@ -18,7 +18,7 @@ namespace CoSys.Web.Controllers
 
         public ActionResult Index()
         {
-            if (Client.LoginUser==null)
+            if (Client.LoginUser == null)
                 return RedirectToAction("Login", "Account");
             return View();
         }
@@ -78,26 +78,26 @@ namespace CoSys.Web.Controllers
                 {
                     department = WebService.Find_Department(model.DepartmentID);
                 }
-                 else  if (model.DepartmentID.Split(';').Length == 2)
+                else if (model.DepartmentID.Split(';').Length == 2)
                 {
                     model.ChildrenDepartmentList = WebService.Get_DepartmentSelectItem(model.DepartmentID.Split(';')[0]);
                     department = WebService.Find_Department(model.DepartmentID.Split(';')[1]);
                 }
 
-                if(department==null)
+                if (department == null)
                     return View("Index");
                 model.Logs = WebService.Get_LogByNewsId(model.ID);
             }
 
             model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
-            model.MethodList= WebService.Get_DataDictorySelectItem(GroupCode.Channel); 
+            model.MethodList = WebService.Get_DataDictorySelectItem(GroupCode.Channel);
             return View(model);
         }
 
         public ActionResult AdminManage(string id)
         {
             var model = WebService.Find_News(id);
-            ViewBag.CanEdit = false;;
+            ViewBag.CanEdit = false; ;
             if (model == null)
             {
                 model = new News();
@@ -125,7 +125,7 @@ namespace CoSys.Web.Controllers
                 if (department == null)
                     return View("Admin");
                 model.Logs = WebService.Get_LogByNewsId(model.ID);
-                if ((model.State==NewsState.None||model.State==NewsState.Reject)&&!model.UserID.Equals(admin.ID))
+                if ((model.State == NewsState.None || model.State == NewsState.Reject) && !model.UserID.Equals(admin.ID))
                     return View("Admin");
                 if (!admin.IsSuperAdmin)
                 {
@@ -140,7 +140,7 @@ namespace CoSys.Web.Controllers
                     if (model.State == NewsState.WaitAudit)
                     {
                         //判断投递部门权限
-                        if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin&&!model.UserID.Equals(admin.ID))
+                        if ((department.Flag & admin.DepartmentFlag) == 0 && !admin.IsSuperAdmin && !model.UserID.Equals(admin.ID))
                         {
                             return View("Admin");
                         }
@@ -173,7 +173,7 @@ namespace CoSys.Web.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [ValidateInput(false)]
-        public JsonResult Add(News model,bool isAduit=true,long departmentFlag=0)
+        public JsonResult Add(News model, bool isAduit = true, long departmentFlag = 0)
         {
             ModelState.Remove("ID");
             ModelState.Remove("CreatedTime");
@@ -218,9 +218,9 @@ namespace CoSys.Web.Controllers
         }
 
 
-        public ActionResult ExportStatistics(string title,string userId, NewsState? state, int? type, int? areaId, string name, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag = 0, long departmentFlag = 0)
+        public ActionResult ExportStatistics(string title, string userId, NewsState? state, int? type, int? areaId, string name, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag = 0, long departmentFlag = 0)
         {
-            var list = WebService.Get_UserNewsPageList(1, 100000, title, userId, state, type,areaId, name, searchTimeStart, searchTimeEnd, methodFlag, departmentFlag).Result.List;
+            var list = WebService.Get_UserNewsPageList(1, 100000, title, userId, state, type, areaId, name, searchTimeStart, searchTimeEnd, methodFlag, departmentFlag).Result.List;
             string fileName = DateTime.Now.ToString("yyyyMMddhhmmss") + ".xls";
             string filePath = Path.Combine(Server.MapPath("~/") + @"Export\" + fileName);
             NPOIHelper<News>.GetExcel(list, GetChanelHT(), filePath);
@@ -231,7 +231,7 @@ namespace CoSys.Web.Controllers
         {
             Hashtable hs = new Hashtable();
             hs["Title"] = "标题";
-            hs["SubmitTime"] = "投递时间"; 
+            hs["SubmitTime"] = "投递时间";
             hs["StateStr"] = "状态";
             hs["UserName"] = "作者";
             return hs;
@@ -245,9 +245,9 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetPageList(int pageIndex, int pageSize, string title,NewsState? state,int? type,int? areaId)
+        public ActionResult GetPageList(int pageIndex, int pageSize, string title, NewsState? state, int? type, int? areaId)
         {
-            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, state, type,areaId));
+            return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, state, type, areaId));
         }
 
 
@@ -260,7 +260,7 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title,string userId, NewsState? state, bool isAudit=true)
+        public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title, string userId, NewsState? state, bool isAudit = true)
         {
             return JResult(WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, userId, isAudit, state));
         }
@@ -274,7 +274,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult GetUserPageList(int pageIndex, int pageSize, string title, string userId, NewsState? state, int? type, int? areaId, string name, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag = 0, long departmentFlag = 0)
         {
-            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, userId, state,type,areaId, name, searchTimeStart, searchTimeEnd,methodFlag,departmentFlag));
+            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, userId, state, type, areaId, name, searchTimeStart, searchTimeEnd, methodFlag, departmentFlag));
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult GetMyPageList(int pageIndex, int pageSize, string title, NewsState? state, int? type, int? areaId)
         {
-            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, Client.LoginAdmin.ID, state, type, areaId,"",null,null));
+            return JResult(WebService.Get_UserNewsPageList(pageIndex, pageSize, title, Client.LoginAdmin.ID, state, type, areaId, "", null, null));
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace CoSys.Web.Controllers
         {
             return JResult(WebService.ReSet_News(id));
         }
-        
+
         /// <summary>
         /// 审核
         /// </summary>
@@ -326,7 +326,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult Audit(YesOrNoCode isPass, string id, string msg)
         {
-            return JResult(WebService.Audit_News(isPass, id,msg));
+            return JResult(WebService.Audit_News(isPass, id, msg));
         }
         /// <summary>
         /// 发布
@@ -346,7 +346,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult EditorialPass(string id, string msg)
         {
-            return JResult(WebService.News_EditorialPass(id, msg));           
+            return JResult(WebService.News_EditorialPass(id, msg));
         }
 
 
@@ -358,43 +358,78 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public void GetExportPageList(int pageIndex, int pageSize, string title, NewsState? state)
+        public ActionResult GetExportPageList(int pageIndex, int pageSize, string title, NewsState? state)
         {
-            var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", true, state);
-            if(result.Result.List!=null&& result.Result.List.Count >0)
+            var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", true, state,true);
+            if (result.Result.List != null && result.Result.List.Count > 0)
             {
                 var methodDic = WebService.Cache_Get_DataDictionary()[GroupCode.Channel];
-                result.Result.List.Where(x=>x.State==NewsState.Pass||x.State==NewsState.Plush).ToList().ForEach(x =>
-                {
-                    var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
-                    if (list == null)
-                        list = new List<string>();
-                    var str = string.Join(",", list);
-                    Export(x, str);
-                });
+                var path = System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "/";
+                result.Result.List.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush).ToList().ForEach(x =>
+                        {
+                            var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
+                            if (list == null)
+                                list = new List<string>();
+                            var str = string.Join(",", list);
+                            Export(x, str, path);
+                        });
+                var zipUrl = "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
+                ZipHelper.Zip(System.Web.HttpContext.Current.Request.PhysicalApplicationPath + zipUrl, System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/", 1, "", new string[] { path });
+                //Directory.Delete(path);
+                return JResult(zipUrl);
             }
+            return JResult("");
         }
 
-        public void Export(News model,string str)
+        public void Export(News model, string str, string path)
         {
-            using (MemoryStream ms = WordHelper.Export(model, str))
+
+            if (!(Directory.Exists(path)))
+            {
+                Directory.CreateDirectory(path);
+            }
+            FileStream fs = new FileStream(path + model.Title + ".txt", FileMode.Create);
+            StreamWriter sw = new StreamWriter(fs);
+            try
+            {
+                sw.Write(xxHTML(model.Content));
+                sw.Flush();
+            }
+            catch (Exception ex)
             {
 
-                //将流的位置设置到开始位置。
-                ms.Position = 0;
-                //块大小
-                long ChunkSize = 102400;
-                //建立100k的缓冲区
-                byte[] buffer = new byte[ChunkSize];
-                //已读字节数
-                long dataLengthToRead = ms.Length;
-                Response.ContentType = "application/octet-stream";
-                Response.ContentType = "application/ms-word";
-                Response.AddHeader("Content-Disposition",
-                    string.Format("attachment; filename={0}", HttpUtility.UrlEncode(model.Title + ".doc", Encoding.UTF8)));
-                Response.BinaryWrite(ms.ToArray());
+            }
+            finally
+            {
+                sw.Close();
+                fs.Close();
+            }
+
+            using (MemoryStream ms = WordHelper.Export(model, str))
+            {
+                byte[] bytes = new byte[ms.Length];
+                ms.Read(bytes, 0, bytes.Length);
+                // 设置当前流的位置为流的开始   
+                ms.Seek(0, SeekOrigin.Begin);
+
+                fs = new FileStream(path + model.Title + ".doc", FileMode.Create);
+                BinaryWriter bw = new BinaryWriter(fs);
+                try
+                {
+                    bw.Write(bytes);
+                }
+                catch (Exception ex)
+                {
+
+                }
+                finally
+                {
+                    bw.Close();
+                    fs.Close();
+                }
             }
         }
+
 
 
 
