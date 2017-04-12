@@ -446,10 +446,14 @@ namespace CoSys.Service
                 }
                 else
                 {
-                    if(!isExport)
-                        query = query.Where(x => x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush);
+                    if (isExport)
+                    {
+                        query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush);
+                    }
                     else
-                        query = query.Where(x =>x.State == NewsState.Pass || x.State == NewsState.Plush);
+                    {
+                        query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush || x.State == NewsState.WaitAudit);
+                    }
                 }
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.CreatedTime).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -575,6 +579,49 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
+        public WebResult<bool> UserUpdate_News(News model, bool isAudit)
+        {
+            using (DbRepository db = new DbRepository())
+            {
+                var oldEntity = db.News.Find(model.ID);
+                if (oldEntity != null)
+                {
+                    oldEntity.Title = model.Title;
+                    oldEntity.PenName = model.PenName;
+                    oldEntity.Content = model.Content;
+                    oldEntity.MethodFlag = model.MethodFlag;
+                    oldEntity.Paths = model.Paths;
+                    oldEntity.NewsTypeID = model.NewsTypeID;
+                    oldEntity.DepartmentID = model.DepartmentID;
+                    oldEntity.Msg = model.Msg;
+                    if (oldEntity.State == NewsState.Reject || oldEntity.State == NewsState.None)
+                    {
+                        if (isAudit)
+                        {
+                            oldEntity.State = NewsState.WaitAudit;
+                            oldEntity.SubmitTime = DateTime.Now;                            
+                        }
+                        else
+                            oldEntity.State = NewsState.None;
+                    }
+                }
+                else
+                    return Result(false, ErrorCode.sys_param_format_error);
+
+
+                if (db.SaveChanges() > 0)
+                {
+                }
+                return Result(true);
+            }
+
+        }
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public WebResult<bool> Update_News(News model, bool isAudit)
         {
             using (DbRepository db = new DbRepository())
@@ -676,8 +723,6 @@ namespace CoSys.Service
                                 oldEntity.AuditState = NewsAuditState.EditorAudit;
                             }
                         }
-                        else
-                            oldEntity.State = NewsState.None;
                     }
                 }
                 else

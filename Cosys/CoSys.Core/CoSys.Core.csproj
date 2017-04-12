@@ -90,6 +90,7 @@
     <Compile Include="Helper\EditorHelper.cs" />
     <Compile Include="Helper\EnumHelper.cs" />
     <Compile Include="Helper\ExcelHelper.cs" />
+    <Compile Include="Helper\ImageThumbnailHelper.cs" />
     <Compile Include="Helper\LogHelper.cs" />
     <Compile Include="Helper\LoginHelper.cs" />
     <Compile Include="Helper\NPOIHelper.cs" />

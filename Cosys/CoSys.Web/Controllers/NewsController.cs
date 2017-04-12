@@ -217,6 +217,31 @@ namespace CoSys.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        [ValidateInput(false)]
+        public JsonResult UserUpdate(News model, bool isAduit = true)
+        {
+            ModelState.Remove("CreatedTime");
+            ModelState.Remove("IsDelete");
+            ModelState.Remove("State");
+            ModelState.Remove("UserID");
+            ModelState.Remove("MethodFlag");
+            if (ModelState.IsValid)
+            {
+                var result = WebService.UserUpdate_News(model, isAduit);
+                return JResult(result);
+            }
+            else
+            {
+                return ParamsErrorJResult(ModelState);
+            }
+        }
+        
+
 
         public ActionResult ExportStatistics(string title, string userId, NewsState? state, int? type, int? areaId, string name, DateTime? searchTimeStart, DateTime? searchTimeEnd, long methodFlag = 0, long departmentFlag = 0)
         {

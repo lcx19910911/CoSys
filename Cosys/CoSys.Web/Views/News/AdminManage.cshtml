@@ -16,13 +16,16 @@
                 canEdit = true;
             }
         }
-        if (role.AuditState == NewsAuditState.LastAudit|| role.AuditState == Model.AuditState)
+        if (!admin.IsSuperAdmin)
         {
-            canEdit = true;
+            if (role.AuditState == Model.AuditState)
+            {
+                canEdit = true;
+            }
         }
-        if (role.AuditState == Model.AuditState && Model.UserID.Equals(admin.ID))
+        else
         {
-            canEdit = false;
+            canEdit= false;
         }
     }
     else
@@ -118,20 +121,6 @@
                         </div>
                     </div>
                 }
-                <div class="am-form-group" id="childrenDiv" style="@(Model.ChildrenDepartmentList!=null&&Model.ChildrenDepartmentList.Count>0?" ":" display:none;")">
-                    <label for="user-email" class="am-u-sm-3 am-form-label">小组<strong class="am-text-danger am-text-sm">*</strong></label>
-                    <div class="am-u-sm-9">
-                        <select name="ChildrenDepartmentID" @(!canEdit ? "disabled":"" )>
-                            @if (Model.ChildrenDepartmentList != null && Model.ChildrenDepartmentList.Count != 0)
-                            {
-                                foreach (var item in Model.ChildrenDepartmentList)
-                                {
-                                    <option value="@item.Value" @(Model.DepartmentID.IsNotNullOrEmpty() && Model.DepartmentID.Contains(item.Value) ? "selected":"" )>@item.Text</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                </div>
                 @if (isFormPhone)
                 {
                     <div class="am-form-group">
@@ -170,11 +159,11 @@
                                 <div class="am-u-lg-4">
                                     @if (canEdit)
                                     {
-                                        <a class="am-close am-icon-times am-u-sm-1" style="opacity:1"><img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:140px;" /></a><hr />
+                                        <a class="am-close am-icon-times am-u-sm-1" style="opacity:1"><img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:150px;" /></a><hr />
                                     }
                                     else
                                     {
-                                        <img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:140px;" /><hr />
+                                        <img class="am-u-lg-3" data-src="@(item)" src="@(item)" style="width:150px;" /><hr />
                                     }
                                 </div>
                             }
@@ -292,23 +281,6 @@
                         {
                             if (canEdit)
                             {
-                                @*<div class="am-form-group">
-                                    <label class="am-u-sm-3 am-u-end am-form-label">发布于</label>
-                                    <div class="am-u-sm-9">
-                                        @if (Model.MethodList != null && Model.MethodList.Count != 0)
-                                        {
-                                            foreach (var item in Model.MethodList)
-                                            {
-                                                if ((Model.PlushMethodFlag & item.Value.GetLong()) != 0)
-                                                {
-                                                    <label class="am-checkbox">
-                                                        <input type="checkbox" checked="checked" value="@(item.Value)" data-am-ucheck checked>@item.Text
-                                                    </label>
-                                                }
-                                            }
-                                        }
-                                    </div>
-                                </div>*@
                                 <div class="am-form-group">
                                     <label class="am-u-sm-3 am-u-end am-form-label">发布渠道</label>
                                     <div class="am-u-sm-9" id="plushFlagDiv">
@@ -484,9 +456,10 @@
             fileSuffixs: ["jpg", "png", 'jpeg'],
             maximumFilesUpload: 1,//最大文件上传数
             onComplete: function (data) {
+                CloseLoading();
                 if (data) {
                     $("#div_imageShow").parents(".am-form-group").show();
-                    $("#div_imageShow").append('<img style="width:100px;height:60px;" data-src="'+data+'" src="' + data + '"/>');
+                    $("#div_imageShow").append('<img style="width:150px;height:150px;" data-src="'+data+'" src="' + data + '"/>');
                 }
                 else {
                     alert("上传错误");
@@ -499,6 +472,7 @@
                     return false;
                 }
                 //Loading("图片正在上传中...", "请稍等");
+                ShowLoading();
                 uploadheadimg.submitUpload();
                 return true;//返回false将取消当前选择的文件
             },
@@ -565,15 +539,15 @@
             var paths = "";
             if (isPhone == "1") {
                 content = $("[name='Content']").text();
-                $("#div_imageShow img").each(function () {
-                    imgAry.push($(this).attr("data-src"));
-                })
-                paths = imgAry.join(',');
             }
             else {
                 content = ue.getContent();
             }
 
+            $("#div_imageShow img").each(function () {
+                imgAry.push($(this).attr("data-src"));
+            })
+            paths = imgAry.join(',');
             if (content == "") {
                 $.Nuoya.alert("请填写内容");
                 return;
@@ -594,6 +568,7 @@
         }
 
         $("#rejectBtn").on("click", function () {
+
             SavaNews(function () {
                 var msg = $("[name='Msg']").val();
 

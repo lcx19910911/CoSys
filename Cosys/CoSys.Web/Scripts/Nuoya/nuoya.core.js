@@ -15,6 +15,8 @@
     $.Nuoya = {
         //数据请求
         action: function (url, param, callback, errorCallback, async) {
+
+            ShowLoading();
             jQuery.ajax({
                 async: async,
                 url: url + "?_token=" + $.Nuoya.getURLParam("_token"),
@@ -29,7 +31,7 @@
                     else {
                         isSuccess = false;
                     }
-
+                    CloseLoading();
                     var work = function () {
                         if (json.Redirect) {
                             window.location.href = json.Redirect;
