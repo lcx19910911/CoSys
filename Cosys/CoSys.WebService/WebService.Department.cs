@@ -224,6 +224,7 @@ namespace CoSys.Service
                     {
                         name = x.Name,
                         value = x.Flag.ToString(),
+                        nocheck= Get_DepartmentZTreeChildren(x.ID, groups).Count>0,
                         children = Get_DepartmentZTreeChildren(x.ID, groups)
                     }).ToList();
             }
