@@ -90,6 +90,7 @@
     <Compile Include="Helper\EditorHelper.cs" />
     <Compile Include="Helper\EnumHelper.cs" />
     <Compile Include="Helper\ExcelHelper.cs" />
+    <Compile Include="Helper\ImageThumbnailHelper.cs" />
     <Compile Include="Helper\LogHelper.cs" />
     <Compile Include="Helper\LoginHelper.cs" />
     <Compile Include="Helper\NPOIHelper.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Helper\UploadHelper.cs" />
     <Compile Include="Helper\WebHelper.cs" />
     <Compile Include="Helper\WordHelper.cs" />
+    <Compile Include="Helper\ZipHelper.cs" />
     <Compile Include="Model\FileCode.cs" />
     <Compile Include="Model\LoginUser.cs" />
     <Compile Include="Model\PageList.cs" />

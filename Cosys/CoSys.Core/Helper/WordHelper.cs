@@ -79,7 +79,7 @@ namespace CoSys.Core
                 foreach (var item in model.Paths.Split(','))
                 {
 
-                    using (FileStream picData = new FileStream(item, FileMode.Open, FileAccess.Read))
+                    using (FileStream picData = new FileStream(System.Web.HttpContext.Current.Request.PhysicalApplicationPath+item, FileMode.Open, FileAccess.Read))
                     {
                         r6.AddPicture(picData, (int)PictureType.PNG, "图片"+index, widthEmus, heightEmus);
                     }

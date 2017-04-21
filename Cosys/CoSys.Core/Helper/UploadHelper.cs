@@ -18,29 +18,9 @@ namespace CoSys.Core
             string path= Path.Combine(phicyPath, fileName);
             if (!Directory.Exists(phicyPath))
                 Directory.CreateDirectory(phicyPath);
-            file.SaveAs(path);
+            //file.SaveAs(path);
+            ImageThumbnailHelper.ReducedImage(file.InputStream, 300, 300, path);
             return string.Format("/{0}/{1}",root,fileName);
-        }
-
-        public static string Save(HttpPostedFileBase file, string mark, out string fileName)
-        {
-            var root = string.Empty;
-            if (LoginHelper.UserIsLogin())
-            {
-                root = $"Upload/{LoginHelper.GetCurrentUser().Phone}/{mark}";
-            }
-            else
-            {
-                root = @"Upload/" + mark;
-            }
-            string phicyPath = Path.Combine(HttpRuntime.AppDomainAppPath, root);
-            var savefileName = Guid.NewGuid().ToString("N") + file.FileName.Substring(file.FileName.LastIndexOf('.'));
-            fileName = file.FileName;
-            string path = Path.Combine(phicyPath, savefileName);
-            if (!Directory.Exists(phicyPath))
-                Directory.CreateDirectory(phicyPath);
-            file.SaveAs(path);
-            return string.Format("/{0}/{1}", root, savefileName);
         }
 
 
