@@ -14,6 +14,7 @@ using System.Web.UI;
 using System.IO;
 using System.Web;
 using System.Net.Mail;
+using System.Drawing;
 
 namespace CoSys.Core
 {
@@ -416,6 +417,16 @@ namespace CoSys.Core
             {
                 ctl.RenderControl(htw);
                 return sw.ToString();
+            }
+        }
+
+        public static Stream GetImageStream(string url)
+        {
+            System.Net.WebRequest webreq = System.Net.WebRequest.Create(url);
+            System.Net.WebResponse webres = webreq.GetResponse();
+            using (System.IO.Stream stream = webres.GetResponseStream())
+            {
+                return  stream;
             }
         }
 

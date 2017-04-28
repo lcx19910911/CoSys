@@ -629,6 +629,7 @@ namespace CoSys.Service
                 var oldEntity = db.News.Find(model.ID);
                 if (oldEntity != null)
                 {
+                    oldEntity.History = new List<string>() { oldEntity.Title, oldEntity.Content }.ToJson();
                     oldEntity.Title = model.Title;
                     oldEntity.PenName = model.PenName;
                     oldEntity.Content = model.Content;

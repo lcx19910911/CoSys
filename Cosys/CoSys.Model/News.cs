@@ -45,6 +45,12 @@ namespace CoSys.Model
         /// </summary>
         public string Content { get; set; }
 
+
+        /// <summary>
+        /// 标题
+        /// </summary>
+        public string History { get; set; }
+
         public NewsAuditState AuditState { get; set; } = NewsAuditState.None;
         /// <summary>
         /// 标题
