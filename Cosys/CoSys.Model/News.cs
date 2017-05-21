@@ -44,12 +44,7 @@ namespace CoSys.Model
         /// 标题
         /// </summary>
         public string Content { get; set; }
-
-
-        /// <summary>
-        /// 标题
-        /// </summary>
-        public string History { get; set; }
+        
 
         public NewsAuditState AuditState { get; set; } = NewsAuditState.None;
         /// <summary>
@@ -129,5 +124,7 @@ namespace CoSys.Model
         public YesOrNoCode CanAudit { get; set; } = YesOrNoCode.No;
 
         public DateTime? SubmitTime { get; set; }
+
+        
     }
 }

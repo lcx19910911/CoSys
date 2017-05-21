@@ -13,7 +13,7 @@ namespace CoSys.Repository.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201703201243127_1"; }
+            get { return "201704280521528_1"; }
         }
         
         string IMigrationMetadata.Source

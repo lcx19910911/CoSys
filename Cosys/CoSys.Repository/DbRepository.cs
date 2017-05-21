@@ -93,6 +93,8 @@ namespace CoSys.Repository
 
         public DbSet<News> News { get; set; }
 
+        public DbSet<NewsHistory> NewsHistory { get; set; }
+
         public DbSet<Department> Department { get; set; }
     }
 

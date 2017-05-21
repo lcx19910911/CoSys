@@ -214,23 +214,17 @@
                     </div>
                 }
 
-                @if (Model.History.IsNotNullOrEmpty())
-                {
-                    var obj = Model.History.DeserializeJson<List<string>>();
-                    <div class="am-form-group">
-                        <label for="user-name" class="am-u-sm-3 am-form-label">历史标题</label>
-                        <div class="am-u-sm-9">
-                            <input type="text" value="@(obj[0])" readonly>
-                        </div>
+
+                <div class="am-form-group">
+                    <div class="am-u-sm-4 am-u-sm-push-2">
+                        <button id="saveBtn" type="button" class="am-btn am-btn-lg am-btn-success">保存</button>
                     </div>
-                    
-                    <div class="am-form-group">
-                        <label for="user-name" class="am-u-sm-3 am-form-label">历史内容</label>
-                        <div class="am-u-sm-9">
-                            <textarea rows="8"  readonly>@Html.Raw(obj[1])</textarea>
-                        </div>
+                    <div class="am-u-sm-4">
+                        <button id="submitBtn" type="button" class="am-btn am-btn-lg am-btn-success">发稿</button>
                     </div>
-                }
+                </div>
+
+                <button id="historyBtn" type="button" class="am-btn am-btn-lg am-btn-success">历史记录</button>
                 @if (Model.ID.IsNotNullOrEmpty())
                 {
                     if (Model.State == NewsState.None)
@@ -667,6 +661,9 @@
                 else
                     $.Nuoya.alert(data.ErrorDesc);
             });
+        });
+
+        $("#historyBtn").click(function () {
         });
 
         $("#saveBtn,#submitBtn").on("click", function () {

@@ -72,6 +72,7 @@
     <Compile Include="Enum\YesOrNo.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Model\SelectItem.cs" />
+    <Compile Include="NewsHistory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Department.cs" />
     <Compile Include="Role.cs" />

@@ -629,7 +629,12 @@ namespace CoSys.Service
                 var oldEntity = db.News.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    oldEntity.History = new List<string>() { oldEntity.Title, oldEntity.Content }.ToJson();
+                    db.NewsHistory.Add(new NewsHistory()
+                    {
+                        NewsID = model.ID,
+                        Content = oldEntity.Content,
+                        Title = oldEntity.Title
+                    });
                     oldEntity.Title = model.Title;
                     oldEntity.PenName = model.PenName;
                     oldEntity.Content = model.Content;
@@ -1080,7 +1085,7 @@ namespace CoSys.Service
                       plushMethod += " " + x.Value;
                       var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, news.Paths);
                       ;
-                      var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php",$"title={news.Title}&catid={news.NewsTypeName}&body={news.Content}&author={news.PenName}";
+                      var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php",$"title={news.Title}&catid={news.NewsTypeName}&body={news.Content}&author={news.PenName}");
                   });
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
                 if (db.SaveChanges() > 0)

@@ -189,6 +189,7 @@
     <Content Include="HtmlTemplates\DataDictionary\Update.html" />
     <Content Include="HtmlTemplates\Menu\Update.html" />
     <Content Include="HtmlTemplates\Department\Update.html" />
+    <Content Include="HtmlTemplates\News\HistoryIndex.html" />
     <Content Include="HtmlTemplates\News\Index.html" />
     <Content Include="HtmlTemplates\Role\Update.html" />
     <Content Include="HtmlTemplates\Admin\ChangePassword.html" />
