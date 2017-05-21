@@ -1072,10 +1072,15 @@ namespace CoSys.Service
                 news.PlushMethodFlag = channelFlag;
                 //邮箱头盖
                 var plushMethod = "";
+                var typeNameDic = Cache_Get_DataDictionary()[GroupCode.Channel];
+
+                news.NewsTypeName = typeNameDic.ContainsKey(news.NewsTypeID) ? typeNameDic[news.NewsTypeID].Value : "无";
                 Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0 && x.Remark.IsNotNullOrEmpty()).ToList().ForEach(x =>
                   {
                       plushMethod += " " + x.Value;
                       var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, news.Paths);
+                      ;
+                      var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php",$"title={news.Title}&catid={news.NewsTypeName}&body={news.Content}&author={news.PenName}";
                   });
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
                 if (db.SaveChanges() > 0)
