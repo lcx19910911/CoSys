@@ -174,6 +174,10 @@
                     </div>
                 </div>
                 <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                <div class="am-form-group">
+                    <button id="historyBtn" type="button" class="am-btn am-u-sm-push-3 am-u-sm-2 am-u-end">历史记录</button>
+                </div>
+                
                 @if (Model.ID.IsNotNullOrEmpty() && Model.Logs != null && Model.Logs.Count > 0)
                 {
                     if (isFormPhone)
@@ -224,7 +228,6 @@
                     </div>
                 </div>
 
-                <button id="historyBtn" type="button" class="am-btn am-btn-lg am-btn-success">历史记录</button>
                 @if (Model.ID.IsNotNullOrEmpty())
                 {
                     if (Model.State == NewsState.None)
@@ -525,7 +528,7 @@
             });
         })
 
-        function SavaNews(callback) {
+        function SavaNews(callback,mark) {
             var id = '@(Model.ID)';
             var title = $("[name='Title']").val();
             if (title == "") {
@@ -576,6 +579,7 @@
                 Paths: paths,
                 Content: content,
                 isAduit: true,
+                Mark:mark
             }, function (data) {
                 callback(data);
             });
@@ -603,7 +607,7 @@
                     else
                         $.Nuoya.alert(data.ErrorDesc);
                 });
-            });
+            },"history");
         });
 
         $("#passBtn").on("click", function () {
@@ -621,7 +625,7 @@
                     else
                         $.Nuoya.alert(data.ErrorDesc);
                 });
-            });
+            }, "history");
 
         });
 
@@ -639,7 +643,7 @@
                 else
                     $.Nuoya.alert(data.ErrorDesc);
             });
-        });
+        }, "history");
 
 
 
@@ -664,6 +668,54 @@
         });
 
         $("#historyBtn").click(function () {
+            $.Nuoya.ajaxDialog({
+                closeViaDimmer: false,
+                ajaxUrl: "/HtmlTemplates/News/HistoryIndex.html",
+                title: "历史记录",
+                width: "1200px",
+                height: "600px",
+                callback: function (e) {
+                    var historyGrid = $.Nuoya.grid({
+                        tableId: "historyDataTable",
+                        //表格id
+                        search: {
+                            domainId: "searchHistoryDomain",
+                            subId: "btnHistorySearch"
+                        },
+                        ajaxUrl: "/News/GetHistoryPageList",
+                        //数据请求地址
+                        pageSize: 10,
+                        events: [
+                            {
+                                className: "am-text-secondary",
+                                icon: "icon-pencil-square-o",
+                                name: "详情",
+                                click: function (item) {
+                                    $.Nuoya.ajaxDialog({
+                                        closeViaDimmer: false,
+                                        ajaxUrl: "/HtmlTemplates/News/History.html",
+                                        title: "详情",
+                                        width: "1300px",
+                                        height: "630px",
+                                        callback: function (o) {
+                                            $("#form [name='Title']").val(item.Title);
+                                            $("#form [name='UpdaterName']").val(item.UpdaterName);
+                                            $("#form [name='CreatedTime']").val(RenderTime(item.CreatedTime));
+                                            var historyTxtContentId = $.AMUI.utils.generateGUID("historyTxtContent");
+                                            $(".historyTxtContent").attr("id", historyTxtContentId)
+                                            var historyUe = UE.getEditor(historyTxtContentId);
+                                            historyUe.addListener("ready", function () {
+                                                // editor准备好之后才可以使用
+                                                historyUe.setContent(item.Content);
+                                            });
+                                        }
+                                    })
+                                }
+                            }
+                        ]
+                    });
+                }
+            })
         });
 
         $("#saveBtn,#submitBtn").on("click", function () {

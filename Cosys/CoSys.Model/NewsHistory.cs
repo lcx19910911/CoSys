@@ -32,5 +32,14 @@ namespace CoSys.Model
         /// 标题
         /// </summary>
         public string Content { get; set; }
+
+
+        [Required]
+        [MaxLength(32)]
+        [Column("UpdaterID", TypeName = "char")]
+        public string UpdaterID { get; set; }
+
+        [NotMapped]
+        public string UpdaterName { get; set; }
     }
 }

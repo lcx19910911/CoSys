@@ -199,7 +199,7 @@ namespace CoSys.Web.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [ValidateInput(false)]
-        public JsonResult Update(News model, bool isAduit = true)
+        public JsonResult Update(News model, bool isAduit = true,string mark="")
         {
             ModelState.Remove("CreatedTime");
             ModelState.Remove("IsDelete");
@@ -208,7 +208,7 @@ namespace CoSys.Web.Controllers
             ModelState.Remove("MethodFlag");
             if (ModelState.IsValid)
             {
-                var result = WebService.Update_News(model, isAduit);
+                var result = WebService.Update_News(model, isAduit,mark);
                 return JResult(result);
             }
             else
@@ -275,6 +275,19 @@ namespace CoSys.Web.Controllers
             return JResult(WebService.Get_NewsPageList(pageIndex, pageSize, title, state, type, areaId));
         }
 
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="name">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public ActionResult GetHistoryPageList(int pageIndex, int pageSize, string newsId)
+        {
+            return JResult(WebService.Get_NewsHistoryPageList(pageIndex, pageSize, newsId));
+        }
+        
 
 
         /// <summary>

@@ -79,6 +79,39 @@ namespace CoSys.Service
             }
         }
 
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="title">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public WebResult<PageList<NewsHistory>> Get_NewsHistoryPageList(int pageIndex, int pageSize, string newsId)
+        {
+            using (DbRepository db = new DbRepository())
+            {
+                var query = db.NewsHistory.AsQueryable().AsNoTracking();
+                if (newsId.IsNotNullOrEmpty())
+                {
+                    query = query.Where(x => x.NewsID==newsId);
+                }
+                var count = query.Count();
+                var list = query.OrderByDescending(x => x.ID).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                if (list != null && list.Count > 0)
+                {
+                    var userIdlist = list.Select(x => x.UpdaterID).ToList();
+                    var userDic = db.User.Where(x => userIdlist.Contains(x.ID)).ToList().ToDictionary(x => x.ID);
+                    list.ForEach(x =>
+                    {
+                        if (x.UpdaterID.IsNotNullOrEmpty() && userDic.ContainsKey(x.UpdaterID))
+                            x.UpdaterName = userDic[x.UpdaterID].RealName;
+                    });
+                }
+                return ResultPageList(list, pageIndex, pageSize, count);
+            }
+        }
+
         public List<News> GetReturnList(List<News> list, DbRepository db)
         {
             var admin = Client.LoginAdmin;
@@ -622,19 +655,23 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public WebResult<bool> Update_News(News model, bool isAudit)
+        public WebResult<bool> Update_News(News model, bool isAudit,string mark)
         {
             using (DbRepository db = new DbRepository())
             {
                 var oldEntity = db.News.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    db.NewsHistory.Add(new NewsHistory()
+                    if (mark.IsNotNullOrEmpty() && mark == "history")
                     {
-                        NewsID = model.ID,
-                        Content = oldEntity.Content,
-                        Title = oldEntity.Title
-                    });
+                        db.NewsHistory.Add(new NewsHistory()
+                        {
+                            NewsID = model.ID,
+                            Content = oldEntity.Content,
+                            Title = oldEntity.Title,
+                            UpdaterID=Client.LoginAdmin.ID
+                        });
+                    }
                     oldEntity.Title = model.Title;
                     oldEntity.PenName = model.PenName;
                     oldEntity.Content = model.Content;
