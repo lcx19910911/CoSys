@@ -167,7 +167,8 @@
                 callback: function (e) {
                     formInit();//表单初始化
                     if ('@(type)' == '2') {
-                        $("#form #remarkDiv").text("邮箱地址:");
+                        $("#form #remarkDiv").text("邮箱地址：");
+                        $("#form #tipdiv").text("发布到栏目不必填写此项")
                     }
                     $("#form [name='GroupCode']").val(@(type));
                 },
@@ -219,7 +220,8 @@
                                         data: model
                                     });
                                     if ('@(type)' == '2') {
-                                        $("#form #remarkDiv").text("邮箱地址");
+                                        $("#form #remarkDiv").text("邮箱地址：");
+                                        $("#form #tipdiv").text("发布到栏目不必填写此项")
                                     }
                                     formInit(model);//表单初始化
                                 });
