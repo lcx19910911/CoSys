@@ -9,6 +9,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace CoSys.Service
 {
@@ -1125,7 +1126,8 @@ namespace CoSys.Service
                       }
                       else
                       {
-                          var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php", $"title={news.Title}&catid={x.Value}&body={news.Content}&author={news.PenName}");
+                          
+                          var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php", $"title={HttpUtility.UrlEncode(news.Title)}&catid={HttpUtility.UrlEncode(x.Value)}&body={HttpUtility.UrlEncode(news.Content)}&author={HttpUtility.UrlEncode(news.PenName)}");
                       }
                   });
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
