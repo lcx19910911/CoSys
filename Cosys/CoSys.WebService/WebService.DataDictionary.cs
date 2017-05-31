@@ -202,17 +202,15 @@ namespace CoSys.Service
         {
             using (DbRepository db = new DbRepository())
             {
-                if (db.DataDictionary.Where(x => x.GroupCode == GroupCode.Area && x.Key.Equals(model.Key)&&!x.ID.Equals(model.ID)).Any())
+                if (db.DataDictionary.Where(x => x.GroupCode == GroupCode.Area && x.Key.Equals(model.Key) && !x.ID.Equals(model.ID)).Any())
                     return Result(false, ErrorCode.sys_param_format_error);
                 var oldEntity = db.DataDictionary.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    if (string.IsNullOrEmpty(model.Key))
+                    if (oldEntity.GroupCode != GroupCode.Channel && string.IsNullOrEmpty(model.Key))
                         oldEntity.Key = model.ID;
                     oldEntity.ParentKey = model.ParentKey;
                     oldEntity.Sort = model.Sort;
-                    if(model.Key.IsNotNullOrEmpty())
-                        oldEntity.Key = model.Key;
                     oldEntity.Remark = model.Remark;
                     oldEntity.Value = model.Value;
                 }
