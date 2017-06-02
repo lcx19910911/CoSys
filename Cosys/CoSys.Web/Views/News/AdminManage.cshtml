@@ -174,10 +174,12 @@
                     </div>
                 </div>
                 <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                @if (Model.ID.IsNotNullOrEmpty())
+                {
                 <div class="am-form-group">
                     <button id="historyBtn" type="button" class="am-btn am-u-sm-push-3 am-u-sm-2 am-u-end">历史记录</button>
                 </div>
-                
+                }
                 @if (Model.ID.IsNotNullOrEmpty() && Model.Logs != null && Model.Logs.Count > 0)
                 {
                     if (isFormPhone)
@@ -670,7 +672,10 @@
                         //表格id
                         search: {
                             domainId: "searchHistoryDomain",
-                            subId: "btnHistorySearch"
+                            subId: "btnHistorySearch",
+                        },
+                        params: {
+                            newsId: '@(Model.ID)'
                         },
                         ajaxUrl: "/News/GetHistoryPageList",
                         //数据请求地址

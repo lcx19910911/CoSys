@@ -250,3 +250,4 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+/Cosys/CoSys.Web/Export/20170602103135.zip

@@ -9,6 +9,7 @@ using CoSys.Core;
 using System.Collections;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace CoSys.Web.Controllers
 {
@@ -396,7 +397,7 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetExportPageList(int pageIndex, int pageSize, string title, NewsState? state)
+        public ActionResult GetTxtExportPageList(int pageIndex, int pageSize, string title, NewsState? state)
         {
             var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", true, state,true);
             if (result.Result.List != null && result.Result.List.Count > 0)
@@ -409,52 +410,68 @@ namespace CoSys.Web.Controllers
                             if (list == null)
                                 list = new List<string>();
                             var str = string.Join(",", list);
-                            Export(x, str, path);
+                            Export(x, str, path,true);
                         });
                 var zipUrl = "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
                 ZipHelper.Zip(System.Web.HttpContext.Current.Request.PhysicalApplicationPath + zipUrl, System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/", 1, "", new string[] { path });
-                //Directory.Delete(path);
+
+                AsyncHelper.Run(() => {
+                    Directory.Delete(path);
+                });
                 return JResult(zipUrl);
             }
             return JResult("");
         }
 
-        public void Export(News model, string str, string path)
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">分页大小</param>
+        /// <param name="name">名称 - 搜索项</param>
+        /// <param name="no">编号 - 搜索项</param>
+        /// <returns></returns>
+        public ActionResult GetWordExportPageList(int pageIndex, int pageSize, string title, NewsState? state)
+        {
+            var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", true, state, true);
+            if (result.Result.List != null && result.Result.List.Count > 0)
+            {
+                var methodDic = WebService.Cache_Get_DataDictionary()[GroupCode.Channel];
+                var path = System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "/";
+                result.Result.List.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush).ToList().ForEach(x =>
+                {
+                    var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
+                    if (list == null)
+                        list = new List<string>();
+                    var str = string.Join(",", list);
+                    Export(x, str, path);
+                });
+                var zipUrl = "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
+                ZipHelper.Zip(System.Web.HttpContext.Current.Request.PhysicalApplicationPath + zipUrl, System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/", 1, "", new string[] { path });
+
+                AsyncHelper.Run(() => {
+                    Directory.Delete(path,true);
+                });
+                return JResult(zipUrl);
+            }
+            return JResult("");
+        }
+
+        public void Export(News model, string str, string path, bool isTxt = false)
         {
 
             if (!(Directory.Exists(path)))
             {
                 Directory.CreateDirectory(path);
             }
-            FileStream fs = new FileStream(path + model.Title + ".txt", FileMode.Create);
-            StreamWriter sw = new StreamWriter(fs);
-            try
+            if (isTxt)
             {
-                sw.Write(xxHTML(model.Content));
-                sw.Flush();
-            }
-            catch (Exception ex)
-            {
-
-            }
-            finally
-            {
-                sw.Close();
-                fs.Close();
-            }
-
-            using (MemoryStream ms = WordHelper.Export(model, str))
-            {
-                byte[] bytes = new byte[ms.Length];
-                ms.Read(bytes, 0, bytes.Length);
-                // 设置当前流的位置为流的开始   
-                ms.Seek(0, SeekOrigin.Begin);
-
-                fs = new FileStream(path + model.Title + ".doc", FileMode.Create);
-                BinaryWriter bw = new BinaryWriter(fs);
+                FileStream fs = new FileStream(path + model.Title + ".txt", FileMode.Create);
+                StreamWriter sw = new StreamWriter(fs);
                 try
                 {
-                    bw.Write(bytes);
+                    sw.Write(xxHTML(model.Content));
+                    sw.Flush();
                 }
                 catch (Exception ex)
                 {
@@ -462,8 +479,35 @@ namespace CoSys.Web.Controllers
                 }
                 finally
                 {
-                    bw.Close();
+                    sw.Close();
                     fs.Close();
+                }
+
+            }
+            else
+            {
+                using (MemoryStream ms = WordHelper.Export(model, str))
+                {
+                    byte[] bytes = new byte[ms.Length];
+                    ms.Read(bytes, 0, bytes.Length);
+                    // 设置当前流的位置为流的开始   
+                    ms.Seek(0, SeekOrigin.Begin);
+
+                    FileStream fs = new FileStream(path + model.Title + ".doc", FileMode.Create);
+                    BinaryWriter bw = new BinaryWriter(fs);
+                    try
+                    {
+                        bw.Write(bytes);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    finally
+                    {
+                        bw.Close();
+                        fs.Close();
+                    }
                 }
             }
         }

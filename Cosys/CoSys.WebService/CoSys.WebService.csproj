@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebService.NewsFile.cs" />
     <Compile Include="WebService.News.cs" />
     <Compile Include="WebService.cs" />
     <Compile Include="WebService.DataDictionary.cs" />
