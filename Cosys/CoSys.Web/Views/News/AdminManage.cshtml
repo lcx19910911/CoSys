@@ -330,16 +330,10 @@
                                             <div class="am-u-sm-3 am-u-sm-push-2">
                                                 <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
                                             </div>
-                                            <div class="am-u-sm-3">
-                                                <button id="editorialPassBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
-                                            </div>
                                         }
-                                        else
-                                        {
                                             <div class="am-u-sm-3 am-u-sm-push-2">
                                                 <button id="editorialPassBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
                                             </div>
-                                        }
                                         <div class="am-u-sm-4">
                                             <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过(到稿件审核员)</button>
                                         </div>
@@ -578,7 +572,7 @@
 
         }
 
-        $("#rejectBtn").on("click", function () {
+        $("#rejectBtn").click(function () {
 
             SavaNews(function () {
                 var msg = $("[name='Msg']").val();
@@ -602,7 +596,7 @@
             },"history");
         });
 
-        $("#passBtn").on("click", function () {
+        $("#passBtn").click(function () {
             SavaNews(function () {
                 var msg = $("[name='Msg']").val();
                 $.Nuoya.action("/news/Audit", {
@@ -622,24 +616,27 @@
         });
 
 
-        $("#editorialPassBtn").on("click", function () {
-            var msg = $("[name='Msg']").val();
-            $.Nuoya.action("/news/EditorialPass", {
-                id: '@(Model.ID)',
-                msg: msg
-            }, function (data) {
-                if (!data.ErrorDesc) {
-                    $.Nuoya.alert("审核成功");
-                    window.location.href = "/news/admin";
-                }
-                else
-                    $.Nuoya.alert(data.ErrorDesc);
-            });
-        }, "history");
+        $("#editorialPassBtn").click(function () {
+            SavaNews(function () {
+                var msg = $("[name='Msg']").val();
+                $.Nuoya.action("/news/EditorialPass", {
+                    id: '@(Model.ID)',
+                    isPass: 1,
+                    msg: msg
+                }, function (data) {
+                    if (!data.ErrorDesc) {
+                        $.Nuoya.alert("审核成功");
+                        window.location.href = "/news/admin";
+                    }
+                    else
+                        $.Nuoya.alert(data.ErrorDesc);
+                });
+            }, "history");
+        });
 
 
 
-        $("#plushBtn").on("click", function () {
+        $("#plushBtn").click(function () {
             var msg = $("[name='Msg']").val();
             var plushFlag = 0;
             $("#plushFlagDiv input:checked").each(function () {
@@ -713,7 +710,7 @@
             })
         });
 
-        $("#saveBtn,#submitBtn").on("click", function () {
+        $("#saveBtn,#submitBtn").click(function () {
              var id = '@(Model.ID)';
             var title = $("[name='Title']").val();
             if (title == "") {
