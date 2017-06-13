@@ -301,7 +301,7 @@ namespace CoSys.Web.Controllers
         /// <returns></returns>
         public ActionResult GetAdminPageList(int pageIndex, int pageSize, string title, string userId, NewsState? state, bool isAudit = true)
         {
-            return JResult(WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, userId, isAudit, state));
+            return JResult(WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, userId,"", isAudit, state));
         }
         /// <summary>
         /// 获取分页列表
@@ -397,14 +397,14 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetTxtExportPageList(int pageIndex, int pageSize, string title, NewsState? state)
+        public ActionResult GetTxtExportPageList(int pageIndex, int pageSize, string title, NewsState? state,string ids)
         {
-            var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", true, state,true);
+            var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", ids, true, state,true);
             if (result.Result.List != null && result.Result.List.Count > 0)
             {
                 var methodDic = WebService.Cache_Get_DataDictionary()[GroupCode.Channel];
                 var path = System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "/";
-                result.Result.List.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush).ToList().ForEach(x =>
+                result.Result.List.ForEach(x =>
                         {
                             var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
                             if (list == null)
@@ -431,14 +431,14 @@ namespace CoSys.Web.Controllers
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public ActionResult GetWordExportPageList(int pageIndex, int pageSize, string title, NewsState? state)
+        public ActionResult GetWordExportPageList(int pageIndex, int pageSize, string title, NewsState? state, string ids)
         {
-            var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", true, state, true);
+            var result = WebService.Get_AdminNewsPageList(pageIndex, pageSize, title, "", ids, true, state, true);
             if (result.Result.List != null && result.Result.List.Count > 0)
             {
                 var methodDic = WebService.Cache_Get_DataDictionary()[GroupCode.Channel];
                 var path = System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "/";
-                result.Result.List.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush).ToList().ForEach(x =>
+                result.Result.List.ForEach(x =>
                 {
                     var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
                     if (list == null)

@@ -435,7 +435,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string userId, bool isAudit, NewsState? state, bool isExport = false)
+        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string userId,string ids, bool isAudit, NewsState? state, bool isExport = false)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -452,6 +452,10 @@ namespace CoSys.Service
                 if (userId.IsNotNullOrEmpty())
                 {
                     query = query.Where(x => (!string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(userId)));
+                }
+                if (ids.IsNotNullOrEmpty())
+                {
+                    query = query.Where(x => ids.Contains(x.ID));
                 }
                 if (!isAudit)
                 {

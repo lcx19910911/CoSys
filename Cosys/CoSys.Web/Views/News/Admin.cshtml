@@ -58,10 +58,10 @@
                         <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
                         @if (ViewBag.CanExport)
                         {
-                        <button class="am-btn am-btn-default" onclick="ExportTxt()" type="button">导出Txt</button>
-                        <button class="am-btn am-btn-default" onclick="ExportWord()" type="button">导出Word</button>
+                        <button class="am-btn am-btn-default am-margin-left-sm" onclick="ExportTxt()" type="button">导出Txt</button>
+                        <button class="am-btn am-btn-default am-margin-left-sm" onclick="ExportWord()" type="button">导出Word</button>
                         }
-                        <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                        <button class="am-btn am-btn-default am-margin-left-sm" onclick="ClearFilter()" type="button">清除</button>
                     </span>
                 </div>
             </div>
@@ -102,13 +102,13 @@
             return item.RoleName + "-" + item.StateStr;
         }
         function ExportTxt() {
-            $.Nuoya.action("/news/GetTxtExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val() }, function (result) {
+            $.Nuoya.action("/news/GetTxtExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val(), ids: grid.getCheckIds() }, function (result) {
                 window.open(result);
             })
         }
 
         function ExportWord() {
-            $.Nuoya.action("/news/GetWordExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val() }, function (result) {
+            $.Nuoya.action("/news/GetWordExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val(), ids: grid.getCheckIds() }, function (result) {
                 window.open(result);
             })
         }
