@@ -486,7 +486,7 @@ namespace CoSys.Service
                 {
                     if (isExport)
                     {
-                        query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush);
+                       // query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush);
                     }
                     else
                     {

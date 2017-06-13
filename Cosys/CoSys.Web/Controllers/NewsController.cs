@@ -416,7 +416,7 @@ namespace CoSys.Web.Controllers
                 ZipHelper.Zip(System.Web.HttpContext.Current.Request.PhysicalApplicationPath + zipUrl, System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/", 1, "", new string[] { path });
 
                 AsyncHelper.Run(() => {
-                    Directory.Delete(path);
+                    Directory.Delete(path,true);
                 });
                 return JResult(zipUrl);
             }
