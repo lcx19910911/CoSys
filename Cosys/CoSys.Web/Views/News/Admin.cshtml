@@ -102,13 +102,13 @@
             return item.RoleName + "-" + item.StateStr;
         }
         function ExportTxt() {
-            $.Nuoya.action("/news/GetTxtExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val(), ids: grid.getCheckIds() }, function (result) {
+            $.Nuoya.action("/news/GetTxtExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val(), ids: grid.getCheckIds().join() }, function (result) {
                 window.open(result);
             })
         }
 
         function ExportWord() {
-            $.Nuoya.action("/news/GetWordExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val(), ids: grid.getCheckIds() }, function (result) {
+            $.Nuoya.action("/news/GetWordExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val(), ids: grid.getCheckIds().join() }, function (result) {
                 window.open(result);
             })
         }

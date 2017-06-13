@@ -404,13 +404,15 @@ namespace CoSys.Web.Controllers
             {
                 var methodDic = WebService.Cache_Get_DataDictionary()[GroupCode.Channel];
                 var path = System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "/";
+                var index = 1;
                 result.Result.List.ForEach(x =>
                         {
                             var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
                             if (list == null)
                                 list = new List<string>();
                             var str = string.Join(",", list);
-                            Export(x, str, path,true);
+                            Export(x, str, path, index,true);
+                            index++;
                         });
                 var zipUrl = "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
                 ZipHelper.Zip(System.Web.HttpContext.Current.Request.PhysicalApplicationPath + zipUrl, System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/", 1, "", new string[] { path });
@@ -438,13 +440,15 @@ namespace CoSys.Web.Controllers
             {
                 var methodDic = WebService.Cache_Get_DataDictionary()[GroupCode.Channel];
                 var path = System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "/";
+                var index = 1;
                 result.Result.List.ForEach(x =>
                 {
                     var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
                     if (list == null)
                         list = new List<string>();
                     var str = string.Join(",", list);
-                    Export(x, str, path);
+                    Export(x, str, path, index);
+                    index++;
                 });
                 var zipUrl = "/Export/" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
                 ZipHelper.Zip(System.Web.HttpContext.Current.Request.PhysicalApplicationPath + zipUrl, System.Web.HttpContext.Current.Request.PhysicalApplicationPath + "/Export/", 1, "", new string[] { path });
@@ -457,7 +461,7 @@ namespace CoSys.Web.Controllers
             return JResult("");
         }
 
-        public void Export(News model, string str, string path, bool isTxt = false)
+        public void Export(News model, string str, string path,int index, bool isTxt = false)
         {
 
             if (!(Directory.Exists(path)))
@@ -466,7 +470,7 @@ namespace CoSys.Web.Controllers
             }
             if (isTxt)
             {
-                FileStream fs = new FileStream(path + model.Title + ".txt", FileMode.Create);
+                FileStream fs = new FileStream(path + index + "-" + model.Title  + ".txt", FileMode.Create);
                 StreamWriter sw = new StreamWriter(fs);
                 try
                 {
@@ -493,7 +497,7 @@ namespace CoSys.Web.Controllers
                     // 设置当前流的位置为流的开始   
                     ms.Seek(0, SeekOrigin.Begin);
 
-                    FileStream fs = new FileStream(path + model.Title + ".doc", FileMode.Create);
+                    FileStream fs = new FileStream(path + index + "-" + model.Title + ".doc", FileMode.Create);
                     BinaryWriter bw = new BinaryWriter(fs);
                     try
                     {
