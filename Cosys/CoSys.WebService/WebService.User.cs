@@ -68,13 +68,13 @@ namespace CoSys.Service
         /// <param name="loginName"></param>
         /// <param name="password"></param>
         /// <returns></returns> 
-        public Tuple<ValidateCodeGenertor,string> Create_ValidateCode(string loginName)
+        public Tuple<ValidateCodeGenertor, string> Create_ValidateCode(string loginName)
         {
             ValidateCodeGenertor v = ValidateCodeGenertor.Default;
             CacheHelper.Remove("code" + loginName);
             var code = v.CreateValidateCode();
             CacheHelper.Set<string>("code" + loginName, code, CacheTimeOption.SixMinutes);
-            return new Tuple<ValidateCodeGenertor, string>(v,code);
+            return new Tuple<ValidateCodeGenertor, string>(v, code);
         }
 
         /// <summary>
@@ -85,11 +85,11 @@ namespace CoSys.Service
         /// <param name="name">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name,int? type, int? areaId, DateTime? searchTimeStart, DateTime? searchTimeEnd, bool isAdmin=false)
+        public WebResult<PageList<User>> Get_UserPageList(int pageIndex, int pageSize, string name, int? type, int? areaId, DateTime? searchTimeStart, DateTime? searchTimeEnd, bool isAdmin = false)
         {
             using (DbRepository db = new DbRepository())
             {
-                var query = db.User.AsQueryable().AsNoTracking().AsNoTracking().Where(x => !x.IsDelete&&!x.IsSuperAdmin);
+                var query = db.User.AsQueryable().AsNoTracking().AsNoTracking().Where(x => !x.IsDelete && !x.IsSuperAdmin);
 
                 if (areaId == null && type == null)
                 {
@@ -100,7 +100,7 @@ namespace CoSys.Service
                 {
                     query = query.Where(x => x.RealName.Contains(name));
                 }
-                if (areaId != null&& type != null)
+                if (areaId != null && type != null)
                 {
                     if (searchTimeStart != null)
                     {
@@ -113,7 +113,7 @@ namespace CoSys.Service
                     }
                     if (type == 0)
                     {
-                        query = query.Where(x =>!string.IsNullOrEmpty(x.ProvoniceCode)&& x.ProvoniceCode.Equals(areaId.ToString())&& string.IsNullOrEmpty(x.CityCode));
+                        query = query.Where(x => !string.IsNullOrEmpty(x.ProvoniceCode) && x.ProvoniceCode.Equals(areaId.ToString()) && string.IsNullOrEmpty(x.CityCode));
                     }
                     else if (type == 1)
                     {
@@ -129,14 +129,14 @@ namespace CoSys.Service
                     }
                     else if (type == -1)
                     {
-                        query = query.Where(x => string.IsNullOrEmpty(x.ProvoniceCode) );
+                        query = query.Where(x => string.IsNullOrEmpty(x.ProvoniceCode));
                     }
                 }
 
                 var count = query.Count();
                 var list = query.OrderByDescending(x => x.RealName).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
                 var userIdList = list.Select(x => x.ID).ToList();
-                var newsGroupDic = db.News.Where(x=> userIdList.Contains(x.UserID)).GroupBy(x=>x.UserID).ToDictionary(x=>x.Key,x=>x.ToList());
+                var newsGroupDic = db.News.Where(x => userIdList.Contains(x.UserID)).GroupBy(x => x.UserID).ToDictionary(x => x.Key, x => x.ToList());
                 var roleDic = new Dictionary<string, Role>();
                 var areaDic = new Dictionary<string, DataDictionary>();
                 if (isAdmin)
@@ -189,7 +189,7 @@ namespace CoSys.Service
             }
             using (var db = new DbRepository())
             {
-                
+
                 var user = db.User.Find(id);
                 if (user == null)
                     return Result(false, ErrorCode.user_not_exit);
@@ -210,14 +210,14 @@ namespace CoSys.Service
                     return Result(false, ErrorCode.sys_fail);
                 }
             }
-    }
+        }
 
-    /// <summary>
-    /// 增加
-    /// </summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    public WebResult<bool> Add_User(User model)
+        /// <summary>
+        /// 增加
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public WebResult<bool> Add_User(User model)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -256,7 +256,7 @@ namespace CoSys.Service
             }
 
         }
-        
+
         /// <summary>
         /// 用户注册
         /// </summary>
@@ -271,7 +271,7 @@ namespace CoSys.Service
                 {
                     Phone = phone,
                     Password = CryptoHelper.MD5_Encrypt(password),
-           
+
                 };
                 db.User.Add(user);
                 if (db.SaveChanges() > 0)
@@ -286,7 +286,7 @@ namespace CoSys.Service
                 }
             }
         }
-        
+
         /// <summary>
         /// 修改
         /// </summary>
@@ -397,6 +397,6 @@ namespace CoSys.Service
         {
             var key = CacheHelper.RenderKey(Params.Cache_Prefix_Key, account);
             return CacheHelper.Get<string>(key);
-        }   
+        }
     }
 }
