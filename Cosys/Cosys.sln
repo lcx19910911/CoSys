@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoSys.WebService", "CoSys.W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoSys.Web", "CoSys.Web\CoSys.Web.csproj", "{8E671F52-94D2-4CC0-BFEE-A1E6A134162D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoSys.Test", "CoSys.Test\CoSys.Test.csproj", "{09B63742-4F8B-4747-8C95-233CAF73DE46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8E671F52-94D2-4CC0-BFEE-A1E6A134162D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E671F52-94D2-4CC0-BFEE-A1E6A134162D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E671F52-94D2-4CC0-BFEE-A1E6A134162D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09B63742-4F8B-4747-8C95-233CAF73DE46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09B63742-4F8B-4747-8C95-233CAF73DE46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09B63742-4F8B-4747-8C95-233CAF73DE46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09B63742-4F8B-4747-8C95-233CAF73DE46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
