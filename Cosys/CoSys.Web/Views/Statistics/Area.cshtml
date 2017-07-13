@@ -29,7 +29,7 @@
                             {
                                 if (item.Value!="0")
                                 {
-                                <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
+                                <option value="@item.Value" @(item.Value.Trim() == "350000" ? "selected" : "")>@item.Text</option>
                                 }
                             }
                         }
@@ -83,7 +83,7 @@
                             {
                                 if (item.Value != "0")
                                 {
-                                    <option value="@item.Value" @(item.Value == "16" ? "selected" : "")>@item.Text</option>
+                                    <option value="@item.Value" @(item.Value.Trim() == "350000" ? "selected" : "")>@item.Text</option>
                                 }
                             }
                         }
