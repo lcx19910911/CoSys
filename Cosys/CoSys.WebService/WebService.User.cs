@@ -240,6 +240,11 @@ namespace CoSys.Service
                     model.CountyCode = null;
                 if (model.StreetCode == "0")
                     model.StreetCode = null;
+                if (model.NewPassword.IsNullOrEmpty())
+                 {
+                    model.NewPassword = "123456";
+                    model.ConfirmPassword = "123456";
+                }
                 model.Password = CryptoHelper.MD5_Encrypt(model.NewPassword);
                 model.ID = Guid.NewGuid().ToString("N");
                 model.CreatedTime = DateTime.Now;
