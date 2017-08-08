@@ -1121,20 +1121,23 @@ namespace CoSys.Service
                 //邮箱头盖
                 var plushMethod = "";
                 var typeNameDic = Cache_Get_DataDictionary()[GroupCode.Channel];
-                
-                Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0).ToList().ForEach(x =>
-                  {
-                      plushMethod += " " + x.Value;
-                      if (x.Remark.IsNotNullOrEmpty())
-                      {
-                          var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, news.Paths);
-                      }
-                      else
-                      {
-                          
-                          var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php", $"title={HttpUtility.UrlEncode(news.Title)}&catid={HttpUtility.UrlEncode(x.Value)}&body={HttpUtility.UrlEncode(news.Content)}&author={HttpUtility.UrlEncode(news.PenName)}");
-                      }
-                  });
+                var list = Cache_Get_DataDictionary()[GroupCode.Channel].Values.ToList();
+                list.ForEach(x =>
+                {
+                    if ((x.Key.GetLong() & channelFlag) != 0)
+                    {
+                        plushMethod += " " + x.Value;
+                        if (x.Remark.IsNotNullOrEmpty())
+                        {
+                            var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, news.Paths);
+                        }
+                        else
+                        {
+
+                            var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php", $"title={HttpUtility.UrlEncode(news.Title)}&catid={HttpUtility.UrlEncode(x.Value)}&body={HttpUtility.UrlEncode(news.Content)}&author={HttpUtility.UrlEncode(news.PenName)}");
+                        }
+                    }
+                });
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
                 if (db.SaveChanges() > 0)
                 {
