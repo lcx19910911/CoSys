@@ -52,7 +52,7 @@
                 </div>
 
 
-                <div class="am-form-group">
+                <div class="am-form-group" style="display:none;">
                     <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
                         <select name="NewsTypeID" @(!canEdit ? "disabled": "" )>
@@ -77,9 +77,9 @@
                     </div>
                 }
                 <div class="am-form-group">
-                    <label for="user-name" class="am-u-sm-3 am-form-label">见刊笔名<strong class="am-text-danger am-text-sm">*</strong></label>
+                    <label for="user-name" class="am-u-sm-3 am-form-label">"><strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <input type="text" name="PenName" placeholder="见刊笔名" maxlength="64" value="@((Model.ID.IsNullOrEmpty()?(admin.PenName.IsNullOrEmpty()?admin.RealName:admin.PenName): Model.PenName))" @(!canEdit ? "readonly": "" )>
+                        <input type="text" name="PenName" placeholder="">" maxlength="64" value="@((Model.ID.IsNullOrEmpty()?(admin.PenName.IsNullOrEmpty()?admin.RealName:admin.PenName): Model.PenName))" @(!canEdit ? "readonly": "" )>
                     </div>
                 </div>
                 @if (Model.ID.IsNotNullOrEmpty())

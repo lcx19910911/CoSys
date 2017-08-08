@@ -92,6 +92,10 @@ namespace CoSys.Web.Controllers
 
             model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
             model.MethodList = WebService.Get_DataDictorySelectItem(GroupCode.Channel);
+            if (model.NewsTypeID.IsNullOrEmpty())
+            {
+                model.NewsTypeID = model.TypeList[0].Value;
+            }
             return View(model);
         }
 
@@ -165,6 +169,10 @@ namespace CoSys.Web.Controllers
 
             model.TypeList = WebService.Get_DataDictorySelectItem(GroupCode.Type);
             model.MethodList = WebService.Get_DataDictorySelectItem(GroupCode.Channel);
+            if (model.NewsTypeID.IsNullOrEmpty())
+            {
+                model.NewsTypeID = model.TypeList[0].Value;
+            }
             return View(model);
         }
 

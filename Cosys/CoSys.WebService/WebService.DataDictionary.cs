@@ -274,7 +274,7 @@ namespace CoSys.Service
             else
                 areas = areas.Where(_ => string.IsNullOrEmpty(_.ParentKey));
             var alist = areas.ToList();
-            var list=alist.Select(x => new SelectItem() { Value = x.Key, Text = x.Value }).ToList();
+            var list=alist.Select(x => new SelectItem() { Value = x.Key, Text = x.Value }).ToList();           
             list.Insert(0, new SelectItem() { Value = "0", Text = "点击选择..." });
             return list;
         }
