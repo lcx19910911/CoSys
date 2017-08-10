@@ -77,7 +77,6 @@ namespace CoSys.Model
         /// <summary>
         /// 用户
         /// </summary>
-        [Required]
         [MaxLength(32)]
         [Column("NewsTypeID", TypeName = "char")]
         public string NewsTypeID { get; set; }

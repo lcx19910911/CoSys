@@ -8,8 +8,12 @@
 }
 
 <script>
-    $.Nuoya.action("/Home/LoadCache", {}, function (data) {
-    });
+    $.ajax({
+        url: "/Home/LoadCache",
+        success: function (json) {
+
+        }
+    })
 </script>
 @if (WebHelper.CheckAgent())
 {
