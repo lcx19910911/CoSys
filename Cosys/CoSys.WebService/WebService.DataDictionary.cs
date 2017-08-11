@@ -268,14 +268,14 @@ namespace CoSys.Service
         /// <returns></returns>
         public List<SelectItem> Get_AreaList(string value)
         {
-            var areas = Cache_Get_DataDictionary()[GroupCode.Area].Values.OrderBy(x => x.Sort).ToList().AsQueryable();
+            var areas = Cache_Get_DataDictionary()[GroupCode.Area].Values.OrderByDescending(x => x.Sort).ToList().AsQueryable();
             if (!string.IsNullOrEmpty(value)&&!value.Equals("0"))
                 areas = areas.Where(x=>!string.IsNullOrEmpty(x.ParentKey)&&x.ParentKey.Trim().Equals(value));
             else
                 areas = areas.Where(_ => string.IsNullOrEmpty(_.ParentKey));
             var alist = areas.ToList();
             var list=alist.Select(x => new SelectItem() { Value = x.Key, Text = x.Value }).ToList();           
-            list.Insert(0, new SelectItem() { Value = "0", Text = "点击选择..." });
+            list.Insert(0, new SelectItem() { Value = "0", Text = "点击选择...",Selected=true });
             return list;
         }
 

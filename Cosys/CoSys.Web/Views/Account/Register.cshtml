@@ -478,7 +478,7 @@
                     success: function (data) {
                         nextSelect.html("");
                         $(data.Result).each(function (index, item) {
-                            nextSelect.append("<option value='" + item.Value + "' selected>" + item.Text + "</option>");
+                            nextSelect.append("<option value='" + item.Value + "'>" + item.Text + "</option>");
                         });
                     }
                 });

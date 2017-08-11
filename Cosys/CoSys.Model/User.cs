@@ -26,7 +26,7 @@ namespace CoSys.Model
         /// 请输入密码
         /// </summary>
         [Display(Name = "请输入密码")]
-        [MaxLength(12), MinLength(6)]
+        [MaxLength(12, ErrorMessage = "长度最大为12"), MinLength(6,ErrorMessage ="长度最少为6")]
         [NotMapped]
         public string NewPassword { get; set; }
 
