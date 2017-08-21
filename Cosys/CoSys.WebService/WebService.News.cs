@@ -468,14 +468,17 @@ namespace CoSys.Service
                     {
                         var departmentIds = db.Department.Where(x => (admin.DepartmentFlag & x.Flag) != 0).Select(x => !string.IsNullOrEmpty(x.ParentID) ? (x.ParentID + ";" + x.ID) : x.ID).ToList();
                         query = query.Where(x => departmentIds.Contains(x.DepartmentID));
-                        if (role.AuditState == NewsAuditState.EditorialAudit)
-                        {
-                            query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
-                        }
-                        if (role.AuditState == NewsAuditState.MinisterAudit || role.AuditState == NewsAuditState.LastAudit)
-                        {
-                            query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.MinisterAudit || x.AuditState == NewsAuditState.LastAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
-                        }
+                        query = query.Where(x => (x.AuditState == role.AuditState));
+
+
+                        //if (role.AuditState == NewsAuditState.EditorialAudit)
+                        //{
+                        //    query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
+                        //}
+                        //if (role.AuditState == NewsAuditState.MinisterAudit || role.AuditState == NewsAuditState.LastAudit)
+                        //{
+                        //    query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.MinisterAudit || x.AuditState == NewsAuditState.LastAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
+                        //}
                     }
                 }
                 if (state != null && (int)state != -1)
