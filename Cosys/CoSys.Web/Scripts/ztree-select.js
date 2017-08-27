@@ -62,7 +62,7 @@
                 if (isFlag) {
                     var flag;
                     var nodes = ztreeObj.getCheckedNodes(true);
-                    $(dom).val("选中了" + nodes.length + "项");
+                    var selectText = "";
                     for (var i = 0; i < nodes.length; i++) {
                         if (nodes[i].value) {
                             if (flag == null) {
@@ -72,7 +72,12 @@
                                 flag |= parseInt(nodes[i].value);
                             }
                         }
+                        selectText += nodes[i].name
+                        if (i != nodes.length - 1) {
+                            selectText += ",";
+                        }
                     }
+                    $(dom).val("选中了 " + selectText);
                     $(valueInput).val(flag);
                 }
                 else {

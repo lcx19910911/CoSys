@@ -26,14 +26,14 @@ namespace CoSys.Model
         /// 请输入密码
         /// </summary>
         [Display(Name = "请输入密码")]
-        [MaxLength(12), MinLength(6)]
+        [MaxLength(12, ErrorMessage = "长度最大为12"), MinLength(6,ErrorMessage ="长度最少为6")]
         [NotMapped]
         public string NewPassword { get; set; }
 
         /// <summary>
         /// 再次输入密码
         /// </summary>
-        [MaxLength(12), MinLength(6), Compare("NewPassword", ErrorMessage = "两次密码输入不一致")]
+        [MaxLength(12, ErrorMessage = "长度最大为12"), MinLength(6, ErrorMessage = "长度最少为6"), Compare("NewPassword", ErrorMessage = "两次密码输入不一致")]
         [NotMapped]
         public string ConfirmPassword { get; set; }
 

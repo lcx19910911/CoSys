@@ -208,17 +208,15 @@ namespace CoSys.Service
         {
             using (DbRepository db = new DbRepository())
             {
-                if (db.DataDictionary.Where(x => x.GroupCode == GroupCode.Area && x.Key.Equals(model.Key)&&!x.ID.Equals(model.ID)).Any())
+                if (db.DataDictionary.Where(x => x.GroupCode == GroupCode.Area && x.Key.Equals(model.Key) && !x.ID.Equals(model.ID)).Any())
                     return Result(false, ErrorCode.sys_param_format_error);
                 var oldEntity = db.DataDictionary.Find(model.ID);
                 if (oldEntity != null)
                 {
-                    if (string.IsNullOrEmpty(model.Key))
+                    if (oldEntity.GroupCode != GroupCode.Channel && string.IsNullOrEmpty(model.Key))
                         oldEntity.Key = model.ID;
                     oldEntity.ParentKey = model.ParentKey;
                     oldEntity.Sort = model.Sort;
-                    if(model.Key.IsNotNullOrEmpty())
-                        oldEntity.Key = model.Key;
                     oldEntity.Remark = model.Remark;
                     oldEntity.Value = model.Value;
                 }
@@ -276,14 +274,14 @@ namespace CoSys.Service
         /// <returns></returns>
         public List<SelectItem> Get_AreaList(string value)
         {
-            var areas = Cache_Get_DataDictionary()[GroupCode.Area].Values.OrderBy(x => x.Sort).ToList().AsQueryable();
+            var areas = Cache_Get_DataDictionary()[GroupCode.Area].Values.OrderByDescending(x => x.Sort).ToList().AsQueryable();
             if (!string.IsNullOrEmpty(value)&&!value.Equals("0"))
                 areas = areas.Where(x=>!string.IsNullOrEmpty(x.ParentKey)&&x.ParentKey.Trim().Equals(value));
             else
                 areas = areas.Where(_ => string.IsNullOrEmpty(_.ParentKey));
             var alist = areas.ToList();
-            var list=alist.Select(x => new SelectItem() { Value = x.Key, Text = x.Value }).ToList();
-            list.Insert(0, new SelectItem() { Value = "0", Text = "点击选择..." });
+            var list=alist.Select(x => new SelectItem() { Value = x.Key, Text = x.Value }).ToList();           
+            list.Insert(0, new SelectItem() { Value = "0", Text = "点击选择...",Selected=true });
             return list;
         }
 

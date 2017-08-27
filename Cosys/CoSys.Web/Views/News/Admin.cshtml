@@ -58,9 +58,10 @@
                         <button class="am-btn am-btn-default" id="btnSearch" type="button">搜索</button>
                         @if (ViewBag.CanExport)
                         {
-                        <button class="am-btn am-btn-default" onclick="Export()" type="button">导出</button>
+                        <button class="am-btn am-btn-default am-margin-left-sm" onclick="ExportTxt()" type="button">导出Txt</button>
+                        <button class="am-btn am-btn-default am-margin-left-sm" onclick="ExportWord()" type="button">导出Word</button>
                         }
-                        <button class="am-btn am-btn-default" onclick="ClearFilter()" type="button">清除</button>
+                        <button class="am-btn am-btn-default am-margin-left-sm" onclick="ClearFilter()" type="button">清除</button>
                     </span>
                 </div>
             </div>
@@ -78,7 +79,7 @@
                 {
                     <th dataname="SubmitTime" datatype="jsondate">投递日期</th>
                     <th dataname="UserName">投稿人</th>
-                    <th dataname="NewsTypeName">投稿类型</th>
+                    @*<th dataname="NewsTypeName">投稿类型</th>*@
                     <th dataname="DepartmentName">投递部门</th>
                     <th dataname="AuditStateStr">当前处理人</th>
                 }
@@ -100,8 +101,14 @@
         {
             return item.RoleName + "-" + item.StateStr;
         }
-        function Export(obj) {
-            $.Nuoya.action("/news/GetExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val() }, function (result) {
+        function ExportTxt() {
+            $.Nuoya.action("/news/GetTxtExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val(), ids: grid.getCheckIds().join() }, function (result) {
+                window.open(result);
+            })
+        }
+
+        function ExportWord() {
+            $.Nuoya.action("/news/GetWordExportPageList", { pageIndex: grid.pageIndex, pageSize: grid.pageSize, title: $("[name='title']").val(), state: $("[name='state']").val(), ids: grid.getCheckIds().join() }, function (result) {
                 window.open(result);
             })
         }

@@ -435,7 +435,7 @@ namespace CoSys.Service
         /// <param name="title">名称 - 搜索项</param>
         /// <param name="no">编号 - 搜索项</param>
         /// <returns></returns>
-        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string userId, bool isAudit, NewsState? state, bool isExport = false)
+        public WebResult<PageList<News>> Get_AdminNewsPageList(int pageIndex, int pageSize, string title, string userId,string ids, bool isAudit, NewsState? state, bool isExport = false)
         {
             using (DbRepository db = new DbRepository())
             {
@@ -453,6 +453,10 @@ namespace CoSys.Service
                 {
                     query = query.Where(x => (!string.IsNullOrEmpty(x.UserID) && x.UserID.Equals(userId)));
                 }
+                if (ids.IsNotNullOrEmpty())
+                {
+                    query = query.Where(x => ids.Contains(x.ID));
+                }
                 if (!isAudit)
                 {
                     query = query.Where(x => x.UserID.Equals(admin.ID));
@@ -464,14 +468,17 @@ namespace CoSys.Service
                     {
                         var departmentIds = db.Department.Where(x => (admin.DepartmentFlag & x.Flag) != 0).Select(x => !string.IsNullOrEmpty(x.ParentID) ? (x.ParentID + ";" + x.ID) : x.ID).ToList();
                         query = query.Where(x => departmentIds.Contains(x.DepartmentID));
-                        if (role.AuditState == NewsAuditState.EditorialAudit)
-                        {
-                            query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
-                        }
-                        if (role.AuditState == NewsAuditState.MinisterAudit || role.AuditState == NewsAuditState.LastAudit)
-                        {
-                            query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.MinisterAudit || x.AuditState == NewsAuditState.LastAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
-                        }
+                        query = query.Where(x => (x.AuditState == role.AuditState));
+
+
+                        //if (role.AuditState == NewsAuditState.EditorialAudit)
+                        //{
+                        //    query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.EditorialAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
+                        //}
+                        //if (role.AuditState == NewsAuditState.MinisterAudit || role.AuditState == NewsAuditState.LastAudit)
+                        //{
+                        //    query = query.Where(x => (x.AuditState == NewsAuditState.EditorAudit || x.AuditState == NewsAuditState.MinisterAudit || x.AuditState == NewsAuditState.LastAudit || x.State == NewsState.WaitAudit || x.State == NewsState.Pass || x.State == NewsState.Plush));
+                        //}
                     }
                 }
                 if (state != null && (int)state != -1)
@@ -482,7 +489,7 @@ namespace CoSys.Service
                 {
                     if (isExport)
                     {
-                        query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush);
+                       // query = query.Where(x => x.State == NewsState.Pass || x.State == NewsState.Plush);
                     }
                     else
                     {
@@ -633,7 +640,8 @@ namespace CoSys.Service
                         if (isAudit)
                         {
                             oldEntity.State = NewsState.WaitAudit;
-                            oldEntity.SubmitTime = DateTime.Now;                            
+                            oldEntity.SubmitTime = DateTime.Now;
+                            oldEntity.AuditState = NewsAuditState.EditorAudit;                           
                         }
                         else
                             oldEntity.State = NewsState.None;
@@ -1116,20 +1124,23 @@ namespace CoSys.Service
                 //邮箱头盖
                 var plushMethod = "";
                 var typeNameDic = Cache_Get_DataDictionary()[GroupCode.Channel];
-                
-                Cache_Get_DataDictionary()[GroupCode.Channel].Values.Where(x => (x.Key.GetLong() & channelFlag) != 0).ToList().ForEach(x =>
-                  {
-                      plushMethod += " " + x.Value;
-                      if (x.Remark.IsNotNullOrEmpty())
-                      {
-                          var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, news.Paths);
-                      }
-                      else
-                      {
-                          
-                          var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php", $"title={HttpUtility.UrlEncode(news.Title)}&catid={HttpUtility.UrlEncode(x.Value)}&body={HttpUtility.UrlEncode(news.Content)}&author={HttpUtility.UrlEncode(news.PenName)}");
-                      }
-                  });
+                var list = Cache_Get_DataDictionary()[GroupCode.Channel].Values.ToList();
+                list.ForEach(x =>
+                {
+                    if ((x.Key.GetLong() & channelFlag) != 0)
+                    {
+                        plushMethod += " " + x.Value;
+                        if (x.Remark.IsNotNullOrEmpty())
+                        {
+                            var result = WebHelper.SendMail(x.Remark, $"{CustomHelper.GetValue("Company_Email_Title")} 笔名:{news.PenName}", news.Content, news.Paths);
+                        }
+                        else
+                        {
+
+                            var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php", $"title={HttpUtility.UrlEncode(news.Title)}&catid={HttpUtility.UrlEncode(x.Value)}&body={HttpUtility.UrlEncode(news.Content)}&author={HttpUtility.UrlEncode(news.PenName)}");
+                        }
+                    }
+                });
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
                 if (db.SaveChanges() > 0)
                 {

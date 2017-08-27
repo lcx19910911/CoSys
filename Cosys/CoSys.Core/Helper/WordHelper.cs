@@ -4,6 +4,7 @@ using NPOI.XWPF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -81,7 +82,7 @@ namespace CoSys.Core
                 r4.SetText($"发布渠道:{plsushMethodStr}");
             }
 
-
+            model.Content.Replace("&nbsp;", " ");
             var list=GetHtmlImageUrlList(model.Content);
 
             if (list.Length > 0)
@@ -107,11 +108,17 @@ namespace CoSys.Core
 
                         var widthEmus = (int)(400.0 * 9525);
                         var heightEmus = (int)(300.0 * 9525);
-
-                        using (FileStream picData = new FileStream(Get_img(list[i]), FileMode.Open, FileAccess.Read))
+                        string path = Get_img(list[i]);
+                        if (File.Exists(path))
                         {
-                            r6.AddPicture(picData, (int)PictureType.PNG, "图片", widthEmus, heightEmus);
+                            using (FileStream picData = new FileStream(path, FileMode.Open, FileAccess.Read))
+                            {
+                                r6.AddPicture(picData, (int)PictureType.PNG, "图片", widthEmus, heightEmus);
+                            }
                         }
+                        AsyncHelper.Run(() => {
+                            File.Delete(path);
+                        });
                     }
                 }
             }
@@ -142,6 +149,7 @@ namespace CoSys.Core
                     using (FileStream picData = new FileStream(System.Web.HttpContext.Current.Request.PhysicalApplicationPath + item, FileMode.Open, FileAccess.Read))
                     {
                         r6.AddPicture(picData, (int)PictureType.PNG, "图片" + index, widthEmus, heightEmus);
+
                     }
                     index++;
                 }
@@ -162,6 +170,66 @@ namespace CoSys.Core
             }
         }
 
+        /**/
+        /// <summary>  
+        /// 生成缩略图  
+        /// </summary>  
+        /// <param name="sourceFile">原始图片文件</param>  
+        /// <param name="quality">质量压缩比</param>  
+        /// <param name="multiple">收缩倍数</param>  
+        /// <param name="outputFile">输出文件名</param>  
+        /// <returns>成功返回true,失败则返回false</returns>  
+        public static bool GetThumImage(string sourceFile, long quality, int multiple, string outputFile)
+        {
+            try
+            {
+                long imageQuality = quality;
+                Bitmap sourceImage = new Bitmap(sourceFile);
+                ImageCodecInfo myImageCodecInfo = GetEncoderInfo("image/jpeg");
+                System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
+                EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, imageQuality);
+                myEncoderParameters.Param[0] = myEncoderParameter;
+                float xWidth = sourceImage.Width;
+                float yWidth = sourceImage.Height;
+                Bitmap newImage = new Bitmap((int)(xWidth / multiple), (int)(yWidth / multiple));
+                Graphics g = Graphics.FromImage(newImage);
+
+                g.DrawImage(sourceImage, 0, 0, xWidth / multiple, yWidth / multiple);
+                g.Dispose();
+                newImage.Save(outputFile, myImageCodecInfo, myEncoderParameters);
+                sourceImage.Dispose();
+
+                AsyncHelper.Run(() => {
+                    File.Delete(sourceFile);
+                });
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+        /**/
+        /// <summary>  
+        /// 获取图片编码信息  
+        /// </summary>  
+        private static ImageCodecInfo GetEncoderInfo(string mimeType)
+        {
+            int j;
+            ImageCodecInfo[] encoders;
+            encoders = ImageCodecInfo.GetImageEncoders();
+            for (j = 0; j < encoders.Length; ++j)
+            {
+                if (encoders[j].MimeType == mimeType)
+                    return encoders[j];
+            }
+            return null;
+        }
+
+
         public static string Get_img(string url)
         {
             Bitmap img = null;
@@ -173,13 +241,20 @@ namespace CoSys.Core
                 System.Uri httpUrl = new System.Uri(url);
                 req = (HttpWebRequest)(WebRequest.Create(httpUrl));
                 req.Timeout = 180000; //设置超时值10秒
-                req.UserAgent = "XXXXX";
-                req.Accept = "XXXXXX";
                 req.Method = "GET";
                 res = (HttpWebResponse)(req.GetResponse());
-                img = new Bitmap(res.GetResponseStream());//获取图片流          
-                path = System.Web.HttpContext.Current.Request.PhysicalApplicationPath + @"/Save/" + Guid.NewGuid().ToString("N") + ".png";
+                img = new Bitmap(res.GetResponseStream());//获取图片流    
+                var direcotry = System.Web.HttpContext.Current.Request.PhysicalApplicationPath + @"/Upload/Save/";
+                path = direcotry + Guid.NewGuid().ToString("N") + ".png";
+                string pathPerc = direcotry + Guid.NewGuid().ToString("N") + ".jpg";
+                if (!(Directory.Exists(direcotry)))
+                {
+                    Directory.CreateDirectory(direcotry);
+                }
                 img.Save(path);//随机名
+                GetThumImage(path, 80, 3, pathPerc);
+
+                return pathPerc;
             }
 
             catch (Exception ex)

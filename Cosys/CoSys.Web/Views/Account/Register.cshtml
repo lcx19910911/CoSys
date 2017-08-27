@@ -60,12 +60,12 @@
                     <lable class="info">真实姓名:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入姓名" required name="RealName" maxlength="32" value="@(Model.RealName)" />
                     <div class="clear"> </div>
                 </li>
-                <li>
+                @*<li>
                     <lable class="info">见刊笔名:</lable><input type="text" placeholder="请输入见刊笔名"  name="PenName" maxlength="32" value="@(Model.PenName)" />
                     <div class="clear"> </div>
-                </li>
+                </li>*@
                 <li>
-                    <lable class="info">户籍所在地:</lable><input type="text" placeholder="户籍所在地"  name="IDCardAddres" maxlength="256" value="@(Model.IDCardAddres)" />
+                    <lable class="info">所在地:</lable><input type="text" placeholder="所在地"  name="IDCardAddres" maxlength="256" value="@(Model.IDCardAddres)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
@@ -234,11 +234,16 @@
                             maxlength: 32
                         },
                         ProvoniceCode: {
-                     
+                            required: true
                         },
                         CityCode: {
+                            required: true
                         },
                         CountyCode: {
+                            required: true
+                        },
+                        StreetCode: {
+                            required: true
                         },
                         Addres: {
                             maxlength: 256
@@ -282,14 +287,21 @@
                         Position: {
                             maxlength: "最多{0}个字符"
                         },
-                        Zipcode: {
-                            maxlength: "最多{0}个字符"
-                        },
+
                         ProvoniceCode: {
+                            required: "省份不允许为空"
                         },
                         CityCode: {
+                            required: "市不允许为空"
                         },
                         CountyCode: {
+                            required: "县区不允许为空"
+                        },
+                        StreetCode: {
+                            required: "街道不允许为空"
+                        },
+                        Zipcode: {
+                            maxlength: "最多{0}个字符"
                         },
                         Addres: {
                             required: "通信地址不允许为空",
@@ -348,10 +360,16 @@
                             maxlength: 32
                         },
                         ProvoniceCode: {
+                            required: true
                         },
                         CityCode: {
+                            required: true
                         },
                         CountyCode: {
+                            required: true
+                        },
+                        StreetCode: {
+                            required: true
                         },
                         Addres: {
                             maxlength: 256
@@ -407,10 +425,16 @@
                             maxlength: "最多{0}个字符"
                         },
                         ProvoniceCode: {
+                            required: "省份不允许为空"
                         },
                         CityCode: {
+                            required: "市不允许为空"
                         },
                         CountyCode: {
+                            required: "县区不允许为空"
+                        },
+                        StreetCode: {
+                            required: "街道不允许为空"
                         },
                         Addres: {
                             maxlength: "最多{0}个字符"
@@ -454,7 +478,7 @@
                     success: function (data) {
                         nextSelect.html("");
                         $(data.Result).each(function (index, item) {
-                            nextSelect.append("<option value='" + item.Value + "' selected>" + item.Text + "</option>");
+                            nextSelect.append("<option value='" + item.Value + "'>" + item.Text + "</option>");
                         });
                     }
                 });

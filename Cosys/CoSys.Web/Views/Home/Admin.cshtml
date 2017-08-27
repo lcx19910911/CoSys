@@ -9,8 +9,12 @@
     var nonoCount = Model.Where(x => x.State == NewsState.None).Count();
 }
 <script>
-    $.Nuoya.action("/Home/LoadCache", {}, function (data) {
-    });
+    $.ajax({
+        url: "/Home/LoadCache",
+        success: function (json) {
+
+        }
+    })
 </script>
 <div class="am-g" style="margin-top:50px;">
     <div class="am-u-md-12">

@@ -28,7 +28,7 @@
             var isForPhone = '@(isForPhone?1:0)' == "1";
             $.Nuoya.ajaxDialog({
                 closeViaDimmer: false,
-                width: (isForPhone?(($(window).width() - 40)+"px"):"800px"),
+                width: (isForPhone?(($(window).width() - 40)+"px"):"600px"),
                 height: (isForPhone ? (($(window).height() - 300) + "px") : "280px"),
                 ajaxUrl: "/HtmlTemplates/Admin/ChangePassword.html",
                 title: "修改密码",
@@ -531,11 +531,11 @@
                                         <span class="am-icon-bars"></span> 投稿渠道
                                     </a>
                                 </li>
-                                <li>
+                                @*<li>
                                     <a data-am-collapse="{target: '#投稿类型'}" class="am-cf am-collapsed" href="/DataDictionary/Index?type=3">
                                         <span class="am-icon-bars"></span> 投稿类型
                                     </a>
-                                </li>
+                                </li>*@
                             </ul>
                         </li>
                     }

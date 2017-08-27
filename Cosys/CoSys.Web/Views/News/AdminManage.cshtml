@@ -35,7 +35,6 @@
     }
     ViewBag.Title = title;
 }
-
 <div class="admin-content-body" style="@(isFormPhone?"margin-top:50px":"")">
     <div class="am-cf am-padding am-padding-bottom-0">
         <div class="am-fl am-cf"><a href="/news/index"><strong class="am-text-primary am-text-lg">稿件管理</strong> </a>/ <small>@title</small></div>
@@ -52,7 +51,7 @@
                 </div>
 
 
-                <div class="am-form-group">
+                <div class="am-form-group" style="display:none;">
                     <label for="user-email" class="am-u-sm-3 am-form-label">类型<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
                         <select name="NewsTypeID" @(!canEdit ? "disabled": "" )>
@@ -77,9 +76,9 @@
                     </div>
                 }
                 <div class="am-form-group">
-                    <label for="user-name" class="am-u-sm-3 am-form-label">见刊笔名<strong class="am-text-danger am-text-sm">*</strong></label>
+                    <label for="user-name" class="am-u-sm-3 am-form-label">作者<strong class="am-text-danger am-text-sm">*</strong></label>
                     <div class="am-u-sm-9">
-                        <input type="text" name="PenName" placeholder="见刊笔名" maxlength="64" value="@((Model.ID.IsNullOrEmpty()?(admin.PenName.IsNullOrEmpty()?admin.RealName:admin.PenName): Model.PenName))" @(!canEdit ? "readonly": "" )>
+                        <input type="text" name="PenName" placeholder="作者" maxlength="64" value="@((Model.ID.IsNullOrEmpty()?(admin.PenName.IsNullOrEmpty()?admin.RealName:admin.PenName): Model.PenName))" @(!canEdit ? "readonly": "" )>
                     </div>
                 </div>
                 @if (Model.ID.IsNotNullOrEmpty())
@@ -174,10 +173,12 @@
                     </div>
                 </div>
                 <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                @if (Model.ID.IsNotNullOrEmpty())
+                {
                 <div class="am-form-group">
                     <button id="historyBtn" type="button" class="am-btn am-u-sm-push-3 am-u-sm-2 am-u-end">历史记录</button>
                 </div>
-                
+                }
                 @if (Model.ID.IsNotNullOrEmpty() && Model.Logs != null && Model.Logs.Count > 0)
                 {
                     if (isFormPhone)
@@ -269,7 +270,7 @@
                                             {
                                                 foreach (var item in Model.MethodList)
                                                 {
-                                                    <label class="am-checkbox">
+                                                    <label class="am-checkbox" style="padding-top:0em;">
                                                         <input type="checkbox" value="@(item.Value)" data-am-ucheck />@item.Text
                                                     </label>
                                                 }
@@ -296,7 +297,7 @@
                                         {
                                             foreach (var item in Model.MethodList)
                                             {
-                                                <label class="am-checkbox">
+                                                <label class="am-checkbox"  style="padding-top:0em;">
                                                     <input type="checkbox" value="@(item.Value)" data-am-ucheck />@item.Text
                                                 </label>
                                             }
@@ -328,16 +329,10 @@
                                             <div class="am-u-sm-3 am-u-sm-push-2">
                                                 <button id="rejectBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核驳回</button>
                                             </div>
-                                            <div class="am-u-sm-3">
-                                                <button id="editorialPassBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
-                                            </div>
                                         }
-                                        else
-                                        {
                                             <div class="am-u-sm-3 am-u-sm-push-2">
                                                 <button id="editorialPassBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过</button>
                                             </div>
-                                        }
                                         <div class="am-u-sm-4">
                                             <button id="passBtn" type="button" class="am-btn am-btn-lg am-btn-success">审核通过(到稿件审核员)</button>
                                         </div>
@@ -352,7 +347,7 @@
                                             {
                                                 foreach (var item in Model.MethodList)
                                                 {
-                                                    <label class="am-checkbox">
+                                                    <label class="am-checkbox" style="padding-top:0em;">
                                                         <input type="checkbox" value="@(item.Value)" data-am-ucheck />@item.Text
                                                     </label>
                                                 }
@@ -576,7 +571,7 @@
 
         }
 
-        $("#rejectBtn").on("click", function () {
+        $("#rejectBtn").click(function () {
 
             SavaNews(function () {
                 var msg = $("[name='Msg']").val();
@@ -600,7 +595,7 @@
             },"history");
         });
 
-        $("#passBtn").on("click", function () {
+        $("#passBtn").click(function () {
             SavaNews(function () {
                 var msg = $("[name='Msg']").val();
                 $.Nuoya.action("/news/Audit", {
@@ -620,24 +615,27 @@
         });
 
 
-        $("#editorialPassBtn").on("click", function () {
-            var msg = $("[name='Msg']").val();
-            $.Nuoya.action("/news/EditorialPass", {
-                id: '@(Model.ID)',
-                msg: msg
-            }, function (data) {
-                if (!data.ErrorDesc) {
-                    $.Nuoya.alert("审核成功");
-                    window.location.href = "/news/admin";
-                }
-                else
-                    $.Nuoya.alert(data.ErrorDesc);
-            });
-        }, "history");
+        $("#editorialPassBtn").click(function () {
+            SavaNews(function () {
+                var msg = $("[name='Msg']").val();
+                $.Nuoya.action("/news/EditorialPass", {
+                    id: '@(Model.ID)',
+                    isPass: 1,
+                    msg: msg
+                }, function (data) {
+                    if (!data.ErrorDesc) {
+                        $.Nuoya.alert("审核成功");
+                        window.location.href = "/news/admin";
+                    }
+                    else
+                        $.Nuoya.alert(data.ErrorDesc);
+                });
+            }, "history");
+        });
 
 
 
-        $("#plushBtn").on("click", function () {
+        $("#plushBtn").click(function () {
             var msg = $("[name='Msg']").val();
             var plushFlag = 0;
             $("#plushFlagDiv input:checked").each(function () {
@@ -670,7 +668,10 @@
                         //表格id
                         search: {
                             domainId: "searchHistoryDomain",
-                            subId: "btnHistorySearch"
+                            subId: "btnHistorySearch",
+                        },
+                        params: {
+                            newsId: '@(Model.ID)'
                         },
                         ajaxUrl: "/News/GetHistoryPageList",
                         //数据请求地址
@@ -708,7 +709,7 @@
             })
         });
 
-        $("#saveBtn,#submitBtn").on("click", function () {
+        $("#saveBtn,#submitBtn").click(function () {
              var id = '@(Model.ID)';
             var title = $("[name='Title']").val();
             if (title == "") {
