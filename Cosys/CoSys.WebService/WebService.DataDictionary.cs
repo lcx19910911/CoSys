@@ -126,11 +126,17 @@ namespace CoSys.Service
         {
             using (DbRepository db = new DbRepository())
             {
-                if(db.DataDictionary.Where(x=>x.GroupCode==GroupCode.Area&&x.Key.Equals(model.Key)).Any())
+                if (db.DataDictionary.Where(x => x.GroupCode == GroupCode.Area && x.Key.Equals(model.Key)).Any())
+                {
+                    if (model.GroupCode == GroupCode.Area)
+                    {
+                        return Result(false, ErrorCode.areacode_had);
+                    }
                     return Result(false, ErrorCode.sys_param_format_error);
+                }
                 if (model.GroupCode == GroupCode.Channel)
                 {
-                    var limitFlags = Cache_Get_DataDictionary()[GroupCode.Channel].Select(x=>x.Value.Key.GetLong()).ToList();
+                    var limitFlags = Cache_Get_DataDictionary()[GroupCode.Channel].Select(x => x.Value.Key.GetLong()).ToList();
                     var limitFlagAll = 0L;
                     // 获取所有角色位值并集
                     limitFlags.ForEach(x => limitFlagAll |= x);

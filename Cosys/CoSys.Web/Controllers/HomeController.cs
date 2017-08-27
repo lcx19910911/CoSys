@@ -32,10 +32,10 @@ namespace CoSys.Web.Controllers
         {
             var s1=WebService.Cache_Get_DataDictionary()[GroupCode.Area];
             var s2 = WebService.Cache_Get_DataDictionary()[GroupCode.Channel];
-            var s3 = WebService.Cache_Get_DataDictionary()[GroupCode.Type];
+           // var s3 = WebService.Cache_Get_DataDictionary()[GroupCode.Type];
             return JResult("");
         }
-
+        
         public ActionResult Admin()
         {
             if (Client.LoginAdmin == null)

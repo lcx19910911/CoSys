@@ -75,12 +75,18 @@ namespace CoSys.Model
         [Description("手机号码已存在.")]
         datadatabase_mobile__had = 63,
 
-      
 
-        
+
+        /// <summary>
+        /// 地区编码已存在
+        /// </summary>
+        [Description("地区编码已存在.")]
+        areacode_had = 64,
+
+
         #endregion
 
-       
+
 
 
 
