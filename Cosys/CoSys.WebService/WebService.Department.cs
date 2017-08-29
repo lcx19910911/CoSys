@@ -62,14 +62,6 @@ namespace CoSys.Service
                 limitFlags.ForEach(x => limitFlagAll |= x);
                 var limitFlag = 0L;
                 // 从低位遍历是否为空
-                for (var i = 0; i < 64; i++)
-                {
-                    if ((limitFlagAll & (1 << i)) == 0)
-                    {
-                        limitFlag = 1 << i;
-                        break;
-                    }
-                }
                 model.Flag = limitFlag;
                 db.Department.Add(model);
                 if (db.SaveChanges() > 0)
