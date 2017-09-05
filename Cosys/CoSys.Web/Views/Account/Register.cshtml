@@ -24,6 +24,7 @@
             color:red;
         }
     </style>
+    
 </head>
 <body>
     <div class="main" style="@(isInfo ? "margin:0px; width:100%;height:100%" : "")">
@@ -53,39 +54,23 @@
                     </li>
                 }
                 <li>
-                    <lable class="info">邮箱:</lable><input type="text" placeholder="请输入邮箱" name="Email" maxlength="32" value="@(Model.Email)" />
-                    <div class="clear"> </div>
-                </li>
-                <li>
                     <lable class="info">真实姓名:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入姓名" required name="RealName" maxlength="32" value="@(Model.RealName)" />
                     <div class="clear"> </div>
                 </li>
-                @*<li>
-                    <lable class="info">见刊笔名:</lable><input type="text" placeholder="请输入见刊笔名"  name="PenName" maxlength="32" value="@(Model.PenName)" />
-                    <div class="clear"> </div>
-                </li>*@
                 <li>
-                    <lable class="info">所在地:</lable><input type="text" placeholder="所在地"  name="IDCardAddres" maxlength="256" value="@(Model.IDCardAddres)" />
+                    <lable class="info">身份证号:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入身份证号" name="IDCard" maxlength="32" value="@(Model.IDCard)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">身份证号:</lable><input type="text" placeholder="请输入身份证号"  name="IDCard" maxlength="32" value="@(Model.IDCard)" />
+                    <lable class="info">手机:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入手机" required name="Phone" maxlength="11" value="@(Model.Phone)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">单位:</lable><input type="text" placeholder="请输入单位" name="CompanyName" maxlength="32" value="@(Model.CompanyName)" />
+                    <lable class="info">邮箱:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入邮箱" name="Email" maxlength="32" value="@(Model.Email)" />
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">职位:</lable><input type="text" placeholder="请输入职位" name="Position" maxlength="32" value="@(Model.Position)" />
-                    <div class="clear"> </div>
-                </li>
-                <li>
-                    <lable class="info">邮编:</lable><input type="text" placeholder="请输入邮编" name="Zipcode" maxlength="32" value="@(Model.Zipcode)" />
-                    <div class="clear"> </div>
-                </li>
-                <li>
-                    <lable class="info">省:</lable>
+                    <lable class="info">省:<strong class="am-text-danger am-text-sm">*</strong></lable>
                     <select class="area" onchange="loadArea(this)" name="ProvoniceCode">
                         @foreach (var item in Model.ProvinceItems)
                         {
@@ -96,7 +81,7 @@
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">市:</lable>
+                    <lable class="info">市:<strong class="am-text-danger am-text-sm">*</strong></lable>
                     <select class="area" onchange="loadArea(this)" name="CityCode">
                         @if (Model.CityItems != null && Model.CityItems.Count > 0)
                         {
@@ -110,7 +95,7 @@
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">县:</lable>
+                    <lable class="info">县:<strong class="am-text-danger am-text-sm">*</strong></lable>
                     <select class="area" onchange="loadArea(this)" name="CountyCode">
                         @if (Model.CountyItems != null && Model.CountyItems.Count > 0)
                         {
@@ -124,7 +109,7 @@
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">街道:</lable>
+                    <lable class="info">街道:<strong class="am-text-danger am-text-sm">*</strong></lable>
                     <select class="area" name="StreetCode">
                         @if (Model.StreetItems != null && Model.StreetItems.Count > 0)
                         {
@@ -137,6 +122,27 @@
                     @*<input type="text" placeholder="街道" required id="password" />*@
                     <div class="clear"> </div>
                 </li>
+                @*<li>
+                    <lable class="info">见刊笔名:</lable><input type="text" placeholder="请输入见刊笔名"  name="PenName" maxlength="32" value="@(Model.PenName)" />
+                    <div class="clear"> </div>
+                </li>*@
+                <li>
+                    <lable class="info">通讯地址:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="通讯地址"  name="IDCardAddres" maxlength="256" value="@(Model.IDCardAddres)" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">邮编:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入邮编" name="Zipcode" maxlength="32" value="@(Model.Zipcode)" />
+                    <div class="clear"> </div>
+                </li>
+
+                <li>
+                    <lable class="info">单位:</lable><input type="text" placeholder="请输入单位" name="CompanyName" maxlength="32" value="@(Model.CompanyName)" />
+                    <div class="clear"> </div>
+                </li>
+                <li>
+                    <lable class="info">职位:</lable><input type="text" placeholder="请输入职位" name="Position" maxlength="32" value="@(Model.Position)" />
+                    <div class="clear"> </div>
+                </li>
                 <li>
                     <lable class="info">会员类型:<strong class="am-text-danger am-text-sm">*</strong></lable>
                     <select class="area" name="Code">
@@ -147,7 +153,7 @@
                     </select>
                     <div class="clear"> </div>
                 </li>
-                <li>
+                @*<li>
                     <lable class="info">通讯地址:</lable><input type="text" placeholder="请输入通讯地址"  name="Addres" maxlength="256" value="@(Model.Addres)" />
                     <div class="clear"> </div>
                 </li>
@@ -156,13 +162,9 @@
                     <div class="clear"> </div>
                 </li>
                 <li>
-                    <lable class="info">手机:<strong class="am-text-danger am-text-sm">*</strong></lable><input type="text" placeholder="请输入手机" required name="Phone" maxlength="11" value="@(Model.Phone)" />
-                    <div class="clear"> </div>
-                </li>
-                <li>
                     <lable class="info">QQ:</lable><input type="text" placeholder="请输入QQ" name="QQ" maxlength="32" value="@(Model.QQ)" />
                     <div class="clear"> </div>
-                </li>
+                </li>*@
                 @if (!isInfo||(Request["info"]=="true"))
                 {
                     if (Model.ID.IsNotNullOrEmpty())
@@ -181,6 +183,7 @@
                         </li>
 
                         <label><input type="checkbox" id="checkbox" checked=""><i> </i>同意平台条款</label>
+                        <label><a style="color:red; margin-left:30%;" onclick="showNotice()">平台条款</a></label>
                         <button class="submit-btn" onclick="Submit()">注册</button>
                     }
                     <div class="clear"> </div>
@@ -209,6 +212,7 @@
                             maxlength: 32
                         },
                         Email: {
+                            required: true,
                             email: true,
                         },
                         RealName: {
@@ -219,9 +223,11 @@
                             maxlength: 32
                         },
                         IDCardAddres: {
+                            required: true,
                             maxlength: 256
                         },
                         IDCard: {
+                            required: true,
                             maxlength: 18
                         },
                         CompanyName: {
@@ -231,6 +237,7 @@
                             maxlength: 32
                         },
                         Zipcode: {
+                            required: true,
                             maxlength: 32
                         },
                         ProvoniceCode: {
@@ -256,9 +263,6 @@
                             mobile: true,
                             required: true
                         },
-                        Code: {
-                            required: true
-                        }
                     },
                     messages: {
                         Account: {
@@ -266,6 +270,7 @@
                             maxlength: "最多{0}个字符"
                         },
                         Email: {
+                            required: "邮箱不允许为空",
                             maxlength: "最多{0}个字符",
                         },
                         RealName: {
@@ -279,6 +284,7 @@
                             maxlength: "最多{0}个字符"
                         },
                         IDCard: {
+                            required: "身份证号码不允许为空",
                             idCard: "请输入正确的身份证号码",
                         },
                         CompanyName: {
@@ -301,10 +307,12 @@
                             required: "街道不允许为空"
                         },
                         Zipcode: {
+                            required: "邮编不允许为空",
                             maxlength: "最多{0}个字符"
                         },
                         Addres: {
                             required: "通信地址不允许为空",
+                            maxlength: "最多{0}个字符"
                         },
                         TelePhone: {
                             maxlength: "最多{0}个字符"
@@ -335,7 +343,7 @@
                             maxlength: 12
                         },
                         Email: {
-                            maxlength: 32,
+                            required: true,
                             email: true,
                         },
                         RealName: {
@@ -346,9 +354,12 @@
                             maxlength: 32
                         },
                         IDCardAddres: {
+                            required: true,
                             maxlength: 256
                         },
                         IDCard: {
+                            required: true,
+                            maxlength: 18
                         },
                         CompanyName: {
                             maxlength: 64
@@ -357,6 +368,7 @@
                             maxlength: 32
                         },
                         Zipcode: {
+                            required: true,
                             maxlength: 32
                         },
                         ProvoniceCode: {
@@ -400,19 +412,21 @@
                             maxlength: "最多{0}个字符"
                         },
                         Email: {
+                            required: "邮箱不允许为空",
                             maxlength: "最多{0}个字符",
                         },
                         RealName: {
                             required: "真实姓名不允许为空",
                             maxlength: "最多{0}个字符"
                         },
+                        Code: {
+                            required: "会员类型不允许为空",
+                        },
                         PenName: {
                             maxlength: "最多{0}个字符"
                         },
-                        IDCardAddres: {
-                            maxlength: "最多{0}个字符"
-                        },
                         IDCard: {
+                            required: "身份证号码不允许为空",
                             idCard: "请输入正确的身份证号码",
                         },
                         CompanyName: {
@@ -421,9 +435,7 @@
                         Position: {
                             maxlength: "最多{0}个字符"
                         },
-                        Zipcode: {
-                            maxlength: "最多{0}个字符"
-                        },
+
                         ProvoniceCode: {
                             required: "省份不允许为空"
                         },
@@ -436,7 +448,12 @@
                         StreetCode: {
                             required: "街道不允许为空"
                         },
+                        Zipcode: {
+                            required: "邮编不允许为空",
+                            maxlength: "最多{0}个字符"
+                        },
                         Addres: {
+                            required: "通信地址不允许为空",
                             maxlength: "最多{0}个字符"
                         },
                         TelePhone: {
@@ -462,6 +479,11 @@
             //    });
             //});
         }
+        function showNotice()
+        {
+            window.location.href = "/account/notice";
+        }
+
 
         function loadArea(obj) {
             var thatObj = $(obj);
@@ -529,7 +551,7 @@
                 callback: function (data) {
                     if (!data.ErrorDesc) {
                         alert("修改成功");
-                        window.location.href = "/home/index";
+                        //window.location.href = "/home/index";
                     }
                     else {
                         alert(data.ErrorDesc);

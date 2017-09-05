@@ -614,6 +614,7 @@
     <Content Include="Views\Statistics\Register.cshtml" />
     <Content Include="Views\Statistics\Chanel.cshtml" />
     <Content Include="Views\News\Statistics.cshtml" />
+    <Content Include="Views\Account\Notice.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

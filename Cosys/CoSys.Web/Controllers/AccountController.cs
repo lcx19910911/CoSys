@@ -17,6 +17,11 @@ namespace CoSys.Web.Controllers
             //WebService.GetArea();
             return View();
         }
+        
+        public ActionResult Notice()
+        {
+            return View();
+        }
         public ActionResult Register(string id)
         {
             var model = WebService.Find_User(id);
