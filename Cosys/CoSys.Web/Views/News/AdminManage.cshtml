@@ -637,13 +637,13 @@
 
         $("#plushBtn").click(function () {
             var msg = $("[name='Msg']").val();
-            var plushFlag = 0;
+            var plushAry =new Array();
             $("#plushFlagDiv input:checked").each(function () {
-                plushFlag = plushFlag | parseInt($(this).val());
+                plushAry.push($(this).val());
             })
             $.Nuoya.action("/news/Plush", {
                 id: '@(Model.ID)',
-                flag: plushFlag,
+                methodIDStr: plushAry.join(),
                 msg: msg
             }, function (data) {
                 if (!data.ErrorDesc) {

@@ -64,7 +64,7 @@ namespace CoSys.Model
         public string Msg { get; set; }
 
         public long MethodFlag { get; set; }
-        public long PlushMethodFlag { get; set; }
+        public string PlushMethodIDStr { get; set; }
 
         [NotMapped]
         public List<Log> Logs { get; set; }

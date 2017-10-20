@@ -1103,7 +1103,7 @@ namespace CoSys.Service
         /// </summary>
         /// <param name="Model"></param>
         /// <returns></returns> 
-        public WebResult<bool> Plush_News(string id, long channelFlag, string msg)
+        public WebResult<bool> Plush_News(string id, string methodIDStr, string msg)
         {
             using (var db = new DbRepository())
             {
@@ -1120,15 +1120,13 @@ namespace CoSys.Service
 
                 news.UpdateAdminID = admin.ID;
                 news.State = NewsState.Plush;
-                news.PlushMethodFlag = channelFlag;
+                news.PlushMethodIDStr = methodIDStr;
                 //邮箱头盖
                 var plushMethod = "";
                 var typeNameDic = Cache_Get_DataDictionary()[GroupCode.Channel];
                 var list = Cache_Get_DataDictionary()[GroupCode.Channel].Values.ToList();
-                list.ForEach(x =>
+                list.Where(x=> methodIDStr.Contains(x.ID)).ToList().ForEach(x =>
                 {
-                    if ((x.Key.GetLong() & channelFlag) != 0)
-                    {
                         plushMethod += " " + x.Value;
                         if (x.Remark.IsNotNullOrEmpty())
                         {
@@ -1136,10 +1134,8 @@ namespace CoSys.Service
                         }
                         else
                         {
-
-                            var getResult = WebHelper.GetPage("http://5.weboss.hk/newsApi.php", $"title={HttpUtility.UrlEncode(news.Title)}&catid={HttpUtility.UrlEncode(x.Value)}&body={HttpUtility.UrlEncode(news.Content)}&author={HttpUtility.UrlEncode(news.PenName)}");
+                            var getResult = WebHelper.GetPage("http://www.fjfpa.org.cn/newsApi.php", $"title={HttpUtility.UrlEncode(news.Title)}&body={HttpUtility.UrlEncode(news.Content)}&author={HttpUtility.UrlEncode(news.PenName)}");
                         }
-                    }
                 });
                 Add_Log(LogCode.Plush, id, Client.LoginAdmin.ID, $"发布于{plushMethod}");
                 if (db.SaveChanges() > 0)
@@ -1585,7 +1581,7 @@ namespace CoSys.Service
                     model.Add(new StatisticsModel()
                     {
                         Key = x.Key,
-                        AllCount = db.News.Where(y => (y.PlushMethodFlag & key) != 0).Select(y => y.ID).Count(),
+                        AllCount = db.News.Where(y => y.PlushMethodIDStr.Contains(x.ID)).Select(y => y.ID).Count(),
                         Name = dic[x.Key].Value
                     });
                 });

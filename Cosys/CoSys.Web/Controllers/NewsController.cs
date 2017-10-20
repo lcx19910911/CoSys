@@ -380,9 +380,9 @@ namespace CoSys.Web.Controllers
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public ActionResult Plush(string id, long flag, string msg)
+        public ActionResult Plush(string id, string methodIDStr, string msg)
         {
-            return JResult(WebService.Plush_News(id, flag, msg));
+            return JResult(WebService.Plush_News(id, methodIDStr, msg));
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace CoSys.Web.Controllers
                 var index = 1;
                 result.Result.List.ForEach(x =>
                         {
-                            var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
+                            var list = methodDic.Values.Where(y => x.PlushMethodIDStr.Contains(y.ID)).Select(y => y.Value).ToList();
                             if (list == null)
                                 list = new List<string>();
                             var str = string.Join(",", list);
@@ -451,7 +451,7 @@ namespace CoSys.Web.Controllers
                 var index = 1;
                 result.Result.List.ForEach(x =>
                 {
-                    var list = methodDic.Values.Where(y => (y.Key.GetLong() & x.PlushMethodFlag) != 0).Select(y => y.Value).ToList();
+                    var list = methodDic.Values.Where(y => x.PlushMethodIDStr.Contains(y.ID)).Select(y => y.Value).ToList();
                     if (list == null)
                         list = new List<string>();
                     var str = string.Join(",", list);
