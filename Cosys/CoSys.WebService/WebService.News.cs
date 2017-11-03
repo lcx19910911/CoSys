@@ -1132,7 +1132,52 @@ namespace CoSys.Service
                      {
                          if (x.Remark.EndsWith("@id.com"))
                          {
-                             var getResult = WebHelper.GetPage("http://www.fjfpa.org.cn/api/publish.php?username=admin&password=windows", $"act=add&catid={x.Remark.Replace("@id.com","")}&dtime={DateTime.Now.Ticks}&uptime={DateTime.Now.Ticks}&title={HttpUtility.UrlEncode(news.Title)}&body={HttpUtility.UrlEncode(news.Content)}&author={HttpUtility.UrlEncode(news.PenName)}");
+                             var date = new {
+                                 act = "add",
+                                 catid = x.Remark.Replace("@id.com", "").GetInt(),
+                                 dtime = DateTime.Now.Ticks,
+                                 uptime = DateTime.Now.Ticks,
+                                 title = news.Title,
+                                 body = news.Content,
+                                 author = news.PenName,
+                                 catpath = "0086",
+                                 xuhao = 0,
+                                 cl = 0,
+                                 tj = 0,
+                                 iffb = 1,
+                                 ifbold = 0,
+                                 ifred = 0,
+                                 type = "gif",
+                                 source = "",
+                                 memberid = 0,
+                                 secure = 0,
+                                 memo = "test12",
+                                 prop1 = "",
+                                 prop2 = "",
+                                 prop3 = "",
+                                 prop4 = "",
+                                 prop5 = "",
+                                 prop6 = "",
+                                 prop7 = "",
+                                 prop8 = "",
+                                 prop9 = "",
+                                 prop10 = "",
+                                 prop11 = "",
+                                 prop12 = "",
+                                 prop13 = "",
+                                 prop14 = "",
+                                 prop15 = "",
+                                 prop16 = "",
+                                 prop17 = "",
+                                 prop18 = "",
+                                 prop19 = "",
+                                 prop20 = "",
+                                 downcentid = "1",
+                                 downcent = "0",
+                                 tourl = "",
+                                 fileurl = "http://"
+                             };
+                             var getResult = WebHelper.GetPage("http://www.fjfpa.org.cn/api/publish.php?username=admin&password=windows", date.ToJson(), "post");
                          }
                          else
                          {
